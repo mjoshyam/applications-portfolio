@@ -1,0 +1,2241 @@
+<!DOCTYPE html>
+<!-- saved from url=(0067)file:///C:/Users/Riya/Downloads/GamerPsyche_FourPillars%20(15).html -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>GamerPsyche — Four Pillars Framework</title>
+<link href="./GamerPsyche_PracticeRunPresentation_files/css2" rel="stylesheet">
+
+<style>
+
+
+:root{
+  --bg:#070d18;--panel:#0c1526;--border:#1a3558;
+  --cyan:#00d4ff;--gold:#ffc840;--red:#ff4d4d;
+  --green:#00e87a;--purple:#b066ff;--orange:#ff8c42;
+  --text:#d0e8ff;--muted:#8aaec8;--white:#ffffff;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);font-family:'Exo 2',sans-serif;color:var(--text);overflow:hidden;height:100vh;width:100vw;cursor:pointer;user-select:none;}
+body::before{content:'';position:fixed;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.03) 2px,rgba(0,0,0,0.03) 4px);pointer-events:none;z-index:9999;}
+body::after{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(0,212,255,.02) 1px,transparent 1px),linear-gradient(90deg,rgba(0,212,255,.02) 1px,transparent 1px);background-size:64px 64px;pointer-events:none;z-index:0;}
+
+/* ENGINE */
+.deck{position:relative;width:100vw;height:100vh;z-index:1;}
+.slide{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;align-items:center;padding:36px 52px;opacity:0;pointer-events:none;transition:opacity 0.35s ease;}
+.slide.active{opacity:1;pointer-events:all;}
+
+/* HUD */
+.hc{position:fixed;width:32px;height:32px;z-index:100;pointer-events:none;}
+.hc.tl{top:12px;left:12px;border-top:2px solid var(--cyan);border-left:2px solid var(--cyan);}
+.hc.tr{top:12px;right:12px;border-top:2px solid var(--cyan);border-right:2px solid var(--cyan);}
+.hc.bl{bottom:12px;left:12px;border-bottom:2px solid var(--cyan);border-left:2px solid var(--cyan);}
+.hc.br{bottom:12px;right:12px;border-bottom:2px solid var(--cyan);border-right:2px solid var(--cyan);}
+.progress{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,var(--cyan),var(--gold));transition:width 0.4s ease;z-index:200;box-shadow:0 0 10px var(--cyan);}
+.counter{position:fixed;top:14px;right:16px;font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--muted);z-index:200;letter-spacing:.1em;}
+.nav{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);display:flex;gap:7px;z-index:200;}
+.nav-dot{width:7px;height:7px;border-radius:50%;background:var(--muted);transition:all 0.3s;cursor:pointer;}
+.nav-dot.active{background:var(--cyan);box-shadow:0 0 8px var(--cyan);transform:scale(1.4);}
+.hint{position:fixed;bottom:42px;right:18px;font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--muted);letter-spacing:.12em;z-index:200;animation:blink 2.2s infinite;}
+@keyframes blink{0%,100%{opacity:.3}50%{opacity:.9}}
+
+/* SHARED */
+.tag{font-family:'Share Tech Mono',monospace;font-size:12px;letter-spacing:.2em;text-transform:uppercase;color:var(--cyan);margin-bottom:12px;display:flex;align-items:center;gap:8px;}
+.tag::before{content:'▶';font-size:8px;}
+.panel{background:var(--panel);border:1px solid var(--border);border-radius:6px;padding:22px 26px;position:relative;overflow:hidden;}
+.panel::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--cyan),transparent);}
+.panel.red::before   {background:linear-gradient(90deg,var(--red),transparent);}
+.panel.purple::before{background:linear-gradient(90deg,var(--purple),transparent);}
+.panel.green::before {background:linear-gradient(90deg,var(--green),transparent);}
+.panel.gold::before  {background:linear-gradient(90deg,var(--gold),transparent);}
+.panel.orange::before{background:linear-gradient(90deg,var(--orange),transparent);}
+.insight{font-size:16px;background:rgba(0,212,255,0.06);border:1px solid rgba(0,212,255,0.2);border-radius:6px;padding:16px 20px;font-size:17px;line-height:1.7;color:var(--text);}
+.insight strong{color:var(--cyan);font-weight:600;}
+.ach{display:flex;align-items:center;gap:14px;background:rgba(255,200,64,0.06);border:1px solid rgba(255,200,64,0.2);border-radius:6px;padding:14px 18px;}
+.ach-icon{font-size:26px;flex-shrink:0;}
+.ach-t{font-family:'Orbitron',monospace;font-size:11px;font-weight:700;color:var(--gold);letter-spacing:.05em;}
+.ach-d{font-size:16px;color:var(--text);margin-top:3px;line-height:1.45;}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;}
+.g4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:14px;}
+
+/* PHASE BANNER — used throughout to mark DS pipeline stage */
+.phase{display:inline-flex;align-items:center;gap:9px;padding:5px 14px;border-radius:3px;font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:.18em;text-transform:uppercase;margin-bottom:12px;}
+.phase.p1{background:rgba(0,212,255,.1);color:var(--cyan);border:1px solid rgba(0,212,255,.3);}
+.phase.p2{background:rgba(255,200,64,.1);color:var(--gold);border:1px solid rgba(255,200,64,.3);}
+.phase.p3{background:rgba(0,232,122,.1);color:var(--green);border:1px solid rgba(0,232,122,.3);}
+.phase.p4{background:rgba(176,102,255,.1);color:var(--purple);border:1px solid rgba(176,102,255,.3);}
+.phase.p5{background:rgba(255,140,66,.1);color:var(--orange);border:1px solid rgba(255,140,66,.3);}
+
+/* ANIMATIONS */
+.fu{animation:fuA 0.5s ease both;}
+.fu.d1{animation-delay:.08s}.fu.d2{animation-delay:.18s}.fu.d3{animation-delay:.3s}
+.fu.d4{animation-delay:.42s}.fu.d5{animation-delay:.55s}.fu.d6{animation-delay:.68s}
+.fu.d7{animation-delay:.82s}.fu.d8{animation-delay:.96s}
+@keyframes fuA{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
+.gi{animation:giA 0.8s ease both;}
+@keyframes giA{from{opacity:0;filter:blur(12px)}to{opacity:1;filter:blur(0)}}
+
+
+/* SIMULATOR */
+.sim-row{margin-bottom:13px;}
+.sim-label{font-size:17px;color:var(--text);margin-bottom:6px;display:flex;justify-content:space-between;align-items:center;}
+.sim-val{font-family:'Share Tech Mono',monospace;font-size:13px;color:var(--cyan);background:rgba(0,212,255,.1);padding:2px 9px;border-radius:3px;}
+.sim-slider{width:100%;-webkit-appearance:none;height:5px;background:rgba(26,53,88,1);border-radius:3px;outline:none;cursor:pointer;}
+.sim-slider::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:var(--cyan);cursor:pointer;box-shadow:0 0 8px rgba(0,212,255,.5);}
+.sim-btn{font-family:'Share Tech Mono',monospace;font-size:11px;padding:6px 12px;border-radius:4px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;letter-spacing:.1em;transition:all .2s;}
+.sim-btn.active{background:rgba(0,212,255,.15);border-color:var(--cyan);color:var(--cyan);}
+
+/* BOOT */
+#s0{text-align:center;}
+.boot-logo{font-family:'Orbitron',monospace;font-size:clamp(48px,7.5vw,100px);font-weight:900;letter-spacing:-0.02em;line-height:1;color:var(--white);animation:lp 3s ease infinite;}
+.boot-logo span{color:var(--cyan);text-shadow:0 0 60px var(--cyan);}
+@keyframes lp{0%,100%{text-shadow:0 0 30px rgba(0,212,255,.2)}50%{text-shadow:0 0 80px rgba(0,212,255,.55)}}
+.bline{width:110px;height:1px;background:linear-gradient(90deg,transparent,var(--cyan),transparent);margin:24px auto;}
+
+/* DATA PIPELINE STEPS */
+.pipe-step{display:flex;align-items:flex-start;gap:14px;padding:13px 16px;background:rgba(255,255,255,0.025);border-radius:6px;border-left:3px solid var(--cyan);margin-bottom:10px;}
+.pipe-step.gold  {border-left-color:var(--gold);}
+.pipe-step.green {border-left-color:var(--green);}
+.pipe-step.purple{border-left-color:var(--purple);}
+.pipe-step.orange{border-left-color:var(--orange);}
+.pipe-step.red   {border-left-color:var(--red);}
+.pipe-num{font-family:'Orbitron',monospace;font-size:20px;font-weight:900;color:var(--muted);flex-shrink:0;width:30px;line-height:1.2;}
+.pipe-t{font-size:17px;font-weight:600;color:var(--white);margin-bottom:3px;}
+.pipe-d{font-size:16px;color:var(--muted);line-height:1.55;}
+.pbadge{font-family:'Share Tech Mono',monospace;font-size:9px;padding:2px 8px;border-radius:2px;margin-left:8px;vertical-align:middle;}
+.bc {background:rgba(0,212,255,.12);color:var(--cyan);border:1px solid rgba(0,212,255,.3);}
+.bg2{background:rgba(0,232,122,.12);color:var(--green);border:1px solid rgba(0,232,122,.3);}
+.by {background:rgba(255,200,64,.12);color:var(--gold);border:1px solid rgba(255,200,64,.3);}
+.bp {background:rgba(176,102,255,.12);color:var(--purple);border:1px solid rgba(176,102,255,.3);}
+.bo {background:rgba(255,140,66,.12);color:var(--orange);border:1px solid rgba(255,140,66,.3);}
+.br {background:rgba(255,77,77,.12);color:var(--red);border:1px solid rgba(255,77,77,.3);}
+
+/* PLAYER STATS */
+.pstat{background:var(--panel);border:1px solid var(--border);border-radius:6px;padding:18px 14px;text-align:center;position:relative;overflow:hidden;}
+.pstat::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;}
+.pstat.c1::before{background:var(--cyan);}   .pstat.c1 .pstat-n{color:var(--cyan);}
+.pstat.c2::before{background:var(--gold);}   .pstat.c2 .pstat-n{color:var(--gold);}
+.pstat.c3::before{background:var(--green);}  .pstat.c3 .pstat-n{color:var(--green);}
+.pstat.c4::before{background:var(--purple);}  .pstat.c4 .pstat-n{color:var(--purple);}
+.pstat-n{font-family:'Orbitron',monospace;font-size:clamp(24px,3.2vw,40px);font-weight:900;line-height:1;}
+.pstat-l{font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-top:6px;}
+.gtag{font-family:'Share Tech Mono',monospace;font-size:11px;padding:5px 11px;border:1px solid var(--border);border-radius:2px;color:var(--muted);}
+
+/* OUTCOME CARDS */
+.out-card{background:var(--panel);border:1px solid var(--border);border-radius:6px;padding:24px 20px;text-align:center;position:relative;overflow:hidden;}
+.out-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;}
+.out-card.gad::before{background:var(--red);}   .out-card.gad  .out-name{color:var(--red);}   .out-card.gad  .out-avg{color:var(--red);}
+.out-card.spin::before{background:var(--purple);}.out-card.spin .out-name{color:var(--purple);}.out-card.spin .out-avg{color:var(--purple);}
+.out-card.swl::before{background:var(--green);}  .out-card.swl  .out-name{color:var(--green);} .out-card.swl  .out-avg{color:var(--green);}
+.out-emoji{font-size:34px;margin-bottom:10px;}
+.out-name{font-family:'Orbitron',monospace;font-size:clamp(13px,1.5vw,18px);font-weight:700;margin-bottom:4px;}
+.out-scale{font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:12px;}
+.out-meaning{font-size:16px;color:var(--text);line-height:1.55;margin-bottom:14px;}
+.out-avg{font-family:'Orbitron',monospace;font-size:clamp(30px,4vw,48px);font-weight:900;line-height:1;}
+.out-avglabel{font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-top:5px;}
+
+/* PERSONAS */
+.persona-card{background:var(--panel);border:1px solid var(--border);border-radius:6px;padding:18px 16px;position:relative;overflow:hidden;}
+.persona-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;}
+.p1::before{background:var(--cyan);}  .p1 .persona-name{color:var(--cyan);}  .p1 .persona-signal{color:var(--cyan);}
+.p2::before{background:var(--gold);}  .p2 .persona-name{color:var(--gold);}  .p2 .persona-signal{color:var(--gold);}
+.p3::before{background:var(--red);}   .p3 .persona-name{color:var(--red);}   .p3 .persona-signal{color:var(--red);}
+.p4::before{background:var(--green);} .p4 .persona-name{color:var(--green);} .p4 .persona-signal{color:var(--green);}
+.persona-emoji{font-size:28px;margin-bottom:8px;}
+.persona-name{font-family:'Orbitron',monospace;font-size:clamp(12px,1.4vw,15px);font-weight:700;margin-bottom:7px;line-height:1.2;}
+.persona-trait{font-size:16px;color:var(--text);margin-bottom:5px;padding-left:10px;border-left:2px solid rgba(255,255,255,0.08);line-height:1.45;}
+.persona-signal{font-size:11.5px;margin-top:9px;font-family:'Share Tech Mono',monospace;}
+
+/* DAMAGE CARDS (escapism finding) */
+.dmg-card{background:var(--panel);border-radius:6px;padding:20px 18px;text-align:center;position:relative;overflow:hidden;}
+.dmg-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;}
+.dmg-card.bad::before{background:var(--red);}
+.dmg-card.ns::before{background:var(--muted);}
+.dmg-card.warn::before{background:var(--gold);}
+.dmg-n{font-family:'Orbitron',monospace;font-size:clamp(26px,3.5vw,48px);font-weight:900;line-height:1;}
+.dmg-card.bad  .dmg-n{color:var(--red);text-shadow:0 0 20px rgba(255,77,77,.4);}
+.dmg-card.ns   .dmg-n{color:var(--muted);}
+.dmg-card.warn .dmg-n{color:var(--gold);text-shadow:0 0 20px rgba(255,200,64,.4);}
+.dmg-out{font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);margin:7px 0 8px;}
+.dmg-d{font-size:16px;color:var(--text);line-height:1.55;}
+
+/* CAUSAL */
+.ci-item{display:flex;align-items:flex-start;gap:12px;padding:13px 15px;border-radius:6px;margin-bottom:10px;background:rgba(255,255,255,0.025);}
+.ci-item.can{border-left:3px solid var(--green);}
+.ci-item.cant{border-left:3px solid var(--red);}
+.ci-icon{font-size:18px;flex-shrink:0;width:22px;}
+.ci-t{font-size:14px;font-weight:600;margin-bottom:3px;}
+.ci-item.can  .ci-t{color:var(--green);}
+.ci-item.cant .ci-t{color:var(--red);}
+.ci-d{font-size:16px;color:var(--muted);line-height:1.55;}
+
+/* REAL WORLD CARDS */
+.rw-card{background:var(--panel);border:1px solid var(--border);border-radius:6px;padding:22px 24px;position:relative;overflow:hidden;}
+.rw-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;}
+.rw-card.gold::before{background:var(--gold);}   .rw-card.gold   .rw-big{color:var(--gold);}
+.rw-card.green::before{background:var(--green);} .rw-card.green  .rw-big{color:var(--green);}
+.rw-card.cyan::before{background:var(--cyan);}   .rw-card.cyan   .rw-big{color:var(--cyan);}
+.rw-card.purple::before{background:var(--purple);}.rw-card.purple .rw-big{color:var(--purple);}
+.rw-big{font-family:'Orbitron',monospace;font-size:clamp(26px,3.8vw,48px);font-weight:900;line-height:1;margin-bottom:6px;}
+.rw-t{font-size:15px;font-weight:600;color:var(--white);margin-bottom:6px;}
+.rw-d{font-size:16px;color:var(--muted);line-height:1.6;}
+
+/* FINAL */
+#s17{text-align:center;}
+.db-main{font-family:'Orbitron',monospace;font-size:clamp(24px,4vw,54px);font-weight:900;line-height:1.15;color:var(--white);margin-bottom:12px;letter-spacing:-0.02em;}
+.db-main span{color:var(--cyan);}
+.db-sub{font-size:clamp(14px,1.7vw,17px);color:var(--text);line-height:1.75;max-width:580px;margin:0 auto 26px;font-weight:300;}
+.tw{font-size:16px;display:flex;align-items:flex-start;gap:13px;padding:15px 17px;background:var(--panel);border:1px solid var(--border);border-radius:6px;font-size:16px;line-height:1.6;text-align:left;}
+.tw-icon{font-size:20px;flex-shrink:0;}
+.tw strong{color:var(--white);display:block;margin-bottom:3px;font-weight:600;}
+
+
+
+/* PILLAR SECTION HEADERS */
+.pill-banner{display:flex;align-items:center;gap:16px;margin-bottom:28px;}
+.pill-icon{font-size:28px;}
+.pill-label{font-family:'Orbitron',monospace;font-size:clamp(26px,3.5vw,46px);font-weight:900;line-height:1;}
+.pill-sub{font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:.2em;text-transform:uppercase;margin-top:3px;}
+.pill-line{flex:1;height:2px;}
+
+/* PILLAR COLOURS */
+.desc .pill-label,.desc .pill-sub{color:var(--cyan);}
+.desc .pill-line{background:linear-gradient(90deg,var(--cyan),transparent);}
+.desc .phase-badge{background:rgba(0,212,255,.12);color:var(--cyan);border:1px solid rgba(0,212,255,.35);}
+.pred .pill-label,.pred .pill-sub{color:var(--gold);}
+.pred .pill-line{background:linear-gradient(90deg,var(--gold),transparent);}
+.pred .phase-badge{background:rgba(255,200,64,.12);color:var(--gold);border:1px solid rgba(255,200,64,.35);}
+.caus .pill-label,.caus .pill-sub{color:var(--green);}
+.caus .pill-line{background:linear-gradient(90deg,var(--green),transparent);}
+.caus .phase-badge{background:rgba(0,232,122,.12);color:var(--green);border:1px solid rgba(0,232,122,.35);}
+.pres .pill-label,.pres .pill-sub{color:var(--purple);}
+.pres .pill-line{background:linear-gradient(90deg,var(--purple),transparent);}
+.pres .phase-badge{background:rgba(176,102,255,.12);color:var(--purple);border:1px solid rgba(176,102,255,.35);}
+
+.phase-badge{display:inline-block;font-family:'Share Tech Mono',monospace;font-size:10px;
+  letter-spacing:.14em;text-transform:uppercase;padding:4px 12px;border-radius:3px;margin-bottom:14px;}
+
+/* STAT TILES */
+.stile{background:var(--panel);border:1px solid var(--border);border-radius:8px;
+  padding:20px 14px;text-align:center;position:relative;overflow:hidden;}
+.stile::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;}
+.stile.c1::before{background:var(--cyan);}  .stile.c1 .sn{color:var(--cyan);}
+.stile.c2::before{background:var(--gold);}  .stile.c2 .sn{color:var(--gold);}
+.stile.c3::before{background:var(--green);} .stile.c3 .sn{color:var(--green);}
+.stile.c4::before{background:var(--purple);}  .stile.c4 .sn{color:var(--purple);}
+.stile.c5::before{background:var(--orange);} .stile.c5 .sn{color:var(--orange);}
+.stile.c6::before{background:var(--red);}   .stile.c6 .sn{color:var(--red);}
+.sn{font-family:'Orbitron',monospace;font-size:clamp(24px,3vw,42px);font-weight:900;line-height:1;}
+.sl{font-family:'Share Tech Mono',monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-top:6px;}
+.sd{font-size:13px;color:var(--muted);margin-top:6px;line-height:1.4;}
+
+/* PERSONA COMPACT CARDS */
+.pc{background:var(--panel);border-radius:8px;padding:16px 14px;}
+.pc.p1{border:1px solid rgba(0,212,255,.3);border-top:3px solid var(--cyan);}
+.pc.p2{border:1px solid rgba(255,200,64,.3);border-top:3px solid var(--gold);}
+.pc.p3{border:1px solid rgba(255,140,66,.3);border-top:3px solid var(--orange);}
+.pc.p4{border:1px solid rgba(255,77,77,.3);border-top:3px solid var(--red);}
+.pc-em{font-size:28px;text-align:center;margin-bottom:6px;}
+.pc-name{font-family:'Orbitron',monospace;font-size:12px;font-weight:700;text-align:center;margin-bottom:4px;}
+.pc-pct{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--muted);text-align:center;margin-bottom:8px;}
+.pc-desc{font-size:12px;color:var(--muted);line-height:1.5;text-align:center;}
+.pc-score{display:flex;justify-content:space-between;font-size:12px;margin-top:6px;}
+
+/* FINDING ROW */
+.frow{display:flex;gap:12px;align-items:flex-start;padding:13px 16px;
+  background:var(--panel);border:1px solid var(--border);border-radius:8px;}
+.frow-icon{font-size:22px;flex-shrink:0;}
+.frow-t{font-size:14px;font-weight:600;color:var(--white);margin-bottom:3px;}
+.frow-d{font-size:13px;color:var(--muted);line-height:1.5;}
+
+/* VERSUS ROWS */
+.vs-row{display:grid;grid-template-columns:1fr 36px 1fr;align-items:stretch;margin-bottom:10px;}
+.vs-exp{background:rgba(0,212,255,.05);border:1px solid rgba(0,212,255,.18);
+  border-radius:8px 0 0 8px;padding:12px 15px;}
+.vs-mid{background:rgba(255,255,255,.025);display:flex;align-items:center;justify-content:center;font-size:18px;}
+.vs-real{border-radius:0 8px 8px 0;padding:12px 15px;}
+.vs-real.red{background:rgba(255,77,77,.07);border:1px solid rgba(255,77,77,.22);}
+.vs-real.ora{background:rgba(255,140,66,.07);border:1px solid rgba(255,140,66,.22);}
+.vs-tag{font-family:'Share Tech Mono',monospace;font-size:9px;letter-spacing:.14em;
+  text-transform:uppercase;margin-bottom:4px;}
+.vs-txt{font-size:13px;color:var(--text);line-height:1.5;}
+
+/* INTERVENTION CARDS */
+.intv{background:var(--panel);border-radius:8px;padding:18px 16px;border-left:4px solid;}
+.intv.c1{border-left-color:var(--cyan);}
+.intv.c2{border-left-color:var(--red);}
+.intv.c3{border-left-color:var(--gold);}
+.intv.c4{border-left-color:var(--green);}
+.intv-icon{font-size:24px;margin-bottom:8px;}
+.intv-t{font-family:'Orbitron',monospace;font-size:12px;font-weight:700;color:var(--white);margin-bottom:6px;}
+.intv-d{font-size:13px;color:var(--muted);line-height:1.5;}
+
+/* TAKEAWAY CARDS */
+.tkcard{background:var(--panel);border-radius:8px;padding:18px 16px;border-left:4px solid;}
+.tkcard.c1{border-left-color:var(--cyan);}  .tkcard.c2{border-left-color:var(--gold);}
+.tkcard.c3{border-left-color:var(--green);} .tkcard.c4{border-left-color:var(--purple);}
+.tkcard.c5{border-left-color:var(--orange);}.tkcard.c6{border-left-color:var(--red);}
+.tk-n{font-family:'Orbitron',monospace;font-size:26px;font-weight:900;opacity:.2;}
+.tk-t{font-family:'Orbitron',monospace;font-size:12px;font-weight:700;color:var(--white);margin:3px 0 5px;}
+.tk-d{font-size:12px;color:var(--muted);line-height:1.5;}
+
+/* PILLAR FRAMEWORK DIAGRAM */
+.fw-wrap{display:flex;flex-direction:column;align-items:center;width:100%;}
+.fw-roof{background:rgba(0,212,255,.1);border:1px solid rgba(0,212,255,.4);border-radius:6px 6px 0 0;
+  padding:8px 24px;text-align:center;width:78%;font-family:'Orbitron',monospace;
+  font-size:13px;font-weight:700;color:var(--cyan);letter-spacing:.12em;text-transform:uppercase;}
+.fw-belt{width:78%;background:rgba(255,255,255,.025);border-left:1px solid rgba(0,212,255,.2);
+  border-right:1px solid rgba(0,212,255,.2);padding:5px 18px;text-align:center;font-size:12px;color:var(--muted);}
+.fw-cols{display:flex;width:78%;gap:0;margin-top:4px;}
+.fw-col{flex:1;display:flex;flex-direction:column;align-items:center;}
+.fw-body{width:90%;background:var(--panel);border:1px solid var(--border);padding:12px 8px;
+  text-align:center;min-height:80px;display:flex;flex-direction:column;justify-content:center;gap:5px;}
+.fw-stem{width:40%;height:24px;}
+.fw-base{width:90%;padding:9px 6px;text-align:center;font-family:'Orbitron',monospace;
+  font-size:10px;font-weight:900;letter-spacing:.08em;border-radius:0 0 4px 4px;}
+.fw-base.d{background:rgba(0,212,255,.18);color:var(--cyan);  border:1px solid rgba(0,212,255,.45);}
+.fw-base.p{background:rgba(255,200,64,.18);color:var(--gold);  border:1px solid rgba(255,200,64,.45);}
+.fw-base.c{background:rgba(0,232,122,.18);color:var(--green);  border:1px solid rgba(0,232,122,.45);}
+.fw-base.r{background:rgba(176,102,255,.18);color:var(--purple);border:1px solid rgba(176,102,255,.45);}
+.fw-q{font-size:12px;color:var(--muted);font-style:italic;}
+.fw-detail{font-size:11px;color:var(--muted);line-height:1.4;}
+.fw-found{width:78%;background:rgba(255,200,64,.08);border:1px solid rgba(255,200,64,.3);
+  border-radius:0 0 6px 6px;padding:8px 16px;text-align:center;}
+
+</style>
+<script>
+(function(){
+  function loadScript(src, onload, onerror) {
+    var s = document.createElement('script');
+    s.src = src; s.onload = onload; s.onerror = onerror;
+    document.head.appendChild(s);
+  }
+  var cdns = [
+    'https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js',
+    'https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js',
+    'https://unpkg.com/chart.js@4.4.1/dist/chart.umd.min.js'
+  ];
+  var idx = 0;
+  function tryNext() {
+    if(idx >= cdns.length) { console.error('All Chart.js CDNs failed'); return; }
+    loadScript(cdns[idx++], function(){ console.log('Chart.js loaded from CDN '+(idx)); }, tryNext);
+  }
+  tryNext();
+})();
+</script><script src="./GamerPsyche_PracticeRunPresentation_files/chart.umd.min.js.download"></script>
+</head>
+<body>
+<div class="hc tl"></div><div class="hc tr"></div>
+<div class="hc bl"></div><div class="hc br"></div>
+<div class="progress" id="progress" style="width: 100%;"></div>
+<div class="counter" id="counter">17 / 17</div>
+<div class="hint">CLICK OR → TO ADVANCE</div>
+<div class="nav" id="nav"><div class="nav-dot"></div><div class="nav-dot"></div><div class="nav-dot"></div><div class="nav-dot"></div><div class="nav-dot"></div><div class="nav-dot"></div><div class="nav-dot"></div><div class="nav-dot"></div><div class="nav-dot"></div><div class="nav-dot"></div><div class="nav-dot"></div><div class="nav-dot"></div><div class="nav-dot"></div><div class="nav-dot"></div><div class="nav-dot"></div><div class="nav-dot"></div><div class="nav-dot active"></div></div>
+<div class="deck" id="deck">
+<div class="slide" id="s0">
+  <div class="boot-logo gi" style="">Gamer<span>Psyche</span></div>
+  <div class="bline fu d1" style=""></div>
+  <p style="font-size: clamp(18px, 2.4vw, 30px); color: var(--text); max-width: 760px; line-height: 1.6; font-weight: 300; font-style: italic; text-align: center;" class="fu d2">
+    Your controller tracks your hours.<br>
+    <span style="color:var(--cyan);font-weight:600;font-style:normal;">We tracked what those hours do to your mind.</span>
+  </p>
+  <div style="margin-top: 20px; display: flex; gap: 10px; justify-content: center; flex-wrap: wrap;" class="fu d3">
+    <div style="font-family:&#39;Share Tech Mono&#39;,monospace;font-size:14px;color:var(--muted);letter-spacing:.08em;">Manasa &nbsp;•&nbsp; Ming &nbsp;•&nbsp; Nickole &nbsp;•&nbsp; Riya</div>
+  </div>
+</div>
+<div class="slide" id="gi">
+  <div style="width:100%;max-width:1000px;">
+
+    <div class="tag fu" style="justify-content: center; margin-bottom: 8px; font-size: 20px; letter-spacing: 0.18em;">Context</div>
+    <div style="font-family: Orbitron, monospace; font-size: clamp(40px, 5.5vw, 66px); font-weight: 900; color: var(--white); text-align: center; margin-bottom: 56px; line-height: 1;" class="fu d1">Gaming Industry Today</div>
+
+    <!-- 4 stats as plain numbers — no boxes -->
+    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 0px; margin-bottom: 40px;" class="fu d2">
+
+      <div style="text-align:center;padding:0 20px;border-right:1px solid var(--border);">
+        <div style="font-family:&#39;Orbitron&#39;,monospace;font-size:clamp(22px,2.8vw,36px);font-weight:900;color:var(--cyan);line-height:1;">$197bn</div>
+        <div style="font-size:13px;color:var(--white);font-weight:600;margin-top:10px;">Total Market 2025</div>
+        <div style="font-family:&#39;Share Tech Mono&#39;,monospace;font-size:12px;color:var(--green);margin-top:4px;">+7.5% YoY</div>
+      </div>
+
+      <div style="text-align:center;padding:0 20px;border-right:1px solid var(--border);">
+        <div style="font-family:&#39;Orbitron&#39;,monospace;font-size:clamp(22px,2.8vw,36px);font-weight:900;color:var(--red);line-height:1;">$108bn</div>
+        <div style="font-size:13px;color:var(--white);font-weight:600;margin-top:10px;">Mobile · 50%</div>
+        <div style="font-size:12px;color:var(--muted);margin-top:4px;">+7.7% YoY</div>
+      </div>
+
+      <div style="text-align:center;padding:0 20px;border-right:1px solid var(--border);">
+        <div style="font-family:&#39;Orbitron&#39;,monospace;font-size:clamp(22px,2.8vw,36px);font-weight:900;color:var(--gold);line-height:1;">$45bn</div>
+        <div style="font-size:13px;color:var(--white);font-weight:600;margin-top:10px;">Console · 27%</div>
+        <div style="font-size:12px;color:var(--muted);margin-top:4px;">+4.2% YoY</div>
+      </div>
+
+      <div style="text-align:center;padding:0 20px;">
+        <div style="font-family:&#39;Orbitron&#39;,monospace;font-size:clamp(22px,2.8vw,36px);font-weight:900;color:var(--purple);line-height:1;">$43bn</div>
+        <div style="font-size:13px;color:var(--white);font-weight:600;margin-top:10px;">PC · 23%</div>
+        <div style="font-size:12px;color:var(--muted);margin-top:4px;">+10.4% YoY ↑ fastest</div>
+      </div>
+
+    </div>
+
+    <!-- Divider -->
+    <div style="height: 1px; background: linear-gradient(90deg, transparent, rgba(255, 200, 64, 0.4), transparent); margin-bottom: 28px;" class="fu d3"></div>
+
+    <!-- Gap statement — centred, no box -->
+    <div style="text-align: center;" class="fu d3">
+      <div style="font-size:19px;font-weight:600;color:var(--text);line-height:1.7;">Yet none of this tracks how gaming affects mental health.</div>
+      <div style="font-size:19px;font-weight:700;color:var(--gold);margin-top:4px;">That's the gap we set out to fill.</div>
+    </div>
+
+  </div>
+</div>
+
+<div class="slide" id="ro">
+  <div style="width:100%;max-width:1060px;">
+
+    <div class="tag fu" style="justify-content: center; margin-bottom: 28px; font-size: 22px; letter-spacing: 0.18em;">Research Objective</div>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0px;" class="fu d1">
+
+      <!-- Problem -->
+      <div style="padding:32px 28px;border-top:4px solid var(--red);background:rgba(255,77,77,0.05);border-radius:10px 0 0 10px;border:1px solid rgba(255,77,77,0.15);border-top:4px solid var(--red);">
+        <div style="font-family:&#39;Share Tech Mono&#39;,monospace;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--red);margin-bottom:18px;">🔴 &nbsp;Problem</div>
+        <div style="font-family:&#39;Orbitron&#39;,monospace;font-size:17px;font-weight:700;color:var(--white);margin-bottom:14px;line-height:1.35;">Players aren't all the same.</div>
+        <div style="font-size:14px;color:var(--muted);line-height:1.8;">The industry measures hours and spending — never mental health.</div>
+      </div>
+
+      <!-- Gap -->
+      <div style="padding:32px 28px;background:rgba(255,200,64,0.05);border-top:4px solid var(--gold);border-bottom:1px solid rgba(255,200,64,0.15);position:relative;">
+        <div style="font-family:&#39;Share Tech Mono&#39;,monospace;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--gold);margin-bottom:18px;">⚡ &nbsp;The Gap</div>
+        <div style="font-family:&#39;Orbitron&#39;,monospace;font-size:17px;font-weight:700;color:var(--white);margin-bottom:14px;line-height:1.35;">Nobody is tracking the psychology.</div>
+        <div style="font-size:14px;color:var(--muted);line-height:1.8;">No segmentation. No mental health outcomes. No actionable insight.</div>
+        <div style="position:absolute;top:50%;right:-18px;transform:translateY(-50%);font-size:28px;color:var(--gold);z-index:2;">→</div>
+        <div style="position:absolute;top:50%;left:-18px;transform:translateY(-50%);font-size:28px;color:var(--red);z-index:2;">→</div>
+      </div>
+
+      <!-- Solution -->
+      <div style="padding:32px 28px;border-top:4px solid var(--cyan);background:rgba(0,212,255,0.05);border-radius:0 10px 10px 0;border:1px solid rgba(0,212,255,0.15);border-top:4px solid var(--cyan);">
+        <div style="font-family:&#39;Share Tech Mono&#39;,monospace;font-size:10px;letter-spacing:.2em;text-transform:uppercase;color:var(--cyan);margin-bottom:18px;">✅ &nbsp;Our Question</div>
+        <div style="font-family:&#39;Orbitron&#39;,monospace;font-size:17px;font-weight:700;color:var(--white);margin-bottom:14px;line-height:1.35;">Can we segment, predict &amp; intervene?</div>
+        <div style="font-size:14px;color:var(--muted);line-height:1.8;">Four Pillars · 13,377 players · <strong style="color:var(--red);">GAD-7</strong> · <strong style="color:var(--purple);">SPIN</strong> · <strong style="color:var(--green);">SWLS</strong></div>
+      </div>
+
+    </div>
+
+  </div>
+</div>
+
+
+
+
+</div>
+<div class="slide desc" id="d1">
+  <div style="width:100%;max-width:1060px;">
+    <div class="pill-banner fu" style="">
+      <div class="pill-label" style="color:var(--cyan);">Who Did We Study?</div>
+      <div class="pill-line" style="background:linear-gradient(90deg,var(--cyan),transparent);"></div>
+      <span style="font-family:&#39;Share Tech Mono&#39;,monospace;font-size:11px;color:var(--cyan);white-space:nowrap;opacity:0.75;">Descriptive</span>
+    </div>
+
+    <div style="font-size: 14px; color: var(--muted); margin-bottom: 24px;" class="fu d1">Kaggle Online Gaming Anxiety Dataset — 13,464 raw observations, cleaned to <strong style="color:var(--white);">13,377 records</strong> across ~50 variables.</div>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 16px;" class="fu d2">
+      <div style="text-align:center;padding:28px 14px;border-top:3px solid var(--cyan);background:rgba(0,212,255,0.05);border-radius:0 0 10px 10px;">
+        <div style="font-family:&#39;Orbitron&#39;,monospace;font-size:42px;font-weight:900;color:var(--cyan);line-height:1;">13,377</div>
+        <div style="font-size:13px;color:var(--white);font-weight:600;margin-top:8px;">Players analysed</div>
+        <div style="font-size:12px;color:var(--muted);margin-top:4px;">Kaggle Gaming Anxiety Dataset</div>
+      </div>
+      <div style="text-align:center;padding:28px 14px;border-top:3px solid var(--gold);background:rgba(255,200,64,0.05);border-radius:0 0 10px 10px;">
+        <div style="font-family:&#39;Orbitron&#39;,monospace;font-size:42px;font-weight:900;color:var(--gold);line-height:1;">84%</div>
+        <div style="font-size:13px;color:var(--white);font-weight:600;margin-top:8px;">League of Legends</div>
+        <div style="font-size:12px;color:var(--muted);margin-top:4px;">High-pressure competitive environment</div>
+      </div>
+      <div style="text-align:center;padding:28px 14px;border-top:3px solid var(--purple);background:rgba(176,102,255,0.05);border-radius:0 0 10px 10px;">
+        <div style="font-family:&#39;Orbitron&#39;,monospace;font-size:42px;font-weight:900;color:var(--purple);line-height:1;">94%</div>
+        <div style="font-size:13px;color:var(--white);font-weight:600;margin-top:8px;">Male · Gen-Z</div>
+        <div style="font-size:12px;color:var(--muted);margin-top:4px;">52.7% college students</div>
+      </div>
+      <div style="text-align:center;padding:28px 14px;border-top:3px solid var(--green);background:rgba(0,232,122,0.05);border-radius:0 0 10px 10px;">
+        <div style="font-family:&#39;Orbitron&#39;,monospace;font-size:42px;font-weight:900;color:var(--green);line-height:1;">98%</div>
+        <div style="font-size:13px;color:var(--white);font-weight:600;margin-top:8px;">PC Platform</div>
+        <div style="font-size:12px;color:var(--muted);margin-top:4px;">3 validated scales: GAD-7 · SPIN · SWLS</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="slide desc" id="d2">
+  <div style="width:100%;max-width:1060px;">
+    <div class="pill-banner fu" style="">
+      <div class="pill-label" style="color:var(--cyan);">What Do Their Mental Health Scores Look Like?</div>
+      <div class="pill-line"></div>
+      <span style="font-family:&#39;Share Tech Mono&#39;,monospace;font-size:11px;color:var(--cyan);white-space:nowrap;opacity:0.75;">Descriptive</span>
+    </div>
+
+    <div style="font-size: 13px; color: var(--muted); margin-bottom: 14px;" class="fu d1">Clinically validated scales across 13,377 players.</div>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 14px; margin-bottom: 16px;" class="fu d2">
+      <div style="padding:14px 16px;background:var(--panel);border:1px solid var(--border);border-radius:8px;border-top:3px solid var(--green);">
+        <div style="font-family:&#39;Share Tech Mono&#39;,monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--green);margin-bottom:8px;">Life Satisfaction (SWL_T)</div>
+        <div style="position:relative;height:150px;"><canvas id="swlDistChart" width="620" height="300" style="display: block; box-sizing: border-box; height: 150px; width: 310px;"></canvas></div>
+        <div style="font-size:12px;color:var(--muted);margin-top:7px;line-height:1.5;"><strong style="color:var(--white);">Median = 20 · Symmetric.</strong> Moderate satisfaction across most players.</div>
+      </div>
+      <div style="padding:14px 16px;background:var(--panel);border:1px solid var(--border);border-radius:8px;border-top:3px solid var(--red);">
+        <div style="font-family:&#39;Share Tech Mono&#39;,monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--red);margin-bottom:8px;">Generalised Anxiety (GAD_T)</div>
+        <div style="position:relative;height:150px;"><canvas id="gadDistChart" width="620" height="300" style="display: block; box-sizing: border-box; height: 150px; width: 310px;"></canvas></div>
+        <div style="font-size:12px;color:var(--muted);margin-top:7px;line-height:1.5;"><strong style="color:var(--white);">Median = 4 · Right-skewed.</strong> Majority mild — subset reaches elevated ranges.</div>
+      </div>
+      <div style="padding:14px 16px;background:var(--panel);border:1px solid var(--border);border-radius:8px;border-top:3px solid var(--purple);">
+        <div style="font-family:&#39;Share Tech Mono&#39;,monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--purple);margin-bottom:8px;">Social Phobia (SPIN_T)</div>
+        <div style="position:relative;height:150px;"><canvas id="spinDistChart" width="620" height="300" style="display: block; box-sizing: border-box; height: 150px; width: 310px;"></canvas></div>
+        <div style="font-size:12px;color:var(--muted);margin-top:7px;line-height:1.5;"><strong style="color:var(--white);">Median = 18 · Right-skewed.</strong> Majority mild — subset exhibits high scores.</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+
+<div class="slide desc" id="d3a">
+  <div style="width:100%;max-width:1060px;">
+    <div class="pill-banner fu" style="">
+      <div class="pill-label" style="color:var(--cyan);">What Did We Actually Measure?</div>
+      <div class="pill-line" style="background:linear-gradient(90deg,var(--cyan),transparent);"></div>
+      <span style="font-family:&#39;Share Tech Mono&#39;,monospace;font-size:11px;color:var(--cyan);white-space:nowrap;opacity:0.75;">Descriptive</span>
+    </div>
+
+    <div style="font-family: Orbitron, monospace; font-size: 20px; font-weight: 700; color: var(--white); margin-bottom: 24px;" class="fu d1">Most research asks <span style="color:var(--muted);">how much</span> people play. We asked <span style="color:var(--cyan);">why</span> — and what it does to them.</div>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;" class="fu d2">
+
+      <div style="display:flex;gap:14px;align-items:center;padding:18px 20px;border-left:3px solid var(--cyan);background:rgba(0,212,255,0.05);border-radius:0 10px 10px 0;">
+        <span style="font-size:28px;flex-shrink:0;">⏱</span>
+        <div>
+          <div style="font-size:15px;font-weight:600;color:var(--white);">How much they play</div>
+          <div style="font-size:13px;color:var(--muted);margin-top:3px;">Hours, streaming activity, playstyle</div>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:14px;align-items:center;padding:18px 20px;border-left:3px solid var(--gold);background:rgba(255,200,64,0.05);border-radius:0 10px 10px 0;">
+        <span style="font-size:28px;flex-shrink:0;">🧠</span>
+        <div>
+          <div style="font-size:15px;font-weight:600;color:var(--white);">Why they play</div>
+          <div style="font-size:13px;color:var(--muted);margin-top:3px;">Relax, compete, socialise, escape</div>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:14px;align-items:center;padding:18px 20px;border-left:3px solid var(--purple);background:rgba(176,102,255,0.05);border-radius:0 10px 10px 0;">
+        <span style="font-size:28px;flex-shrink:0;">👤</span>
+        <div>
+          <div style="font-size:15px;font-weight:600;color:var(--white);">Who they are</div>
+          <div style="font-size:13px;color:var(--muted);margin-top:3px;">Age, gender, education, employment</div>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:14px;align-items:center;padding:18px 20px;border-left:3px solid var(--green);background:rgba(0,232,122,0.05);border-radius:0 10px 10px 0;">
+        <span style="font-size:28px;flex-shrink:0;">❤️</span>
+        <div>
+          <div style="font-size:15px;font-weight:600;color:var(--white);">How they feel</div>
+          <div style="font-size:13px;color:var(--muted);margin-top:3px;">GAD-7 · SPIN · SWLS</div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</div>
+
+<div class="slide desc" id="d3fs">
+  <div style="width:100%;max-width:1060px;">
+    <div class="pill-banner fu" style="">
+      <div class="pill-label" style="color:var(--cyan);">How Did We Group Players?</div>
+      <div class="pill-line" style="background:linear-gradient(90deg,var(--cyan),transparent);"></div>
+      <span style="font-family:&#39;Share Tech Mono&#39;,monospace;font-size:11px;color:var(--cyan);white-space:nowrap;opacity:0.75;">Descriptive</span>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 18px;" class="fu d1">
+
+      <!-- LEFT -->
+      <div style="display:flex;flex-direction:column;gap:12px;">
+
+        <div style="padding:16px 18px;background:var(--panel);border:1px solid var(--border);border-radius:8px;border-left:3px solid var(--cyan);">
+          <div style="font-size:14px;font-weight:700;color:var(--white);margin-bottom:8px;">Exploration Strategy</div>
+          <div style="font-size:13px;color:var(--text);line-height:1.9;">
+            · Motivational variables only<br>
+            · Behavioural variables only<br>
+            · Combined behavioural + motivational
+          </div>
+          <div style="margin-top:10px;font-size:13px;color:var(--muted);">
+            <strong style="color:var(--white);">Goal:</strong> Stable, separable and interpretable gamer segments.
+          </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+          <div style="padding:12px 14px;background:var(--panel);border:1px solid var(--border);border-radius:8px;border-top:2px solid var(--cyan);">
+            <div style="font-family:&#39;Share Tech Mono&#39;,monospace;font-size:9px;color:var(--cyan);text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px;">Behavioural</div>
+            <div style="font-size:13px;color:var(--text);line-height:1.9;">· Hours played<br>· Streaming<br>· Playstyle</div>
+          </div>
+          <div style="padding:12px 14px;background:var(--panel);border:1px solid var(--border);border-radius:8px;border-top:2px solid var(--gold);">
+            <div style="font-family:&#39;Share Tech Mono&#39;,monospace;font-size:9px;color:var(--gold);text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px;">Motivational</div>
+            <div style="font-size:13px;color:var(--text);line-height:1.9;">· Winning<br>· Improving<br>· Relaxing<br>· Having fun</div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- RIGHT: PCA chart -->
+      <div style="display:flex;flex-direction:column;gap:10px;">
+        <div style="font-family:&#39;Share Tech Mono&#39;,monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:4px;">K-Means Clusters (k=4) — PCA Projection</div>
+        <div style="position:relative;flex:1;min-height:280px;background:var(--panel);border:1px solid var(--border);border-radius:8px;padding:10px;">
+          <canvas id="pcaChartFS" width="998" height="516" style="display: block; box-sizing: border-box; height: 258px; width: 499px;"></canvas>
+        </div>
+        <div style="font-size:11px;color:var(--muted);text-align:center;font-style:italic;">Combined behavioural + motivational · best cluster separation · Red × = centroids</div>
+      </div>
+
+    </div>
+
+  </div>
+</div>
+
+<div class="slide desc" id="d3c">
+  <div style="width:100%;max-width:1060px;">
+    <div class="pill-banner fu" style="">
+      <div class="pill-label" style="color:var(--cyan);">How Many Groups? Finding the Right k</div>
+      <div class="pill-line"></div>
+      <span style="font-family:&#39;Share Tech Mono&#39;,monospace;font-size:11px;color:var(--cyan);white-space:nowrap;opacity:0.75;">Descriptive</span>
+    </div>
+
+    <div style="font-size: 13px; color: var(--muted); margin-bottom: 14px; line-height: 1.6;" class="fu d1">
+      After defining the feature space, we evaluated how many segments best represent the gamer population.
+    </div>
+
+    <div style="display: grid; grid-template-columns: 1fr 1.6fr; gap: 18px;" class="fu d2">
+
+      <!-- LEFT: Elbow + Silhouette stacked -->
+      <div style="display:flex;flex-direction:column;gap:12px;">
+        <div style="padding:12px 14px;background:var(--panel);border:1px solid var(--border);border-radius:8px;">
+          <div style="font-family:&#39;Share Tech Mono&#39;,monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;">Model Diagnostics — Inertia (Elbow at k=5)</div>
+          <div style="position:relative;height:155px;"><canvas id="elbowChart" width="741" height="310" style="display: block; box-sizing: border-box; height: 155px; width: 370px;"></canvas></div>
+        </div>
+        <div style="padding:12px 14px;background:var(--panel);border:1px solid var(--border);border-radius:8px;">
+          <div style="font-family:&#39;Share Tech Mono&#39;,monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;">Silhouette Score — k=2 to k=9</div>
+          <div style="position:relative;height:155px;"><canvas id="silChart" width="741" height="310" style="display: block; box-sizing: border-box; height: 155px; width: 370px;"></canvas></div>
+        </div>
+      </div>
+
+      <!-- RIGHT: Cluster size distribution + Final Model Selection -->
+      <div style="display:flex;flex-direction:column;gap:12px;">
+        <div style="padding:12px 14px;background:var(--panel);border:1px solid var(--border);border-radius:8px;">
+          <div style="font-family:&#39;Share Tech Mono&#39;,monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;">Cluster Distribution — Cluster Size Distribution (k=5)</div>
+          <div style="position:relative;height:220px;"><canvas id="clusterSizeDistChart" width="1222" height="440" style="display: block; box-sizing: border-box; height: 220px; width: 611px;"></canvas></div>
+        </div>
+        <div style="padding:16px 18px;background:rgba(0,232,122,0.06);border:1px solid rgba(0,232,122,0.25);border-radius:8px;border-left:4px solid var(--green);">
+          <div style="font-size:14px;font-weight:700;color:var(--white);margin-bottom:8px;">Final Model Selection</div>
+          <div style="font-size:13px;color:var(--text);line-height:1.8;">
+            <span style="color:var(--orange);">k = 5</span> maximises statistical metrics but creates a micro-cluster (&lt;1%).<br>
+            <span style="color:var(--green);font-weight:600;">k = 4</span> provides balanced and interpretable gamer segments.
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+
+<div class="slide desc" id="d3p">
+  <div style="width:100%;max-width:1060px;">
+    <div class="pill-banner fu" style="">
+      <div class="pill-label" style="color:var(--cyan);">Meet the Four Player Types</div>
+      <div class="pill-line" style="background:linear-gradient(90deg,var(--cyan),transparent);"></div>
+      <span style="font-family:&#39;Share Tech Mono&#39;,monospace;font-size:11px;color:var(--cyan);white-space:nowrap;opacity:0.75;">Descriptive</span>
+    </div>
+
+    <div style="font-size: 13px; color: var(--muted); margin-bottom: 16px;" class="fu d1">Clusters translated based on <strong style="color:var(--white);">engagement intensity · motivational orientation · psychological well-being</strong></div>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 12px;" class="fu d2">
+
+      <!-- C1 Balanced Recreationists -->
+      <div style="border-radius:12px;background:var(--panel);border:1px solid rgba(0,212,255,0.2);border-top:5px solid var(--cyan);padding:22px 16px 16px;display:flex;flex-direction:column;align-items:center;gap:8px;box-shadow:0 0 24px rgba(0,212,255,0.08);">
+        <div style="font-size:44px;">🎮</div>
+        <div style="font-family:&#39;Orbitron&#39;,monospace;font-size:12px;font-weight:700;color:var(--cyan);text-align:center;line-height:1.4;">Balanced Recreationists</div>
+        <div style="background:rgba(0,212,255,0.12);border:1px solid rgba(0,212,255,0.3);border-radius:20px;padding:3px 12px;font-family:&#39;Share Tech Mono&#39;,monospace;font-size:10px;color:var(--cyan);">41.2% &nbsp;·&nbsp; Low Risk</div>
+        <div style="font-size:12px;color:var(--muted);text-align:center;line-height:1.6;flex:1;margin-top:4px;">Play for fun, low competitive pressure.</div>
+        <div style="width:100%;display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px;margin-top:8px;padding-top:10px;border-top:1px solid var(--border);">
+          <div style="text-align:center;"><div style="font-family:&#39;Orbitron&#39;,monospace;font-size:15px;font-weight:700;color:#2e7d2e;">4.7</div><div style="font-size:9px;color:var(--muted);">GAD</div></div>
+          <div style="text-align:center;"><div style="font-family:&#39;Orbitron&#39;,monospace;font-size:15px;font-weight:700;color:#2e7d2e;">19.3</div><div style="font-size:9px;color:var(--muted);">SPIN</div></div>
+          <div style="text-align:center;"><div style="font-family:&#39;Orbitron&#39;,monospace;font-size:15px;font-weight:700;color:#2e7d2e;">20.6</div><div style="font-size:9px;color:var(--muted);">SWL</div></div>
+        </div>
+      </div>
+
+      <!-- C2 Structured Competitors -->
+      <div style="border-radius:12px;background:var(--panel);border:1px solid rgba(255,200,64,0.2);border-top:5px solid var(--gold);padding:22px 16px 16px;display:flex;flex-direction:column;align-items:center;gap:8px;box-shadow:0 0 24px rgba(255,200,64,0.08);">
+        <div style="font-size:44px;">🏆</div>
+        <div style="font-family:&#39;Orbitron&#39;,monospace;font-size:12px;font-weight:700;color:var(--gold);text-align:center;line-height:1.4;">Structured Competitors</div>
+        <div style="background:rgba(255,200,64,0.12);border:1px solid rgba(255,200,64,0.3);border-radius:20px;padding:3px 12px;font-family:&#39;Share Tech Mono&#39;,monospace;font-size:10px;color:var(--gold);">37.1% &nbsp;·&nbsp; Low–Mod Risk</div>
+        <div style="font-size:12px;color:var(--muted);text-align:center;line-height:1.6;flex:1;margin-top:4px;">Goal-driven, performance-focused.</div>
+        <div style="width:100%;display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px;margin-top:8px;padding-top:10px;border-top:1px solid var(--border);">
+          <div style="text-align:center;"><div style="font-family:&#39;Orbitron&#39;,monospace;font-size:15px;font-weight:700;color:#c8b400;">5.3</div><div style="font-size:9px;color:var(--muted);">GAD</div></div>
+          <div style="text-align:center;"><div style="font-family:&#39;Orbitron&#39;,monospace;font-size:15px;font-weight:700;color:#2e7d2e;">19.5</div><div style="font-size:9px;color:var(--muted);">SPIN</div></div>
+          <div style="text-align:center;"><div style="font-family:&#39;Orbitron&#39;,monospace;font-size:15px;font-weight:700;color:#c8b400;">19.6</div><div style="font-size:9px;color:var(--muted);">SWL</div></div>
+        </div>
+      </div>
+
+      <!-- C3 Intensified Strivers -->
+      <div style="border-radius:12px;background:var(--panel);border:1px solid rgba(255,140,66,0.2);border-top:5px solid var(--orange);padding:22px 16px 16px;display:flex;flex-direction:column;align-items:center;gap:8px;box-shadow:0 0 24px rgba(255,140,66,0.08);">
+        <div style="font-size:44px;">🔥</div>
+        <div style="font-family:&#39;Orbitron&#39;,monospace;font-size:12px;font-weight:700;color:var(--orange);text-align:center;line-height:1.4;">Intensified Strivers</div>
+        <div style="background:rgba(255,140,66,0.12);border:1px solid rgba(255,140,66,0.3);border-radius:20px;padding:3px 12px;font-family:&#39;Share Tech Mono&#39;,monospace;font-size:10px;color:var(--orange);">16.3% &nbsp;·&nbsp; Moderate Risk</div>
+        <div style="font-size:12px;color:var(--muted);text-align:center;line-height:1.6;flex:1;margin-top:4px;">Identity tied to competitive success.</div>
+        <div style="width:100%;display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px;margin-top:8px;padding-top:10px;border-top:1px solid var(--border);">
+          <div style="text-align:center;"><div style="font-family:&#39;Orbitron&#39;,monospace;font-size:15px;font-weight:700;color:#c06000;">6.1</div><div style="font-size:9px;color:var(--muted);">GAD</div></div>
+          <div style="text-align:center;"><div style="font-family:&#39;Orbitron&#39;,monospace;font-size:15px;font-weight:700;color:#c06000;">21.9</div><div style="font-size:9px;color:var(--muted);">SPIN</div></div>
+          <div style="text-align:center;"><div style="font-family:&#39;Orbitron&#39;,monospace;font-size:15px;font-weight:700;color:#cc1a1a;">18.4</div><div style="font-size:9px;color:var(--muted);">SWL</div></div>
+        </div>
+      </div>
+
+      <!-- C4 Escapist Regulators -->
+      <div style="border-radius:12px;background:var(--panel);border:1px solid rgba(255,77,77,0.2);border-top:5px solid var(--red);padding:22px 16px 16px;display:flex;flex-direction:column;align-items:center;gap:8px;box-shadow:0 0 24px rgba(255,77,77,0.08);">
+        <div style="font-size:44px;">🌙</div>
+        <div style="font-family:&#39;Orbitron&#39;,monospace;font-size:12px;font-weight:700;color:var(--red);text-align:center;line-height:1.4;">Escapist Regulators</div>
+        <div style="background:rgba(255,77,77,0.12);border:1px solid rgba(255,77,77,0.3);border-radius:20px;padding:3px 12px;font-family:&#39;Share Tech Mono&#39;,monospace;font-size:10px;color:var(--red);">5.1% &nbsp;·&nbsp; High Risk</div>
+        <div style="font-size:12px;color:var(--muted);text-align:center;line-height:1.6;flex:1;margin-top:4px;">Use gaming to cope with stress.</div>
+        <div style="width:100%;display:grid;grid-template-columns:1fr 1fr 1fr;gap:4px;margin-top:8px;padding-top:10px;border-top:1px solid var(--border);">
+          <div style="text-align:center;"><div style="font-family:&#39;Orbitron&#39;,monospace;font-size:15px;font-weight:700;color:#cc1a1a;">6.2</div><div style="font-size:9px;color:var(--muted);">GAD</div></div>
+          <div style="text-align:center;"><div style="font-family:&#39;Orbitron&#39;,monospace;font-size:15px;font-weight:700;color:#c06000;">20.2</div><div style="font-size:9px;color:var(--muted);">SPIN</div></div>
+          <div style="text-align:center;"><div style="font-family:&#39;Orbitron&#39;,monospace;font-size:15px;font-weight:700;color:#c06000;">19.0</div><div style="font-size:9px;color:var(--muted);">SWL</div></div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</div>
+
+<div class="slide desc" id="d3d">
+  <div style="width:100%;max-width:1060px;">
+    <div class="pill-banner fu" style="">
+      <div class="pill-label" style="color:var(--cyan);">Are the Groups Real? Validating Our Clusters</div>
+      <div class="pill-line" style="background:linear-gradient(90deg,var(--cyan),transparent);"></div>
+      <span style="font-family:&#39;Share Tech Mono&#39;,monospace;font-size:11px;color:var(--cyan);white-space:nowrap;opacity:0.75;">Descriptive</span>
+    </div>
+
+    <!-- Heatmap — full width, prominent -->
+    <div style="margin-bottom: 16px;" class="fu d1">
+      <div style="font-size:12px;color:var(--muted);text-align:center;margin-bottom:10px;">Mean of Psychological Variables within 4 Clusters</div>
+      <div style="display:grid;grid-template-columns:56px 1fr 1fr 1fr;gap:6px;align-items:center;">
+        <div></div>
+        <div style="text-align:center;font-family:&#39;Share Tech Mono&#39;,monospace;font-size:13px;font-weight:700;color:var(--white);padding-bottom:4px;">GAD &nbsp;<span style="font-size:10px;color:var(--muted);">↓ lower better</span></div>
+        <div style="text-align:center;font-family:&#39;Share Tech Mono&#39;,monospace;font-size:13px;font-weight:700;color:var(--white);padding-bottom:4px;">SPIN &nbsp;<span style="font-size:10px;color:var(--muted);">↓ lower better</span></div>
+        <div style="text-align:center;font-family:&#39;Share Tech Mono&#39;,monospace;font-size:13px;font-weight:700;color:var(--white);padding-bottom:4px;">SWL &nbsp;<span style="font-size:10px;color:var(--muted);">↑ higher better</span></div>
+        <!-- C1 -->
+        <div style="text-align:right;padding-right:10px;font-family:&#39;Share Tech Mono&#39;,monospace;font-size:12px;color:var(--muted);">🎮 C1</div>
+        <div style="background:#2e7d2e;border-radius:6px;height:52px;display:flex;align-items:center;justify-content:center;font-family:&#39;Orbitron&#39;,monospace;font-size:18px;font-weight:700;color:#fff;">4.7</div>
+        <div style="background:#2e7d2e;border-radius:6px;height:52px;display:flex;align-items:center;justify-content:center;font-family:&#39;Orbitron&#39;,monospace;font-size:18px;font-weight:700;color:#fff;">19.3</div>
+        <div style="background:#2e7d2e;border-radius:6px;height:52px;display:flex;align-items:center;justify-content:center;font-family:&#39;Orbitron&#39;,monospace;font-size:18px;font-weight:700;color:#fff;">20.6</div>
+        <!-- C2 -->
+        <div style="text-align:right;padding-right:10px;font-family:&#39;Share Tech Mono&#39;,monospace;font-size:12px;color:var(--muted);">🏆 C2</div>
+        <div style="background:#c8b400;border-radius:6px;height:52px;display:flex;align-items:center;justify-content:center;font-family:&#39;Orbitron&#39;,monospace;font-size:18px;font-weight:700;color:#fff;">5.3</div>
+        <div style="background:#2e7d2e;border-radius:6px;height:52px;display:flex;align-items:center;justify-content:center;font-family:&#39;Orbitron&#39;,monospace;font-size:18px;font-weight:700;color:#fff;">19.5</div>
+        <div style="background:#c8b400;border-radius:6px;height:52px;display:flex;align-items:center;justify-content:center;font-family:&#39;Orbitron&#39;,monospace;font-size:18px;font-weight:700;color:#fff;">19.6</div>
+        <!-- C3 -->
+        <div style="text-align:right;padding-right:10px;font-family:&#39;Share Tech Mono&#39;,monospace;font-size:12px;color:var(--muted);">🔥 C3</div>
+        <div style="background:#c06000;border-radius:6px;height:52px;display:flex;align-items:center;justify-content:center;font-family:&#39;Orbitron&#39;,monospace;font-size:18px;font-weight:700;color:#fff;">6.1</div>
+        <div style="background:#c06000;border-radius:6px;height:52px;display:flex;align-items:center;justify-content:center;font-family:&#39;Orbitron&#39;,monospace;font-size:18px;font-weight:700;color:#fff;">21.9</div>
+        <div style="background:#cc1a1a;border-radius:6px;height:52px;display:flex;align-items:center;justify-content:center;font-family:&#39;Orbitron&#39;,monospace;font-size:18px;font-weight:700;color:#fff;">18.4</div>
+        <!-- C4 -->
+        <div style="text-align:right;padding-right:10px;font-family:&#39;Share Tech Mono&#39;,monospace;font-size:12px;color:var(--muted);">🌙 C4</div>
+        <div style="background:#cc1a1a;border-radius:6px;height:52px;display:flex;align-items:center;justify-content:center;font-family:&#39;Orbitron&#39;,monospace;font-size:18px;font-weight:700;color:#fff;">6.2</div>
+        <div style="background:#c06000;border-radius:6px;height:52px;display:flex;align-items:center;justify-content:center;font-family:&#39;Orbitron&#39;,monospace;font-size:18px;font-weight:700;color:#fff;">20.2</div>
+        <div style="background:#c06000;border-radius:6px;height:52px;display:flex;align-items:center;justify-content:center;font-family:&#39;Orbitron&#39;,monospace;font-size:18px;font-weight:700;color:#fff;">19.0</div>
+      </div>
+      <!-- Legend -->
+      <div style="display:flex;gap:14px;align-items:center;justify-content:center;margin-top:10px;">
+        <span style="font-family:&#39;Share Tech Mono&#39;,monospace;font-size:9px;color:var(--muted);text-transform:uppercase;">Risk:</span>
+        <div style="display:flex;align-items:center;gap:4px;"><div style="background:#2e7d2e;border-radius:2px;width:18px;height:10px;"></div><span style="font-size:11px;color:var(--muted);">Low</span></div>
+        <div style="display:flex;align-items:center;gap:4px;"><div style="background:#c8b400;border-radius:2px;width:18px;height:10px;"></div><span style="font-size:11px;color:var(--muted);">Moderate</span></div>
+        <div style="display:flex;align-items:center;gap:4px;"><div style="background:#c06000;border-radius:2px;width:18px;height:10px;"></div><span style="font-size:11px;color:var(--muted);">Elevated</span></div>
+        <div style="display:flex;align-items:center;gap:4px;"><div style="background:#cc1a1a;border-radius:2px;width:18px;height:10px;"></div><span style="font-size:11px;color:var(--muted);">High</span></div>
+      </div>
+    </div>
+
+    <!-- Validation methods — horizontal strip -->
+    <div style="display: grid; grid-template-columns: 1fr 40px 1fr 40px 1fr; gap: 0px; align-items: center;" class="fu d2">
+      <div style="padding:14px 18px;background:rgba(0,212,255,0.06);border:1.5px solid rgba(0,212,255,0.3);border-radius:8px;text-align:center;">
+        <div style="font-size:20px;margin-bottom:5px;">🗂️</div>
+        <div style="font-size:13px;font-weight:700;color:var(--white);">K-Means (k=4)</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:3px;">Primary segmentation</div>
+      </div>
+      <div style="text-align:center;font-size:20px;color:var(--muted);">→</div>
+      <div style="padding:14px 18px;background:rgba(255,77,77,0.06);border:1.5px solid rgba(255,77,77,0.2);border-radius:8px;text-align:center;">
+        <div style="font-size:20px;margin-bottom:5px;">🔴</div>
+        <div style="font-size:13px;font-weight:700;color:var(--white);">DBSCAN Validation</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:3px;">Confirms K-Means geometry</div>
+      </div>
+      <div style="text-align:center;font-size:20px;color:var(--muted);">→</div>
+      <div style="padding:14px 18px;background:rgba(0,232,122,0.06);border:1.5px solid rgba(0,232,122,0.3);border-radius:8px;text-align:center;">
+        <div style="font-size:20px;margin-bottom:5px;">✅</div>
+        <div style="font-size:13px;font-weight:700;color:var(--white);">Gaussian Mixture Model</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:3px;">Confirms same cluster structure</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div class="slide caus" id="c_risk">
+  <div style="width:100%;max-width:1060px;">
+    <div class="pill-banner fu" style="">
+      <div class="pill-label" style="color:var(--green);">Which Players Suffer Most?</div>
+      <div class="pill-line" style="background:linear-gradient(90deg,var(--green),transparent);"></div>
+      <span style="font-family:&#39;Share Tech Mono&#39;,monospace;font-size:11px;color:var(--green);white-space:nowrap;opacity:0.75;">Causal</span>
+    </div>
+
+    <div style="font-family: Orbitron, monospace; font-size: 18px; font-weight: 700; color: var(--white); margin-bottom: 4px;" class="fu d1">Same game. Same hours. Consistently different outcomes.</div>
+    <div style="font-family: Orbitron, monospace; font-size: 18px; font-weight: 700; color: var(--red); margin-bottom: 18px;" class="fu d1">The group you belong to changes everything.</div>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px;" class="fu d2">
+
+      <div style="padding:14px 16px;background:var(--panel);border:1px solid var(--border);border-radius:8px;border-top:3px solid var(--red);">
+        <div style="font-family:&#39;Share Tech Mono&#39;,monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--red);margin-bottom:8px;">Anxiety (GAD-7) — lower is better</div>
+        <div style="position:relative;height:220px;"><canvas id="riskGadChart" width="617" height="440" style="display: block; box-sizing: border-box; height: 220px; width: 308px;"></canvas></div>
+      </div>
+
+      <div style="padding:14px 16px;background:var(--panel);border:1px solid var(--border);border-radius:8px;border-top:3px solid var(--purple);">
+        <div style="font-family:&#39;Share Tech Mono&#39;,monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--purple);margin-bottom:8px;">Social Phobia (SPIN) — lower is better</div>
+        <div style="position:relative;height:220px;"><canvas id="riskSpinChart" width="617" height="440" style="display: block; box-sizing: border-box; height: 220px; width: 308px;"></canvas></div>
+      </div>
+
+      <div style="padding:14px 16px;background:var(--panel);border:1px solid var(--border);border-radius:8px;border-top:3px solid var(--green);">
+        <div style="font-family:&#39;Share Tech Mono&#39;,monospace;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--green);margin-bottom:8px;">Life Satisfaction (SWLS) — higher is better</div>
+        <div style="position:relative;height:220px;"><canvas id="riskSwlChart" width="617" height="440" style="display: block; box-sizing: border-box; height: 220px; width: 308px;"></canvas></div>
+      </div>
+
+    </div>
+
+    <div style="margin-top: 14px; padding: 12px 18px; border: 1px solid rgba(255, 77, 77, 0.25); background: rgba(255, 77, 77, 0.05); border-radius: 8px;" class="fu d3">
+      <div style="font-size:13px;color:var(--muted);line-height:1.6;">Escapist Regulators score <strong style="color:var(--red);">32% higher anxiety</strong> than Balanced Recreationists — despite often playing the same games for similar hours.</div>
+    </div>
+
+  </div>
+</div>
+
+<div class="slide pred" id="hyp_overview">
+  <div style="width:100%;max-width:1060px;">
+    <div class="pill-banner fu" style="">
+      <div class="pill-label" style="color:var(--gold);">How Did We Test Our Hypotheses?</div>
+      <div class="pill-line" style="background:linear-gradient(90deg,var(--gold),transparent);"></div>
+      <span style="font-family:&#39;Share Tech Mono&#39;,monospace;font-size:11px;color:var(--gold);white-space:nowrap;opacity:0.75;">Predictive + Causal + Prescriptive</span>
+    </div>
+
+    <!-- 6 / 2 / 2 scoreboard -->
+    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0px; margin-bottom: 20px;" class="fu d1">
+      <div style="text-align:center;padding:10px 20px;border-right:1px solid var(--border);">
+        <div style="font-family:&#39;Orbitron&#39;,monospace;font-size:64px;font-weight:900;color:var(--green);line-height:1;">6</div>
+        <div style="font-family:&#39;Share Tech Mono&#39;,monospace;font-size:11px;text-transform:uppercase;letter-spacing:.14em;color:var(--green);margin-top:6px;">Confirmed</div>
+        <div style="font-size:12px;color:var(--muted);margin-top:3px;">Data backed up the hypothesis</div>
+      </div>
+      <div style="text-align:center;padding:10px 20px;border-right:1px solid var(--border);">
+        <div style="font-family:&#39;Orbitron&#39;,monospace;font-size:64px;font-weight:900;color:var(--orange);line-height:1;">2</div>
+        <div style="font-family:&#39;Share Tech Mono&#39;,monospace;font-size:11px;text-transform:uppercase;letter-spacing:.14em;color:var(--orange);margin-top:6px;">Partially True</div>
+        <div style="font-size:12px;color:var(--muted);margin-top:3px;">Only true for certain player types</div>
+      </div>
+      <div style="text-align:center;padding:10px 20px;">
+        <div style="font-family:&#39;Orbitron&#39;,monospace;font-size:64px;font-weight:900;color:var(--red);line-height:1;">2</div>
+        <div style="font-family:&#39;Share Tech Mono&#39;,monospace;font-size:11px;text-transform:uppercase;letter-spacing:.14em;color:var(--red);margin-top:6px;">Wrong</div>
+        <div style="font-size:12px;color:var(--muted);margin-top:3px;">Data showed the opposite</div>
+      </div>
+    </div>
+
+    <!-- Bridge callout -->
+    <div style="padding: 12px 20px; background: rgba(255, 200, 64, 0.06); border: 1px solid rgba(255, 200, 64, 0.25); border-radius: 8px; margin-bottom: 20px;" class="fu d2">
+      <div style="font-size:13px;color:var(--text);line-height:1.7;">Each hypothesis was tested <strong style="color:var(--white);">across the full dataset and within each player segment</strong> — showing not just whether an effect exists, but <strong style="color:var(--gold);">which player type drives it.</strong></div>
+    </div>
+
+    <!-- 3 methodology cards -->
+    <div style="font-size: 13px; font-weight: 700; color: var(--white); margin-bottom: 10px;" class="fu d3">Multi-modelling Technique to test robustness</div>
+    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px;" class="fu d3">
+
+      <div style="padding:14px 16px;background:var(--panel);border:1px solid var(--border);border-radius:8px;border-left:3px solid var(--cyan);">
+        <div style="font-size:13px;font-weight:600;color:var(--white);margin-bottom:5px;">Baseline OLS</div>
+        <div style="font-size:12px;color:var(--muted);line-height:1.5;">Directional associations between gaming behaviour and outcomes.</div>
+      </div>
+
+      <div style="padding:14px 16px;background:var(--panel);border:1px solid var(--border);border-radius:8px;border-left:3px solid var(--gold);">
+        <div style="font-size:13px;font-weight:600;color:var(--white);margin-bottom:5px;">Stratified Regression</div>
+        <div style="font-size:12px;color:var(--muted);line-height:1.5;">Behavioural threshold detection — does playing too long change behaviour?</div>
+      </div>
+
+      <div style="padding:14px 16px;background:var(--panel);border:1px solid var(--border);border-radius:8px;border-left:3px solid var(--green);">
+        <div style="font-size:13px;font-weight:600;color:var(--white);margin-bottom:5px;">Non-linear Models</div>
+        <div style="font-size:12px;color:var(--muted);line-height:1.5;">Inverted-U behaviour — playtime vs wellbeing relationship.</div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div class="slide caus" id="hyp_surprises">
+  <div style="width:100%;max-width:1060px;">
+    <div class="pill-banner fu" style="">
+      <div class="pill-label" style="color:var(--green);">What Surprised Us</div>
+      <div class="pill-line" style="background:linear-gradient(90deg,var(--green),transparent);"></div>
+      <span style="font-family:&#39;Share Tech Mono&#39;,monospace;font-size:11px;color:var(--green);white-space:nowrap;opacity:0.75;">Causal — findings that defied expectations</span>
+    </div>
+
+    <div style="font-family: Orbitron, monospace; font-size: 18px; font-weight: 700; color: var(--white); margin-bottom: 6px;" class="fu d1">We tested 10 hypotheses. 6 confirmed. 4 surprised us.</div>
+    <div style="font-size: 13px; color: var(--muted); margin-bottom: 22px;" class="fu d1">2 were flat-out wrong. 2 were only true for certain player types.</div>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;" class="fu d2">
+
+      <div style="padding:22px 24px;background:var(--panel);border:1px solid var(--border);border-radius:10px;border-left:5px solid var(--red);display:flex;gap:14px;align-items:flex-start;">
+        <div style="font-family:&#39;Orbitron&#39;,monospace;font-size:28px;font-weight:900;color:rgba(255,77,77,0.2);flex-shrink:0;line-height:1;">✗</div>
+        <div>
+          <div style="font-family:&#39;Share Tech Mono&#39;,monospace;font-size:9px;text-transform:uppercase;letter-spacing:.14em;color:var(--red);margin-bottom:6px;">Wrong — H2</div>
+          <div style="font-size:16px;font-weight:700;color:var(--white);">Streaming raises anxiety, not community</div>
+          <div style="font-size:12px;color:var(--muted);margin-top:5px;">Consistent across every player type.</div>
+        </div>
+      </div>
+
+      <div style="padding:22px 24px;background:var(--panel);border:1px solid var(--border);border-radius:10px;border-left:5px solid var(--red);display:flex;gap:14px;align-items:flex-start;">
+        <div style="font-family:&#39;Orbitron&#39;,monospace;font-size:28px;font-weight:900;color:rgba(255,77,77,0.2);flex-shrink:0;line-height:1;">✗</div>
+        <div>
+          <div style="font-family:&#39;Share Tech Mono&#39;,monospace;font-size:9px;text-transform:uppercase;letter-spacing:.14em;color:var(--red);margin-bottom:6px;">Wrong — H5</div>
+          <div style="font-size:16px;font-weight:700;color:var(--white);">Earnings motivation reduces satisfaction</div>
+          <div style="font-size:12px;color:var(--muted);margin-top:5px;">Doubles for Intensified Strivers.</div>
+        </div>
+      </div>
+
+      <div style="padding:22px 24px;background:var(--panel);border:1px solid var(--border);border-radius:10px;border-left:5px solid var(--orange);display:flex;gap:14px;align-items:flex-start;">
+        <div style="font-family:&#39;Orbitron&#39;,monospace;font-size:28px;font-weight:900;color:rgba(255,140,66,0.2);flex-shrink:0;line-height:1;">~</div>
+        <div>
+          <div style="font-family:&#39;Share Tech Mono&#39;,monospace;font-size:9px;text-transform:uppercase;letter-spacing:.14em;color:var(--orange);margin-bottom:6px;">Partial — H1</div>
+          <div style="font-size:16px;font-weight:700;color:var(--white);">Rank only stresses Intensified Strivers</div>
+          <div style="font-size:12px;color:var(--muted);margin-top:5px;">For others, rank barely matters.</div>
+        </div>
+      </div>
+
+      <div style="padding:22px 24px;background:var(--panel);border:1px solid var(--border);border-radius:10px;border-left:5px solid var(--orange);display:flex;gap:14px;align-items:flex-start;">
+        <div style="font-family:&#39;Orbitron&#39;,monospace;font-size:28px;font-weight:900;color:rgba(255,140,66,0.2);flex-shrink:0;line-height:1;">~</div>
+        <div>
+          <div style="font-family:&#39;Share Tech Mono&#39;,monospace;font-size:9px;text-transform:uppercase;letter-spacing:.14em;color:var(--orange);margin-bottom:6px;">Partial — H10</div>
+          <div style="font-size:16px;font-weight:700;color:var(--white);">Age doesn't protect Escapist Regulators</div>
+          <div style="font-size:12px;color:var(--muted);margin-top:5px;">Gaming reliance overrides maturity entirely.</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="slide pres" id="r1">
+  <div style="width:100%;max-width:1060px;">
+    <div class="pill-banner fu" style="">
+      <div class="pill-label" style="color:var(--purple);">The Finding That Changes Everything</div>
+      <div class="pill-line" style="background:linear-gradient(90deg,var(--purple),transparent);"></div>
+      <span style="font-family:&#39;Share Tech Mono&#39;,monospace;font-size:11px;color:var(--purple);white-space:nowrap;opacity:0.75;">Prescriptive</span>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 32px; align-items: center;" class="fu d1">
+
+      <!-- LEFT: Statement -->
+      <div style="display:flex;flex-direction:column;gap:16px;">
+        <div style="font-family:&#39;Orbitron&#39;,monospace;font-size:clamp(24px,3.2vw,42px);font-weight:900;line-height:1.15;color:var(--white);">
+          It's not <span style="color:var(--muted);">how much</span><br>you play.
+        </div>
+        <div style="font-family:&#39;Orbitron&#39;,monospace;font-size:clamp(24px,3.2vw,42px);font-weight:900;line-height:1.15;color:var(--red);">
+          It's <em style="font-style:normal;">why</em> you play.
+        </div>
+        <div style="width:56px;height:3px;background:linear-gradient(90deg,var(--red),transparent);border-radius:2px;"></div>
+        <div style="font-size:14px;color:var(--text);line-height:1.75;">Players who game <strong style="color:var(--white);">to escape stress</strong> show significantly worse outcomes — independent of hours played.</div>
+      </div>
+
+      <!-- RIGHT: Chart -->
+      <div>
+        <div style="font-family:&#39;Share Tech Mono&#39;,monospace;font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;text-align:center;">Effect of Escape Motivation on Psychological Outcomes</div>
+        <div style="position:relative;height:320px;"><canvas id="relaxEffectChart" width="1028" height="640" style="display: block; box-sizing: border-box; height: 320px; width: 514px;"></canvas></div>
+        <div style="font-size:11px;color:var(--muted);text-align:center;margin-top:8px;">Positive = raises outcome &nbsp;·&nbsp; Negative = reduces outcome</div>
+      </div>
+
+    </div>
+  </div>
+</div>
+  
+
+
+<div class="slide pres" id="r2">
+  <div style="width:100%;max-width:1060px;">
+    <div class="pill-banner fu" style="">
+      <div class="pill-label" style="color:var(--purple);">What Should We Do About It?</div>
+      <div class="pill-line" style="background:linear-gradient(90deg,var(--purple),transparent);"></div>
+      <span style="font-family:&#39;Share Tech Mono&#39;,monospace;font-size:11px;color:var(--purple);white-space:nowrap;opacity:0.75;">Prescriptive</span>
+    </div>
+
+    <div style="font-family: Orbitron, monospace; font-size: 18px; font-weight: 700; color: var(--white); margin-bottom: 22px;" class="fu d1">Four targeted actions. Each matched to the players who need them most.</div>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px;" class="fu d2">
+
+      <div style="display:flex;gap:16px;align-items:center;padding:20px 22px;background:var(--panel);border:1px solid var(--border);border-radius:10px;border-left:5px solid var(--cyan);">
+        <span style="font-size:32px;flex-shrink:0;">🎯</span>
+        <div>
+          <div style="font-family:&#39;Share Tech Mono&#39;,monospace;font-size:9px;text-transform:uppercase;letter-spacing:.12em;color:var(--cyan);margin-bottom:5px;">Younger high-anxiety players</div>
+          <div style="font-size:15px;font-weight:700;color:var(--white);">Early Intervention</div>
+          <div style="font-size:12px;color:var(--muted);margin-top:4px;">Before gaming becomes a coping mechanism.</div>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:16px;align-items:center;padding:20px 22px;background:var(--panel);border:1px solid var(--border);border-radius:10px;border-left:5px solid var(--red);">
+        <span style="font-size:32px;flex-shrink:0;">🌙</span>
+        <div>
+          <div style="font-family:&#39;Share Tech Mono&#39;,monospace;font-size:9px;text-transform:uppercase;letter-spacing:.12em;color:var(--red);margin-bottom:5px;">Escapist Regulators</div>
+          <div style="font-size:15px;font-weight:700;color:var(--white);">Psychological Referral</div>
+          <div style="font-size:12px;color:var(--muted);margin-top:4px;">Gaming masks stress — it doesn't resolve it.</div>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:16px;align-items:center;padding:20px 22px;background:var(--panel);border:1px solid var(--border);border-radius:10px;border-left:5px solid var(--gold);">
+        <span style="font-size:32px;flex-shrink:0;">📺</span>
+        <div>
+          <div style="font-family:&#39;Share Tech Mono&#39;,monospace;font-size:9px;text-transform:uppercase;letter-spacing:.12em;color:var(--gold);margin-bottom:5px;">All player types</div>
+          <div style="font-size:15px;font-weight:700;color:var(--white);">Reduce Passive Streaming</div>
+          <div style="font-size:12px;color:var(--muted);margin-top:4px;">Watching others play raises anxiety. Playing doesn't.</div>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:16px;align-items:center;padding:20px 22px;background:var(--panel);border:1px solid var(--border);border-radius:10px;border-left:5px solid var(--green);">
+        <span style="font-size:32px;flex-shrink:0;">🔥</span>
+        <div>
+          <div style="font-family:&#39;Share Tech Mono&#39;,monospace;font-size:9px;text-transform:uppercase;letter-spacing:.12em;color:var(--green);margin-bottom:5px;">Intensified Strivers</div>
+          <div style="font-size:15px;font-weight:700;color:var(--white);">Reframe Competition</div>
+          <div style="font-size:12px;color:var(--muted);margin-top:4px;">Shift identity from winning to growth.</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+<div class="slide pres" id="limits">
+  <div style="width:100%;max-width:1060px;">
+    <div class="pill-banner fu" style="">
+      <div class="pill-label" style="color:var(--purple);">Limitations &amp; Future Work</div>
+      <div class="pill-line" style="background:linear-gradient(90deg,var(--purple),transparent);"></div>
+      <span style="font-family:&#39;Share Tech Mono&#39;,monospace;font-size:11px;color:var(--purple);white-space:nowrap;opacity:0.75;">Prescriptive</span>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 28px;" class="fu d1">
+
+      <!-- Limitations -->
+      <div style="display:flex;flex-direction:column;gap:14px;">
+        <div style="font-family:&#39;Share Tech Mono&#39;,monospace;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--red);margin-bottom:4px;">Limitations</div>
+
+        <div style="display:flex;gap:14px;align-items:center;padding:20px 20px;background:var(--panel);border:1px solid var(--border);border-radius:10px;border-left:5px solid var(--red);">
+          <span style="font-size:28px;flex-shrink:0;">⚠️</span>
+          <div>
+            <div style="font-size:15px;font-weight:700;color:var(--white);margin-bottom:4px;">Cross-sectional Design</div>
+            <div style="font-size:13px;color:var(--muted);">Associations only — cannot establish causality.</div>
+          </div>
+        </div>
+
+        <div style="display:flex;gap:14px;align-items:center;padding:20px 20px;background:var(--panel);border:1px solid var(--border);border-radius:10px;border-left:5px solid var(--red);">
+          <span style="font-size:28px;flex-shrink:0;">⚠️</span>
+          <div>
+            <div style="font-size:15px;font-weight:700;color:var(--white);margin-bottom:4px;">Sample Bias</div>
+            <div style="font-size:13px;color:var(--muted);">94% male, 84% LoL — limits generalisability.</div>
+          </div>
+        </div>
+
+        <div style="display:flex;gap:14px;align-items:center;padding:20px 20px;background:var(--panel);border:1px solid var(--border);border-radius:10px;border-left:5px solid var(--red);">
+          <span style="font-size:28px;flex-shrink:0;">⚠️</span>
+          <div>
+            <div style="font-size:15px;font-weight:700;color:var(--white);margin-bottom:4px;">Self-Report Measures</div>
+            <div style="font-size:13px;color:var(--muted);">Subject to recall and social desirability bias.</div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Future Work -->
+      <div style="display:flex;flex-direction:column;gap:14px;">
+        <div style="font-family:&#39;Share Tech Mono&#39;,monospace;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--green);margin-bottom:4px;">Future Work</div>
+
+        <div style="display:flex;gap:14px;align-items:center;padding:20px 20px;background:var(--panel);border:1px solid var(--border);border-radius:10px;border-left:5px solid var(--green);">
+          <span style="font-size:28px;flex-shrink:0;">🔬</span>
+          <div>
+            <div style="font-size:15px;font-weight:700;color:var(--white);margin-bottom:4px;">Longitudinal Study</div>
+            <div style="font-size:13px;color:var(--muted);">Track whether escape motivation precedes or follows anxiety.</div>
+          </div>
+        </div>
+
+        <div style="display:flex;gap:14px;align-items:center;padding:20px 20px;background:var(--panel);border:1px solid var(--border);border-radius:10px;border-left:5px solid var(--green);">
+          <span style="font-size:28px;flex-shrink:0;">🌍</span>
+          <div>
+            <div style="font-size:15px;font-weight:700;color:var(--white);margin-bottom:4px;">Broader Sample</div>
+            <div style="font-size:13px;color:var(--muted);">Replicate across different genres, platforms and demographics.</div>
+          </div>
+        </div>
+
+        <div style="display:flex;gap:14px;align-items:center;padding:20px 20px;background:var(--panel);border:1px solid var(--border);border-radius:10px;border-left:5px solid var(--green);">
+          <span style="font-size:28px;flex-shrink:0;">🤝</span>
+          <div>
+            <div style="font-size:15px;font-weight:700;color:var(--white);margin-bottom:4px;">Industry Partnership</div>
+            <div style="font-size:13px;color:var(--muted);">Embed motivation screening into platforms to identify at-risk players.</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="slide active" id="s17">
+
+  <!-- Animated background grid glow -->
+  <div style="position:absolute;inset:0;background-image:linear-gradient(rgba(0,212,255,0.04) 1px,transparent 1px),linear-gradient(90deg,rgba(0,212,255,0.04) 1px,transparent 1px);background-size:80px 80px;pointer-events:none;"></div>
+
+  <!-- Corner accents -->
+  <div style="position:absolute;top:28px;left:28px;width:48px;height:48px;border-top:2px solid var(--cyan);border-left:2px solid var(--cyan);"></div>
+  <div style="position:absolute;top:28px;right:28px;width:48px;height:48px;border-top:2px solid var(--cyan);border-right:2px solid var(--cyan);"></div>
+  <div style="position:absolute;bottom:28px;left:28px;width:48px;height:48px;border-bottom:2px solid var(--cyan);border-left:2px solid var(--cyan);"></div>
+  <div style="position:absolute;bottom:28px;right:28px;width:48px;height:48px;border-bottom:2px solid var(--cyan);border-right:2px solid var(--cyan);"></div>
+
+  <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:0;text-align:center;position:relative;z-index:1;">
+
+    <!-- Logo -->
+    <div style="font-family: Orbitron, monospace; font-size: 14px; font-weight: 700; letter-spacing: 0.35em; text-transform: uppercase; color: var(--cyan); margin-bottom: 32px; opacity: 0.8;" class="fu">GamerPsyche</div>
+
+    <!-- Divider line -->
+    <div style="width: 80px; height: 2px; background: linear-gradient(90deg,transparent,var(--cyan),transparent); margin-bottom: 36px;" class="fu d1"></div>
+
+    <!-- Main statement -->
+    <div style="font-family: Orbitron, monospace; font-size: clamp(36px, 5.5vw, 68px); font-weight: 900; color: var(--white); line-height: 1.15; margin-bottom: 20px; max-width: 820px;" class="fu d2">
+      The game isn't<br>the problem.
+    </div>
+
+    <div style="font-family: Orbitron, monospace; font-size: clamp(36px, 5.5vw, 68px); font-weight: 900; line-height: 1.15; max-width: 820px;" class="fu d3">
+      <span style="color:var(--cyan);">How</span> and <span style="color:var(--cyan);">why</span> you play is.
+    </div>
+
+
+
+  </div>
+</div>
+
+<script>
+
+
+const slides=document.querySelectorAll('.slide');
+const navEl=document.getElementById('nav');
+const progEl=document.getElementById('progress');
+const cntEl=document.getElementById('counter');
+let cur=0; const total=slides.length;
+slides.forEach((_,i)=>{
+  const d=document.createElement('div');
+  d.className='nav-dot'+(i===0?' active':'');
+  d.addEventListener('click',e=>{e.stopPropagation();goTo(i);});
+  navEl.appendChild(d);
+});
+const chartInits={};
+function goTo(n){
+  if(n<0||n>=total) return;
+  slides[cur].classList.remove('active'); navEl.children[cur].classList.remove('active');
+  cur=n;
+  slides[cur].classList.add('active'); navEl.children[cur].classList.add('active');
+  progEl.style.width=((cur+1)/total*100)+'%';
+  cntEl.textContent=String(cur+1).padStart(2,'0')+' / '+String(total).padStart(2,'0');
+  slides[cur].querySelectorAll('.fu,.gi').forEach(el=>{el.style.animation='none';el.offsetHeight;el.style.animation='';});
+  const sid=slides[cur].id;
+  const T=(fn)=>setTimeout(fn,120);
+  if(sid==='d2'    && !chartInits.d2)    { T(initDistCharts2); chartInits.d2=true; }
+  if(sid==='d3fs'  && !chartInits.d3fs)  { T(initPCAfs); chartInits.d3fs=true; }
+  if(sid==='d3c'   && !chartInits.d3c)   { T(()=>{initElbowChart();initSilChart();initClusterSizeDist();}); chartInits.d3c=true; }
+  if(sid==='c_risk'&& !chartInits.c_risk){ T(initRiskCharts); chartInits.c_risk=true; }
+  if(sid==='r1'    && !chartInits.r1)    { T(initRelaxEffectChart); chartInits.r1=true; }
+}
+document.body.addEventListener('click',()=>goTo(cur+1));
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight'||e.key===' '||e.key==='ArrowDown'){e.preventDefault();goTo(cur+1);}
+  if(e.key==='ArrowLeft'||e.key==='ArrowUp'){e.preventDefault();goTo(cur-1);}
+  if(e.key==='Home')goTo(0); if(e.key==='End')goTo(total-1);
+});
+progEl.style.width=(1/total*100)+'%';
+cntEl.textContent='01 / '+String(total).padStart(2,'0');
+
+Chart.defaults.font.family="'Exo 2',sans-serif";
+Chart.defaults.color='#4a6a8a';
+
+
+
+function initGadChart(){
+  const _g = document.getElementById('gadChart'); if(!_g) return;
+  const personas=['🎮 Recreationalist','🏆 Competitor','🔥 Striver','🌙 Escapist'];
+  const pBg=['rgba(0,212,255,0.75)','rgba(255,200,64,0.75)','rgba(255,140,66,0.85)','rgba(255,77,77,0.85)'];
+  const pBdr=['#00d4ff','#ffc840','#ff8c42','#ff4d4d'];
+  new Chart(document.getElementById('gadChart'),{
+    type:'bar',
+    data:{labels:personas,datasets:[{data:[3.7,5.0,6.2,7.1],backgroundColor:pBg,borderColor:pBdr,borderWidth:2,borderRadius:5}]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.parsed.y.toFixed(1)+' — lower is better'}}},
+      scales:{x:{grid:{color:'rgba(26,53,88,0.4)'},ticks:{color:'#c0d8f0',font:{size:12,weight:'600'}}},
+              y:{min:0,max:9,grid:{color:'rgba(26,53,88,0.35)'},ticks:{color:'#4a6a8a',font:{size:11}},
+                title:{display:true,text:'GAD-7 (lower = less anxious)',color:'#4a6a8a',font:{size:10}}}}}
+  });
+}
+function initSpinChart(){
+  const _g = document.getElementById('spinChart'); if(!_g) return;
+  const personas=['🎮 Recreationalist','🏆 Competitor','🔥 Striver','🌙 Escapist'];
+  const pBg=['rgba(0,212,255,0.75)','rgba(255,200,64,0.75)','rgba(255,140,66,0.85)','rgba(255,77,77,0.85)'];
+  const pBdr=['#00d4ff','#ffc840','#ff8c42','#ff4d4d'];
+  new Chart(document.getElementById('spinChart'),{
+    type:'bar',
+    data:{labels:personas,datasets:[{data:[18.2,22.1,25.4,24.6],backgroundColor:pBg,borderColor:pBdr,borderWidth:2,borderRadius:5}]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.parsed.y.toFixed(1)+' — lower is better'}}},
+      scales:{x:{grid:{color:'rgba(26,53,88,0.4)'},ticks:{color:'#c0d8f0',font:{size:12,weight:'600'}}},
+              y:{min:0,max:30,grid:{color:'rgba(26,53,88,0.35)'},ticks:{color:'#4a6a8a',font:{size:11}},
+                title:{display:true,text:'SPIN (lower = less phobia)',color:'#4a6a8a',font:{size:10}}}}}
+  });
+}
+function initSwlChart(){
+  const _s=document.getElementById('swlChart'); if(!_s) return;
+  const personas=['🎮 Recreationalist','🏆 Competitor','🔥 Striver','🌙 Escapist'];
+  const pBg=['rgba(0,212,255,0.75)','rgba(255,200,64,0.75)','rgba(255,140,66,0.85)','rgba(255,77,77,0.85)'];
+  const pBdr=['#00d4ff','#ffc840','#ff8c42','#ff4d4d'];
+  new Chart(document.getElementById('swlChart'),{
+    type:'bar',
+    data:{labels:personas,datasets:[{data:[20.5,17.8,15.3,13.8],backgroundColor:pBg,borderColor:pBdr,borderWidth:2,borderRadius:5}]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.parsed.y.toFixed(1)+' — higher is better'}}},
+      scales:{x:{grid:{color:'rgba(26,53,88,0.4)'},ticks:{color:'#c0d8f0',font:{size:12,weight:'600'}}},
+              y:{min:10,max:25,grid:{color:'rgba(26,53,88,0.35)'},ticks:{color:'#4a6a8a',font:{size:11}},
+                title:{display:true,text:'SWLS (higher = more satisfied)',color:'#4a6a8a',font:{size:10}}}}}
+  });
+}
+
+
+
+function initDivBars(){
+  const _el_initDivBars = document.getElementById('divBars'); if(!_el_initDivBars) return;
+  const container = document.getElementById('divBars');
+  if(!container || container.children.length > 0) return;
+
+  const rows = [
+    { label:'Escape motive',    val: 1.21,  highlight: true },
+    { label:'Hours / week',     val: 0.55,  highlight: false },
+    { label:'Earnings pressure',val: 0.48,  highlight: false },
+    { label:'Narcissism',       val: 0.38,  highlight: false },
+    { label:'Streaming hrs',    val: 0.32,  highlight: false },
+    { label:'Education',        val:-0.37,  highlight: false },
+    { label:'Employment',       val:-0.31,  highlight: false },
+    { label:'Rank',             val:-0.09,  highlight: false },
+  ];
+  const maxVal = 1.4;
+
+  rows.forEach(r => {
+    const pct = Math.abs(r.val) / maxVal * 50; // 50% = half the bar area
+    const isPos = r.val > 0;
+    const color = r.highlight ? '#ff4d4d' : isPos ? 'rgba(255,140,66,0.72)' : 'rgba(0,212,255,0.65)';
+    const glowStyle = r.highlight ? 'box-shadow:0 0 14px rgba(255,77,77,.5);' : '';
+
+    const row = document.createElement('div');
+    row.style.cssText = 'display:flex;align-items:center;gap:10px;';
+    row.innerHTML = `
+      <div style="width:130px;text-align:right;font-size:${r.highlight?'15px':'14px'};
+           color:${r.highlight?'#ff4d4d':'#c0d8f0'};
+           font-weight:${r.highlight?'700':'400'};flex-shrink:0;">${r.label}</div>
+      <div style="flex:1;display:flex;align-items:center;height:28px;">
+        <!-- Left half (negatives) -->
+        <div style="width:50%;display:flex;justify-content:flex-end;">
+          ${!isPos ? `<div style="width:${pct}%;height:${r.highlight?'26px':'20px'};
+            background:${color};border-radius:4px 0 0 4px;${glowStyle}transition:width .5s;"></div>` : ''}
+        </div>
+        <!-- Centre line -->
+        <div style="width:2px;height:32px;background:rgba(255,255,255,.2);flex-shrink:0;"></div>
+        <!-- Right half (positives) -->
+        <div style="width:50%;display:flex;justify-content:flex-start;">
+          ${isPos ? `<div style="width:${pct}%;height:${r.highlight?'26px':'20px'};
+            background:${color};border-radius:0 4px 4px 0;${glowStyle}transition:width .5s;"></div>` : ''}
+        </div>
+      </div>
+      <div style="width:44px;font-family:'Share Tech Mono',monospace;font-size:13px;
+           color:${r.highlight?'#ff4d4d':isPos?'#ff8c42':'#00d4ff'};">
+        ${r.val > 0 ? '+' : ''}${r.val.toFixed(2)}
+      </div>
+    `;
+    container.appendChild(row);
+  });
+}
+
+function initPersonaRadar(){
+  const _r = document.getElementById('personaRadarChart'); if(!_r) return;
+  // Axes: Low Anxiety (inverted GAD), Low Phobia (inverted SPIN), Life Satisfaction, Stability, Rank Benefit
+  // Scaled 0-100 for radar display
+  const personas = [
+    { label:'🎮 Balanced Rec.',   data:[82,73,59,78,52], color:'rgba(0,212,255,0.45)',  border:'#00d4ff' },
+    { label:'🏆 Struct. Comp.',   data:[66,63,51,70,75], color:'rgba(255,200,64,0.45)', border:'#ffc840' },
+    { label:'🔥 Intens. Strivers',data:[44,51,44,42,68], color:'rgba(255,140,66,0.45)', border:'#ff8c42' },
+    { label:'🌙 Escapist Reg.',   data:[32,54,39,28,28], color:'rgba(255,77,77,0.45)',   border:'#ff4d4d' },
+  ];
+  new Chart(document.getElementById('personaRadarChart'),{
+    type:'radar',
+    data:{ labels:['Low Anxiety','Low Phobia','Life Satisfaction','Stability','Rank Benefit'],
+      datasets: personas.map(p=>({ label:p.label, data:p.data,
+        backgroundColor:p.color, borderColor:p.border, borderWidth:2,
+        pointBackgroundColor:p.border, pointRadius:3 })) },
+    options:{ responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{display:true, position:'right', labels:{boxWidth:9,font:{size:9},color:'#c0d8f0',padding:6}} },
+      scales:{ r:{ min:0,max:100, grid:{color:'rgba(26,53,88,0.65)'},
+        angleLines:{color:'rgba(26,53,88,0.9)'},
+        pointLabels:{color:'#7a9abb',font:{size:9}},
+        ticks:{display:false} }}
+    }
+  });
+}
+
+
+
+function initStreamingCorrChart(){
+  const _str=document.getElementById('streamingCorrChart');if(!_str)return;
+  const personas = ['🎮 Balanced','🏆 Comp.','🔥 Strivers','🌙 Escapist'];
+  const gadCorr  = [0.070, 0.044, 0.078, 0.064];
+  const swlCorr  = [-0.070,-0.064,-0.095,-0.027];
+  new Chart(document.getElementById('streamingCorrChart'),{
+    type:'bar',
+    data:{ labels:personas, datasets:[
+      { label:'→ GAD (anxiety ↑)', data:gadCorr, backgroundColor:'rgba(255,77,77,0.7)', borderColor:'#ff4d4d', borderWidth:1.5, borderRadius:3 },
+      { label:'→ SWL (life sat ↓)', data:swlCorr, backgroundColor:'rgba(0,212,255,0.55)', borderColor:'#00d4ff', borderWidth:1.5, borderRadius:3 }
+    ]},
+    options:{ responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{display:true,position:'top',labels:{boxWidth:9,font:{size:9},color:'#c0d8f0',padding:7}},
+        tooltip:{callbacks:{label:c=>`r = ${c.parsed.y.toFixed(3)}`}} },
+      scales:{
+        x:{ grid:{color:'rgba(26,53,88,0.35)'}, ticks:{color:'#c0d8f0',font:{size:9.5}} },
+        y:{ grid:{color:'rgba(26,53,88,0.3)'}, ticks:{color:'#4a6a8a',font:{size:8},callback:v=>v.toFixed(2)},
+          title:{display:true,text:'Pearson r',color:'#4a6a8a',font:{size:8}} }
+      }
+    }
+  });
+}
+
+function initGenderGapChart(){
+  const _g=document.getElementById('genderGapChart');if(!_g)return;
+  const personas = ['🎮 Balanced','🏆 Comp.','🔥 Strivers','🌙 Escapist'];
+  const male   = [17.1, 21.2, 24.1, 23.4];
+  const female = [25.7, 29.5, 34.8, 32.2];
+  new Chart(document.getElementById('genderGapChart'),{
+    type:'bar',
+    data:{ labels:personas, datasets:[
+      { label:'Male SPIN',   data:male,   backgroundColor:'rgba(0,212,255,0.65)', borderColor:'#00d4ff', borderWidth:1.5, borderRadius:3 },
+      { label:'Female SPIN', data:female, backgroundColor:'rgba(176,102,255,0.75)', borderColor:'#b066ff', borderWidth:1.5, borderRadius:3 }
+    ]},
+    options:{ responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{display:true,position:'top',labels:{boxWidth:9,font:{size:9},color:'#c0d8f0',padding:7}},
+        tooltip:{callbacks:{label:c=>`SPIN: ${c.parsed.y.toFixed(1)}`}} },
+      scales:{
+        x:{ grid:{color:'rgba(26,53,88,0.35)'}, ticks:{color:'#c0d8f0',font:{size:9.5}} },
+        y:{ min:12,max:38, grid:{color:'rgba(26,53,88,0.3)'}, ticks:{color:'#4a6a8a',font:{size:8}},
+          title:{display:true,text:'SPIN score',color:'#4a6a8a',font:{size:8}} }
+      }
+    }
+  });
+}
+
+function initPredictorEffectChart(){
+  const labels = ['Escape motive','Hours/week','Earnings load','Narcissism','Streaming','Education','Employment','Rank'];
+  const coefs  = [1.21, 0.055, 0.048, 0.038, 0.032, -0.37, -0.31, -0.09];
+  const cols   = coefs.map(v=> v>0 ? 'rgba(255,77,77,0.78)' : 'rgba(0,232,122,0.75)');
+  const bdr    = coefs.map(v=> v>0 ? '#ff4d4d' : '#00e87a');
+  new Chart(document.getElementById('predictorEffectChart'),{
+    type:'bar',
+    data:{ labels, datasets:[{ data:coefs, backgroundColor:cols, borderColor:bdr, borderWidth:1.5, borderRadius:4 }] },
+    options:{ indexAxis:'y', responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{display:false},
+        tooltip:{callbacks:{label:c=>`β=${(c.parsed.x>0?'+':'')+c.parsed.x.toFixed(3)} on GAD-7`}} },
+      scales:{
+        x:{ grid:{color:'rgba(26,53,88,0.35)'}, ticks:{color:'#4a6a8a',font:{size:8}},
+          title:{display:true,text:'Coefficient on GAD-7 (+ = more anxiety)',color:'#4a6a8a',font:{size:8}} },
+        y:{ grid:{display:false}, ticks:{color:'#c0d8f0',font:{size:9.5}} }
+      }
+    }
+  });
+}
+
+function initOutcomeSummaryChart(){
+  const _o = document.getElementById('outcomeSummaryChart'); if(!_o) return;
+  const personas = ['🎮 Rec.','🏆 Comp.','🔥 Strivers','🌙 Escapist'];
+  new Chart(document.getElementById('outcomeSummaryChart'),{
+    type:'bar',
+    data:{ labels:personas, datasets:[
+      { label:'GAD-7 (×3, lower=better)',  data:[11.1,15.0,18.6,21.3], backgroundColor:'rgba(255,77,77,0.65)',   borderColor:'#ff4d4d', borderWidth:1.5, borderRadius:3 },
+      { label:'SPIN (÷2, lower=better)',   data:[9.1, 11.1,12.7,12.3], backgroundColor:'rgba(176,102,255,0.65)', borderColor:'#b066ff', borderWidth:1.5, borderRadius:3 },
+      { label:'SWLS (direct, higher=better)',data:[20.5,17.8,15.3,13.8],backgroundColor:'rgba(0,232,122,0.65)',  borderColor:'#00e87a', borderWidth:1.5, borderRadius:3 }
+    ]},
+    options:{ responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{display:true,position:'top',labels:{boxWidth:9,font:{size:8.5},color:'#c0d8f0',padding:6}},
+        tooltip:{callbacks:{label:c=>c.dataset.label.split(' ')[0]+': '+c.parsed.y.toFixed(1)}} },
+      scales:{
+        x:{ grid:{color:'rgba(26,53,88,0.35)'}, ticks:{color:'#c0d8f0',font:{size:9}} },
+        y:{ min:8,max:24, grid:{color:'rgba(26,53,88,0.3)'}, ticks:{color:'#4a6a8a',font:{size:8}} }
+      }
+    }
+  });
+}
+
+
+function initDemoBar2(){
+  const _chk = document.getElementById('demoBarChart'); if(!_chk) return;
+  const labels=['Male','LoL Players','College','PC','HS Diploma','Unemployed'];
+  const vals=[94.3,84.0,52.7,98.2,63.6,10.4];
+  const cols=['rgba(0,212,255,.75)','rgba(255,200,64,.75)','rgba(0,232,122,.72)','rgba(176,102,255,.72)','rgba(255,140,66,.75)','rgba(255,77,77,.65)'];
+  new Chart(document.getElementById('demoBarChart'),{
+    type:'bar',data:{labels,datasets:[{data:vals,backgroundColor:cols,borderColor:cols,borderWidth:1.5,borderRadius:4}]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.parsed.y+'%'}}},
+      scales:{x:{grid:{color:'rgba(26,53,88,.35)'},ticks:{color:'#c0d8f0',font:{size:9}}},
+              y:{min:0,max:105,grid:{color:'rgba(26,53,88,.3)'},ticks:{color:'#4a6a8a',font:{size:9},callback:v=>v+'%'}}}}
+  });
+}
+function initGameBar(){
+  const _chk = document.getElementById('gameBarChart'); if(!_chk) return;
+  new Chart(document.getElementById('gameBarChart'),{
+    type:'bar',indexAxis:'y',
+    data:{labels:['League of Legends','Dota 2','World of Warcraft','CS:GO','Other'],
+      datasets:[{data:[11267,580,420,308,802],
+        backgroundColor:['rgba(0,212,255,.8)','rgba(255,200,64,.75)','rgba(0,232,122,.72)','rgba(176,102,255,.72)','rgba(74,106,138,.5)'],borderRadius:3,borderWidth:1.5}]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.parsed.x.toLocaleString()+' players'}}},
+      scales:{x:{grid:{color:'rgba(26,53,88,.3)'},ticks:{color:'#4a6a8a',font:{size:8},callback:v=>(v/1000).toFixed(0)+'k'}},
+              y:{grid:{display:false},ticks:{color:'#c0d8f0',font:{size:9}}}}}
+  });
+}
+function initDistCharts2(){
+  const _d=document.getElementById('swlDistChart'); if(!_d) return;
+  const cfg=(id,clr,bdr,labs,vals)=>new Chart(document.getElementById(id),{
+    type:'bar',data:{labels:labs,datasets:[{data:vals,backgroundColor:clr,borderColor:bdr,borderWidth:1.5,borderRadius:3}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
+      scales:{x:{grid:{color:'rgba(26,53,88,.35)'},ticks:{color:'#c0d8f0',font:{size:9}}},
+              y:{grid:{color:'rgba(26,53,88,.3)'},ticks:{color:'#4a6a8a',font:{size:9},callback:v=>v+'%'}}}}
+  });
+  cfg('swlDistChart','rgba(0,232,122,.65)','#00e87a',['5-9','10-14','15-19','20-24','25-29','30-35'],[4.2,9.8,22.3,31.4,22.8,9.5]);
+  cfg('gadDistChart','rgba(255,77,77,.65)','#ff4d4d',['0-2','3-5','6-9','10-14','15-21'],[38.2,32.4,18.6,7.9,2.9]);
+  cfg('spinDistChart','rgba(176,102,255,.65)','#b066ff',['0-9','10-19','20-29','30-39','40-49','50+'],[22.1,34.8,25.6,11.4,4.8,1.3]);
+}
+
+
+
+function initIndustryGrowthChart(){
+  const _el_initIndustryGrowthChart = document.getElementById('industryGrowthChart'); if(!_el_initIndustryGrowthChart) return;
+  new Chart(document.getElementById('industryGrowthChart'),{
+    type:'bar',
+    data:{
+      labels:['2018','2019','2020','2021','2022','2023','2024'],
+      datasets:[{
+        label:'Market ($B)',
+        data:[135,152,178,198,184,193,205],
+        backgroundColor:'rgba(0,212,255,0.65)',
+        borderColor:'#00d4ff',
+        borderWidth:2,
+        borderRadius:4
+      }]
+    },
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},
+        tooltip:{callbacks:{label:c=>'$'+c.parsed.y+'B'}}},
+      scales:{
+        x:{grid:{color:'rgba(26,53,88,0.35)'},ticks:{color:'#c0d8f0',font:{size:10}}},
+        y:{min:100,max:220,grid:{color:'rgba(26,53,88,0.3)'},
+          ticks:{color:'#4a6a8a',font:{size:9},callback:v=>'$'+v+'B'}}
+      }
+    }
+  });
+}
+
+function initAnxietyTrendChart(){
+  const _el_initAnxietyTrendChart = document.getElementById('anxietyTrendChart'); if(!_el_initAnxietyTrendChart) return;
+  new Chart(document.getElementById('anxietyTrendChart'),{
+    type:'line',
+    data:{
+      labels:['2018','2019','2020','2021','2022','2023','2024'],
+      datasets:[
+        {label:'Gamers (100M)',data:[23,25,28,31,30,31,32],
+          borderColor:'#00d4ff',backgroundColor:'rgba(0,212,255,0.1)',
+          borderWidth:2,pointRadius:4,tension:0.4,fill:true},
+        {label:'Anxiety Prev. (%)',data:[18,19,21,28,25,24,23],
+          borderColor:'#ff4d4d',backgroundColor:'rgba(255,77,77,0.08)',
+          borderWidth:2,pointRadius:4,tension:0.4,fill:true,yAxisID:'y2'}
+      ]
+    },
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:true,position:'top',
+        labels:{boxWidth:10,font:{size:9},color:'#c0d8f0',padding:8}}},
+      scales:{
+        x:{grid:{color:'rgba(26,53,88,0.35)'},ticks:{color:'#c0d8f0',font:{size:9}}},
+        y:{grid:{color:'rgba(26,53,88,0.3)'},
+          ticks:{color:'#4a6a8a',font:{size:9},callback:v=>v*100+'M'}},
+        y2:{position:'right',grid:{display:false},
+          ticks:{color:'#ff4d4d',font:{size:9},callback:v=>v+'%'}}
+      }
+    }
+  });
+}
+
+
+
+function initOutcomesContextChart(){
+  const _el = document.getElementById('outcomesContextChart'); if(!_el) return;
+  const labels=['GAD-7 Anxiety','SPIN Social Phobia','SWLS Life Sat.'];
+  const sample=[4.4, 21.7, 18.0];
+  const clinical=[10, 19, 20];  // mild clinical threshold / population norm
+  new Chart(document.getElementById('outcomesContextChart'),{
+    type:'bar',
+    data:{labels, datasets:[
+      {label:'Our Sample Avg', data:sample,
+        backgroundColor:['rgba(255,77,77,0.75)','rgba(176,102,255,0.75)','rgba(0,232,122,0.75)'],
+        borderColor:['#ff4d4d','#b066ff','#00e87a'], borderWidth:2, borderRadius:4},
+      {label:'Clinical Threshold / Norm', data:clinical,
+        backgroundColor:'rgba(255,255,255,0.08)',
+        borderColor:'rgba(255,255,255,0.35)', borderWidth:2, borderRadius:4,
+        borderDash:[4,4]}
+    ]},
+    options:{
+      responsive:true, maintainAspectRatio:false,
+      plugins:{
+        legend:{display:true, position:'top',
+          labels:{boxWidth:10, font:{size:10}, color:'#c0d8f0', padding:10}},
+        tooltip:{callbacks:{label:c=>`${c.dataset.label}: ${c.parsed.y}`}}
+      },
+      scales:{
+        x:{grid:{color:'rgba(26,53,88,0.35)'}, ticks:{color:'#c0d8f0', font:{size:11,weight:'600'}}},
+        y:{min:0, max:30, grid:{color:'rgba(26,53,88,0.3)'}, ticks:{color:'#4a6a8a', font:{size:9}}}
+      }
+    }
+  });
+}
+
+function initMotivDistChart(){
+  new Chart(document.getElementById('motivDistChart'),{
+    type:'doughnut',
+    data:{
+      labels:['Improving (37.7%)','Novel/NLP Clustered (41.3%)','Winning (16.5%)','Relaxation/Fun (5.2%)'],
+      datasets:[{
+        data:[37.7, 41.3, 16.5, 5.2],
+        backgroundColor:['rgba(255,200,64,0.82)','rgba(176,102,255,0.75)','rgba(0,212,255,0.82)','rgba(0,232,122,0.75)'],
+        borderColor:['#ffc840','#b066ff','#00d4ff','#00e87a'],
+        borderWidth:2, hoverOffset:6
+      }]
+    },
+    options:{
+      responsive:true, maintainAspectRatio:false, cutout:'55%',
+      plugins:{legend:{display:true, position:'right',
+        labels:{boxWidth:9, font:{size:9}, color:'#c0d8f0', padding:5}}}
+    }
+  });
+}
+
+
+
+
+
+
+
+
+
+function initResidenceChart(){
+  const _r=document.getElementById('residenceChart'); if(!_r) return;
+  const countries = ['USA','DEU','GBR','CAN','NLD','FRA','SWE','DNK','BRA','AUS'];
+  const counts    = [4551, 1388, 1048, 1001, 499,  388,  373,  252,  247,  235];
+  new Chart(document.getElementById('residenceChart'),{
+    type:'bar',
+    data:{
+      labels: countries,
+      datasets:[{
+        data: counts,
+        backgroundColor: 'rgba(212,160,40,0.82)',
+        borderColor:     '#d4a028',
+        borderWidth: 1.5,
+        borderRadius: 3
+      }]
+    },
+    options:{
+      responsive:true,
+      maintainAspectRatio:false,
+      plugins:{
+        legend:{display:false},
+        tooltip:{callbacks:{label:c=>c.parsed.y.toLocaleString()+' players'}}
+      },
+      scales:{
+        x:{
+          grid:{color:'rgba(26,53,88,0.3)',drawTicks:false},
+          ticks:{color:'#c0d8f0',font:{size:11,weight:'600'}},
+          title:{display:true,text:'Residence (ISO3)',color:'#4a6a8a',font:{size:10}}
+        },
+        y:{
+          min:0,
+          grid:{color:'rgba(26,53,88,0.3)'},
+          ticks:{color:'#4a6a8a',font:{size:10},callback:v=>v.toLocaleString()},
+          title:{display:true,text:'Frequency',color:'#4a6a8a',font:{size:10}}
+        }
+      }
+    }
+  });
+}
+
+
+function initPCA(){
+  const ctx = document.getElementById('pcaChart');
+  if(!ctx) return;
+
+  const clusterColors = [
+    {bg:'rgba(59,79,168,0.75)',  bd:'#3b4fa8'},
+    {bg:'rgba(42,184,168,0.75)', bd:'#2ab8a8'},
+    {bg:'rgba(61,186,95,0.75)',  bd:'#3dba5f'},
+    {bg:'rgba(168,212,90,0.75)', bd:'#a8d45a'},
+  ];
+
+  const pts = [
+    [{x:0.8,y:-0.2},{x:1.1,y:0.1},{x:1.4,y:-0.3},{x:1.6,y:-0.6},{x:1.8,y:-0.8},
+     {x:0.5,y:0.2},{x:0.9,y:-0.5},{x:1.2,y:0.3},{x:1.5,y:-0.1},{x:1.9,y:-0.4},
+     {x:0.6,y:-0.1},{x:1.0,y:0.4},{x:1.3,y:-0.7},{x:1.7,y:0.1},{x:0.7,y:-0.3},
+     {x:0.4,y:-0.6},{x:1.1,y:-0.9},{x:1.6,y:0.2},{x:0.9,y:0.0},{x:1.4,y:-0.5}],
+    [{x:-2.2,y:-0.8},{x:-1.8,y:-0.3},{x:-1.5,y:-1.1},{x:-2.0,y:-1.3},{x:-1.2,y:-0.6},
+     {x:-2.4,y:-0.5},{x:-1.6,y:-0.9},{x:-1.9,y:-0.1},{x:-1.3,y:-1.4},{x:-2.1,y:-0.2},
+     {x:-1.0,y:-0.4},{x:-1.7,y:-0.7},{x:-2.3,y:-1.0},{x:-1.4,y:0.0},{x:-2.0,y:-0.6},
+     {x:-1.1,y:-1.2},{x:-0.9,y:-0.2},{x:-2.5,y:-0.4},{x:-1.8,y:-1.0},{x:-1.5,y:-0.5}],
+    [{x:-3.8,y:4.5},{x:-3.5,y:5.0},{x:-4.2,y:4.0},{x:-3.2,y:5.8},{x:-3.9,y:3.8},
+     {x:-4.5,y:4.8},{x:-3.6,y:6.7},{x:-3.0,y:4.2},{x:-4.1,y:5.5},{x:-3.4,y:3.9},
+     {x:-3.7,y:4.1},{x:-4.3,y:3.5},{x:-3.1,y:6.0},{x:-3.8,y:5.2},{x:-2.8,y:4.6},
+     {x:-8.0,y:13.0}],
+    [{x:-0.5,y:1.8},{x:0.1,y:2.1},{x:-0.8,y:1.2},{x:0.3,y:1.5},{x:-0.2,y:2.3},
+     {x:-0.6,y:0.8},{x:0.2,y:1.9},{x:-0.4,y:1.4},{x:0.0,y:2.0},{x:-0.7,y:1.6},
+     {x:-0.1,y:0.9},{x:0.4,y:1.7},{x:-0.3,y:2.2},{x:-0.9,y:1.0},{x:0.1,y:1.3}],
+  ];
+
+  // Cluster point datasets first
+  const datasets = clusterColors.map((c,i) => ({
+    label: 'Cluster '+(i+1),
+    data: pts[i],
+    backgroundColor: c.bg,
+    borderColor: c.bd,
+    pointRadius: i===2 ? 5 : 4,
+    pointHoverRadius: 6,
+    showLine: false,
+    order: 2,
+  }));
+
+  // Centroids LAST so they render on top (order:1 = drawn last = front)
+  datasets.push({
+    label: 'Centroids',
+    data: [{x:-0.2,y:2.2},{x:-0.1,y:1.1},{x:-1.8,y:-0.65},{x:1.2,y:-0.1}],
+    backgroundColor: 'rgba(255,40,40,1)',
+    borderColor: '#ff2020',
+    borderWidth: 3,
+    pointRadius: 9,
+    pointHoverRadius: 11,
+    pointStyle: 'crossRot',
+    showLine: false,
+    order: 1,
+  });
+
+  new Chart(ctx, {
+    type: 'scatter',
+    data: { datasets },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: { callbacks: { label: c => c.dataset.label+': ('+c.parsed.x.toFixed(1)+', '+c.parsed.y.toFixed(1)+')' } }
+      },
+      scales: {
+        x: {
+          min:-9, max:3,
+          grid:{color:'rgba(26,53,88,0.4)',borderDash:[3,3]},
+          ticks:{color:'#4a6a8a',font:{size:9}},
+          title:{display:true,text:'Principal Component 1',color:'#4a6a8a',font:{size:10}}
+        },
+        y: {
+          min:-3, max:14,
+          grid:{color:'rgba(26,53,88,0.4)',borderDash:[3,3]},
+          ticks:{color:'#4a6a8a',font:{size:9}},
+          title:{display:true,text:'Principal Component 2',color:'#4a6a8a',font:{size:10}}
+        }
+      }
+    }
+  });
+}
+
+
+
+
+function initPCAfs(){
+  const ctx = document.getElementById('pcaChartFS');
+  if(!ctx) return;
+
+  const clusterColors = [
+    {bg:'rgba(59,79,168,0.75)',  bd:'#3b4fa8'},
+    {bg:'rgba(42,184,168,0.75)', bd:'#2ab8a8'},
+    {bg:'rgba(61,186,95,0.75)',  bd:'#3dba5f'},
+    {bg:'rgba(168,212,90,0.75)', bd:'#a8d45a'},
+  ];
+
+  const pts = [
+    [{x:0.8,y:-0.2},{x:1.1,y:0.1},{x:1.4,y:-0.3},{x:1.6,y:-0.6},{x:1.8,y:-0.8},
+     {x:0.5,y:0.2},{x:0.9,y:-0.5},{x:1.2,y:0.3},{x:1.5,y:-0.1},{x:1.9,y:-0.4},
+     {x:0.6,y:-0.1},{x:1.0,y:0.4},{x:1.3,y:-0.7},{x:1.7,y:0.1},{x:0.7,y:-0.3},
+     {x:0.4,y:-0.6},{x:1.1,y:-0.9},{x:1.6,y:0.2},{x:0.9,y:0.0},{x:1.4,y:-0.5}],
+    [{x:-2.2,y:-0.8},{x:-1.8,y:-0.3},{x:-1.5,y:-1.1},{x:-2.0,y:-1.3},{x:-1.2,y:-0.6},
+     {x:-2.4,y:-0.5},{x:-1.6,y:-0.9},{x:-1.9,y:-0.1},{x:-1.3,y:-1.4},{x:-2.1,y:-0.2},
+     {x:-1.0,y:-0.4},{x:-1.7,y:-0.7},{x:-2.3,y:-1.0},{x:-1.4,y:0.0},{x:-2.0,y:-0.6},
+     {x:-1.1,y:-1.2},{x:-0.9,y:-0.2},{x:-2.5,y:-0.4},{x:-1.8,y:-1.0},{x:-1.5,y:-0.5}],
+    [{x:-3.8,y:4.5},{x:-3.5,y:5.0},{x:-4.2,y:4.0},{x:-3.2,y:5.8},{x:-3.9,y:3.8},
+     {x:-4.5,y:4.8},{x:-3.6,y:6.7},{x:-3.0,y:4.2},{x:-4.1,y:5.5},{x:-3.4,y:3.9},
+     {x:-3.7,y:4.1},{x:-4.3,y:3.5},{x:-3.1,y:6.0},{x:-3.8,y:5.2},{x:-2.8,y:4.6},
+     {x:-8.0,y:13.0}],
+    [{x:-0.5,y:1.8},{x:0.1,y:2.1},{x:-0.8,y:1.2},{x:0.3,y:1.5},{x:-0.2,y:2.3},
+     {x:-0.6,y:0.8},{x:0.2,y:1.9},{x:-0.4,y:1.4},{x:0.0,y:2.0},{x:-0.7,y:1.6},
+     {x:-0.1,y:0.9},{x:0.4,y:1.7},{x:-0.3,y:2.2},{x:-0.9,y:1.0},{x:0.1,y:1.3}],
+  ];
+
+  // Cluster point datasets first
+  const datasets = clusterColors.map((c,i) => ({
+    label: 'Cluster '+(i+1),
+    data: pts[i],
+    backgroundColor: c.bg,
+    borderColor: c.bd,
+    pointRadius: i===2 ? 5 : 4,
+    pointHoverRadius: 6,
+    showLine: false,
+    order: 2,
+  }));
+
+  // Centroids LAST so they render on top (order:1 = drawn last = front)
+  datasets.push({
+    label: 'Centroids',
+    data: [{x:-0.2,y:2.2},{x:-0.1,y:1.1},{x:-1.8,y:-0.65},{x:1.2,y:-0.1}],
+    backgroundColor: 'rgba(255,40,40,1)',
+    borderColor: '#ff2020',
+    borderWidth: 3,
+    pointRadius: 9,
+    pointHoverRadius: 11,
+    pointStyle: 'crossRot',
+    showLine: false,
+    order: 1,
+  });
+
+  new Chart(ctx, {
+    type: 'scatter',
+    data: { datasets },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: { callbacks: { label: c => c.dataset.label+': ('+c.parsed.x.toFixed(1)+', '+c.parsed.y.toFixed(1)+')' } }
+      },
+      scales: {
+        x: {
+          min:-9, max:3,
+          grid:{color:'rgba(26,53,88,0.4)',borderDash:[3,3]},
+          ticks:{color:'#4a6a8a',font:{size:9}},
+          title:{display:true,text:'Principal Component 1',color:'#4a6a8a',font:{size:10}}
+        },
+        y: {
+          min:-3, max:14,
+          grid:{color:'rgba(26,53,88,0.4)',borderDash:[3,3]},
+          ticks:{color:'#4a6a8a',font:{size:9}},
+          title:{display:true,text:'Principal Component 2',color:'#4a6a8a',font:{size:10}}
+        }
+      }
+    }
+  });
+}
+
+
+
+
+function initElbowChart(){
+  const el = document.getElementById('elbowChart');
+  if(!el) return;
+  new Chart(el, {
+    type: 'line',
+    data: {
+      labels: [2,3,4,5,6,7,8,9],
+      datasets:[{
+        data: [85000,70500,58500,40000,36500,23500,20000,17500],
+        borderColor: '#2878b5',
+        backgroundColor: 'rgba(40,120,181,0.08)',
+        borderWidth: 2.5,
+        pointRadius: 5,
+        pointBackgroundColor: '#2878b5',
+        pointBorderColor: '#2878b5',
+        tension: 0.1,
+        fill: true
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false },
+        tooltip: { callbacks: { label: c => 'Inertia: '+c.parsed.y.toLocaleString() } }
+      },
+      scales: {
+        x: { grid:{color:'rgba(26,53,88,0.4)'}, ticks:{color:'#c0d8f0',font:{size:10}},
+             title:{display:true,text:'k value',color:'#4a6a8a',font:{size:10}} },
+        y: { min:15000, max:90000,
+             grid:{color:'rgba(26,53,88,0.3)'},
+             ticks:{color:'#4a6a8a',font:{size:9},callback:v=>v.toLocaleString()},
+             title:{display:true,text:'Inertia',color:'#4a6a8a',font:{size:10}} }
+      }
+    }
+  });
+}
+
+function initSilChart(){
+  const el = document.getElementById('silChart');
+  if(!el) return;
+  new Chart(el, {
+    type: 'line',
+    data: {
+      labels: [2,3,4,5,6,7,8,9],
+      datasets:[{
+        data: [0.350, 0.407, 0.418, 0.549, 0.502, 0.505, 0.516, 0.471],
+        borderColor: '#2878b5',
+        backgroundColor: 'rgba(40,120,181,0.08)',
+        borderWidth: 2.5,
+        pointRadius: 5,
+        pointBackgroundColor: (ctx) => ctx.dataIndex === 4 ? '#ff3333' : '#2878b5',
+        pointBorderColor: (ctx) => ctx.dataIndex === 4 ? '#ff3333' : '#2878b5',
+        pointRadius: (ctx) => ctx.dataIndex === 4 ? 7 : 5,
+        tension: 0.1,
+        fill: true
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false },
+        tooltip: { callbacks: { label: c => 'Silhouette: '+c.parsed.y.toFixed(3) } }
+      },
+      scales: {
+        x: { grid:{color:'rgba(26,53,88,0.4)'}, ticks:{color:'#c0d8f0',font:{size:10}},
+             title:{display:true,text:'k value',color:'#4a6a8a',font:{size:10}} },
+        y: { min:0.33, max:0.56,
+             grid:{color:'rgba(26,53,88,0.3)'},
+             ticks:{color:'#4a6a8a',font:{size:9}},
+             title:{display:true,text:'Silhouette Score',color:'#4a6a8a',font:{size:10}} }
+      }
+    }
+  });
+}
+
+function initClusterSizeDist(){
+  const el = document.getElementById('clusterSizeDistChart');
+  if(!el) return;
+  new Chart(el, {
+    type: 'bar',
+    data: {
+      labels: ['C1','C2','C3','C4','C5'],
+      datasets:[{
+        data: [37.1, 41.3, 5.0, 0.6, 16.0],
+        backgroundColor: ['#2878b5','#2878b5','#2878b5','#e83030','#2878b5'],
+        borderColor:      ['#2878b5','#2878b5','#2878b5','#e83030','#2878b5'],
+        borderWidth: 1.5,
+        borderRadius: 2
+      }]
+    },
+    options: {
+      indexAxis: 'y',
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false },
+        tooltip: { callbacks: { label: c => c.parsed.x.toFixed(1)+'% of players' } }
+      },
+      scales: {
+        x: { min:0, max:50,
+             grid:{color:'rgba(26,53,88,0.3)'},
+             ticks:{color:'#4a6a8a',font:{size:9},callback:v=>v},
+             title:{display:true,text:'Percentage of Players',color:'#4a6a8a',font:{size:10}} },
+        y: { grid:{display:false}, ticks:{color:'#c0d8f0',font:{size:11,weight:'600'}} }
+      }
+    }
+  });
+}
+
+function initClusterProfileChart(){
+  const _el = document.getElementById('clusterProfileChart'); if(!_el) return;
+  const el = document.getElementById('clusterProfileChart');
+  if(!el) return;
+  const features = ['Hours','streams','Playstyle_enum','whyplay_winning','whyplay_improving','whyplay_relaxing','whyplay_having_fun','whyplay_combined','whyplay_novel'];
+  new Chart(el, {
+    type: 'bar',
+    data: {
+      labels: features,
+      datasets: [
+        { label:'Cluster 1', data:[19.5,9.8,4.1,0.0,0.0,0.0,0.0,0.0,0.9], backgroundColor:'rgba(59,79,168,0.82)',  borderColor:'#3b4fa8', borderWidth:1.5, borderRadius:2 },
+        { label:'Cluster 2', data:[23.0,11.5,4.0,0.0,0.9,0.0,0.0,0.0,0.0], backgroundColor:'rgba(42,184,168,0.82)', borderColor:'#2ab8a8', borderWidth:1.5, borderRadius:2 },
+        { label:'Cluster 3', data:[28.0,11.5,3.8,0.9,0.0,0.0,0.0,0.0,0.0], backgroundColor:'rgba(61,186,95,0.82)',  borderColor:'#3dba5f', borderWidth:1.5, borderRadius:2 },
+        { label:'Cluster 4', data:[19.0,9.5,3.6,0.0,0.0,0.9,0.0,0.0,0.0],  backgroundColor:'rgba(168,212,90,0.82)', borderColor:'#a8d45a', borderWidth:1.5, borderRadius:2 },
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend:{display:true,position:'top',align:'end',labels:{boxWidth:10,font:{size:9},color:'#c0d8f0',padding:8}},
+        tooltip:{callbacks:{label:c=>c.dataset.label+': '+c.parsed.y.toFixed(1)}} },
+      scales: {
+        x: { grid:{color:'rgba(26,53,88,0.3)'}, ticks:{color:'#c0d8f0',font:{size:8.5},maxRotation:35,minRotation:35},
+             title:{display:true,text:'Feature',color:'#4a6a8a',font:{size:10}} },
+        y: { min:0, grid:{color:'rgba(26,53,88,0.3)'}, ticks:{color:'#4a6a8a',font:{size:9}},
+             title:{display:true,text:'Mean Value',color:'#4a6a8a',font:{size:10}} }
+      }
+    }
+  });
+}
+
+
+function initClusterProfileChart2(){
+  const el = document.getElementById('clusterProfileChart2');
+  if(!el) return;
+  const features = ['Hours','streams','Playstyle_enum','whyplay_winning','whyplay_improving','whyplay_relaxing','whyplay_having_fun','whyplay_combined','whyplay_novel'];
+  new Chart(el, {
+    type: 'bar',
+    data: {
+      labels: features,
+      datasets: [
+        { label:'Cluster 1', data:[19.5,9.8,4.1,0.0,0.0,0.0,0.0,0.0,0.9], backgroundColor:'rgba(59,79,168,0.82)',  borderColor:'#3b4fa8', borderWidth:1.5, borderRadius:2 },
+        { label:'Cluster 2', data:[23.0,11.5,4.0,0.0,0.9,0.0,0.0,0.0,0.0], backgroundColor:'rgba(42,184,168,0.82)', borderColor:'#2ab8a8', borderWidth:1.5, borderRadius:2 },
+        { label:'Cluster 3', data:[28.0,11.5,3.8,0.9,0.0,0.0,0.0,0.0,0.0], backgroundColor:'rgba(61,186,95,0.82)',  borderColor:'#3dba5f', borderWidth:1.5, borderRadius:2 },
+        { label:'Cluster 4', data:[19.0,9.5,3.6,0.0,0.0,0.9,0.0,0.0,0.0],  backgroundColor:'rgba(168,212,90,0.82)', borderColor:'#a8d45a', borderWidth:1.5, borderRadius:2 },
+      ]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend:{display:true,position:'top',align:'end',labels:{boxWidth:10,font:{size:9},color:'#c0d8f0',padding:8}},
+        tooltip:{callbacks:{label:c=>c.dataset.label+': '+c.parsed.y.toFixed(1)}}
+      },
+      scales: {
+        x:{ grid:{color:'rgba(26,53,88,0.3)'}, ticks:{color:'#c0d8f0',font:{size:8.5},maxRotation:35,minRotation:35},
+            title:{display:true,text:'Feature',color:'#4a6a8a',font:{size:10}} },
+        y:{ min:0, grid:{color:'rgba(26,53,88,0.3)'}, ticks:{color:'#4a6a8a',font:{size:9}},
+            title:{display:true,text:'Mean Value',color:'#4a6a8a',font:{size:10}} }
+      }
+    }
+  });
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function initRiskCharts(){
+  const _rg=document.getElementById('riskGadChart'); if(!_rg) return;
+  const labels = ['Full\nDataset','Balanced\nRec.','Struct.\nComp.','Intens.\nStrivers','Escapist\nReg.'];
+  const shortLabels = ['Full Dataset','Balanced Rec.','Struct. Comp.','Intens. Strivers','Escapist Reg.'];
+  const bgColors = [
+    'rgba(58,90,150,0.85)',
+    'rgba(42,160,130,0.85)',
+    'rgba(180,150,50,0.85)',
+    'rgba(200,70,70,0.85)',
+    'rgba(100,110,130,0.85)'
+  ];
+  const bdColors = ['#3a5a96','#2aa082','#b49632','#c84646','#646e82'];
+
+  const baseOpts = (min, max, step) => ({
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { display: false },
+      tooltip: { callbacks: { label: c => c.parsed.y.toFixed(1) } },
+      datalabels: { display: false }
+    },
+    scales: {
+      x: {
+        grid: { display: false },
+        ticks: { color: '#c0d8f0', font: { size: 9.5 } }
+      },
+      y: {
+        min, max,
+        grid: { color: 'rgba(26,53,88,0.3)' },
+        ticks: { color: '#4a6a8a', font: { size: 9 }, stepSize: step }
+      }
+    }
+  });
+
+  // GAD chart
+  const gadEl = document.getElementById('riskGadChart');
+  if(gadEl) {
+    new Chart(gadEl, {
+      type: 'bar',
+      data: {
+        labels: shortLabels,
+        datasets: [{ data:[5.2,4.7,5.3,6.1,6.2], backgroundColor:bgColors, borderColor:bdColors, borderWidth:2, borderRadius:4 }]
+      },
+      options: {
+        ...baseOpts(4.5, 6.5, 0.5),
+        plugins: {
+          legend: { display: false },
+          tooltip: { callbacks: { label: c => 'GAD-7: '+c.parsed.y.toFixed(1) } }
+        }
+      }
+    });
+  }
+
+  // SPIN chart
+  const spinEl = document.getElementById('riskSpinChart');
+  if(spinEl) {
+    new Chart(spinEl, {
+      type: 'bar',
+      data: {
+        labels: shortLabels,
+        datasets: [{ data:[19.9,19.3,19.5,21.9,20.2], backgroundColor:bgColors, borderColor:bdColors, borderWidth:2, borderRadius:4 }]
+      },
+      options: {
+        ...baseOpts(18, 23, 1),
+        plugins: {
+          legend: { display: false },
+          tooltip: { callbacks: { label: c => 'SPIN: '+c.parsed.y.toFixed(1) } }
+        }
+      }
+    });
+  }
+
+  // SWL chart
+  const swlEl = document.getElementById('riskSwlChart');
+  if(swlEl) {
+    new Chart(swlEl, {
+      type: 'bar',
+      data: {
+        labels: shortLabels,
+        datasets: [{ data:[19.8,20.6,19.6,18.4,19.0], backgroundColor:bgColors, borderColor:bdColors, borderWidth:2, borderRadius:4 }]
+      },
+      options: {
+        ...baseOpts(17, 22, 1),
+        plugins: {
+          legend: { display: false },
+          tooltip: { callbacks: { label: c => 'SWLS: '+c.parsed.y.toFixed(1) } }
+        }
+      }
+    });
+  }
+}
+
+
+
+
+
+function initHypH1(){
+  const labs=['Full Dataset','Balanced Rec.','Struct. Comp.','Intens. Strivers','Escapist Reg.'];
+  function mk(id,d1,d2,l1,l2,yMin,yMax){
+    const el=document.getElementById(id); if(!el) return;
+    new Chart(el,{type:'bar',data:{labels:labs,datasets:[
+      {label:l1,data:d1,backgroundColor:'rgba(38,166,154,0.82)',borderColor:'#269a9a',borderWidth:2,borderRadius:4},
+      {label:l2,data:d2,backgroundColor:'rgba(204,85,85,0.82)', borderColor:'#cc5555',borderWidth:2,borderRadius:4}
+    ]},options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:true,position:'top',labels:{boxWidth:10,font:{size:10},color:'#c0d8f0',padding:10}},
+        tooltip:{callbacks:{label:c=>c.dataset.label+': '+c.parsed.y.toFixed(1)}}},
+      scales:{x:{grid:{display:false},ticks:{color:'#c0d8f0',font:{size:10},maxRotation:20}},
+               y:{min:yMin,max:yMax,grid:{color:'rgba(26,53,88,0.3)'},ticks:{color:'#4a6a8a',font:{size:10}}}}
+    }});
+  }
+  mk('h1RankChart', [5.2,4.8,5.3,5.9,6.3],[5.2,4.2,5.3,6.5,5.8],'Lower League Rank','Higher League Rank',4.0,7.0);
+  mk('h1HoursChart',[5.0,4.5,5.1,5.5,5.9],[5.6,4.8,5.5,6.9,6.5],'Fewer Hours Played','More Hours Played',4.0,7.0);
+}
+
+function initHypH2(){
+  const labs=['Full Dataset','Balanced Rec.','Struct. Comp.','Intens. Strivers','Escapist Reg.'];
+  function mk(id,d1,d2,yMin,yMax){
+    const el=document.getElementById(id); if(!el) return;
+    new Chart(el,{type:'bar',data:{labels:labs,datasets:[
+      {label:'Less Streaming',data:d1,backgroundColor:'rgba(38,166,154,0.82)',borderColor:'#269a9a',borderWidth:2,borderRadius:4},
+      {label:'More Streaming',data:d2,backgroundColor:'rgba(204,85,85,0.82)', borderColor:'#cc5555',borderWidth:2,borderRadius:4}
+    ]},options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:true,position:'top',labels:{boxWidth:10,font:{size:10},color:'#c0d8f0',padding:10}},
+        tooltip:{callbacks:{label:c=>c.dataset.label+': '+c.parsed.y.toFixed(1)}}},
+      scales:{x:{grid:{display:false},ticks:{color:'#c0d8f0',font:{size:10},maxRotation:20}},
+               y:{min:yMin,max:yMax,grid:{color:'rgba(26,53,88,0.3)'},ticks:{color:'#4a6a8a',font:{size:10}}}}
+    }});
+  }
+  mk('h2AnxChart', [5.0,4.5,5.1,5.8,5.9],[5.5,4.9,5.7,6.7,6.5],4.5,7.0);
+  mk('h2SpinChart',[19.3,18.7,19.2,21.5,19.7],[20.5,20.5,20.1,22.6,20.7],18.0,24.0);
+  mk('h2SwlChart', [20.2,20.9,19.9,18.8,19.7],[19.4,20.3,19.1,17.6,18.4],17.0,22.0);
+}
+
+function initHypH5(){
+  const labs=['Full Dataset','Balanced Rec.','Struct. Comp.','Intens. Strivers','Escapist Reg.'];
+  function mk(id,d1,d2,l1,l2,yMin,yMax,bg2,bd2){
+    const el=document.getElementById(id); if(!el) return;
+    new Chart(el,{type:'bar',data:{labels:labs,datasets:[
+      {label:l1,data:d1,backgroundColor:'rgba(38,166,154,0.82)',borderColor:'#269a9a',borderWidth:2,borderRadius:4},
+      {label:l2,data:d2,backgroundColor:bg2,borderColor:bd2,borderWidth:2,borderRadius:4}
+    ]},options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:true,position:'top',labels:{boxWidth:10,font:{size:10},color:'#c0d8f0',padding:10}},
+        tooltip:{callbacks:{label:c=>c.dataset.label+': '+c.parsed.y.toFixed(1)}}},
+      scales:{x:{grid:{display:false},ticks:{color:'#c0d8f0',font:{size:10},maxRotation:20}},
+               y:{min:yMin,max:yMax,grid:{color:'rgba(26,53,88,0.3)'},ticks:{color:'#4a6a8a',font:{size:10}}}}
+    }});
+  }
+  mk('h5SwlChart',[19.9,20.6,19.7,18.5,19.1],[17.0,16.7,18.4,15.0,13.6],'Low Earnings Motivation','High Earnings Motivation',13.0,22.0,'rgba(200,160,50,0.82)','#c8a032');
+  mk('h5GadChart',[5.2,4.7,5.2,6.0,6.2],[7.1,6.8,6.4,8.4,7.5],'Low Earnings Motivation','High Earnings Motivation',4.0,9.0,'rgba(200,160,50,0.82)','#c8a032');
+}
+
+
+function initRelaxEffectChart(){
+  const el = document.getElementById('relaxEffectChart');
+  if(!el) return;
+  new Chart(el, {
+    type: 'bar',
+    data: {
+      labels: ['GAD (Anxiety)', 'SWL (Life Satisfaction)'],
+      datasets: [{
+        data: [1.21, -1.06],
+        backgroundColor: ['rgba(180,30,30,0.88)', 'rgba(230,140,0,0.88)'],
+        borderColor: ['#b41e1e', '#e68c00'],
+        borderWidth: 2,
+        borderRadius: 3
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: c => (c.parsed.y > 0 ? '+' : '') + c.parsed.y.toFixed(2) + ' estimated effect'
+          }
+        }
+      },
+      scales: {
+        x: {
+          grid: { display: false },
+          ticks: { color: '#c0d8f0', font: { size: 13, weight: '600' } }
+        },
+        y: {
+          min: -1.6, max: 1.6,
+          grid: { color: 'rgba(26,53,88,0.35)' },
+          ticks: {
+            color: '#4a6a8a', font: { size: 10 },
+            callback: v => v === 0 ? '0' : (v > 0 ? '+' + v : v)
+          },
+          title: {
+            display: true,
+            text: 'Estimated Effect of Higher Relaxation Motivation',
+            color: '#4a6a8a',
+            font: { size: 9 }
+          }
+        }
+      }
+    },
+    plugins: [{
+      id: 'zeroLine',
+      afterDraw(chart) {
+        const ctx = chart.ctx;
+        const yScale = chart.scales.y;
+        const xScale = chart.scales.x;
+        const y0 = yScale.getPixelForValue(0);
+        ctx.save();
+        ctx.strokeStyle = 'rgba(255,255,255,0.45)';
+        ctx.lineWidth = 1.5;
+        ctx.setLineDash([5, 4]);
+        ctx.beginPath();
+        ctx.moveTo(xScale.left, y0);
+        ctx.lineTo(xScale.right, y0);
+        ctx.stroke();
+        ctx.restore();
+        // Draw value labels on bars
+        chart.data.datasets.forEach((dataset, i) => {
+          const meta = chart.getDatasetMeta(i);
+          meta.data.forEach((bar, index) => {
+            const val = dataset.data[index];
+            if(val === undefined || val === null) return;
+            const label = (val > 0 ? '+' : '') + val.toFixed(2);
+            ctx.save();
+            ctx.fillStyle = 'white';
+            ctx.font = 'bold 15px monospace';
+            ctx.textAlign = 'center';
+            ctx.fillText(label, bar.x, val > 0 ? bar.y - 10 : bar.y + 20);
+            ctx.restore();
+          });
+        });
+      }
+    }]
+  });
+}
+
+
+</script>
+
+</body></html>

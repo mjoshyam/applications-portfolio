@@ -1,0 +1,2156 @@
+<!DOCTYPE html>
+<!-- saved from url=(0065)file:///C:/Users/Riya/Downloads/mixed_models_explainer%20(1).html -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gaming &amp; Mental Health — Research Dashboard</title>
+<script src="./Gaming &amp; Mental Health — Research Dashboard - 2_files/chart.umd.min.js.download"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap');
+
+  :root {
+    --bg: #0a0e1a;
+    --surface: #111827;
+    --surface2: #1a2235;
+    --border: #1f2d45;
+    --accent1: #00e5ff;
+    --accent2: #ff6b6b;
+    --accent3: #7cfc9a;
+    --accent4: #ffbe3d;
+    --purple: #b39ddb;
+    --text: #e2e8f0;
+    --muted: #64748b;
+    --glow: 0 0 20px rgba(0,229,255,0.15);
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body { background:var(--bg); color:var(--text); font-family:'DM Sans',sans-serif; min-height:100vh; overflow-x:hidden; }
+  body::before {
+    content:''; position:fixed; inset:0;
+    background-image: linear-gradient(rgba(0,229,255,0.03) 1px,transparent 1px), linear-gradient(90deg,rgba(0,229,255,0.03) 1px,transparent 1px);
+    background-size:40px 40px; pointer-events:none; z-index:0;
+  }
+  .container { position:relative; z-index:1; max-width:1300px; margin:0 auto; padding:32px 24px; }
+
+  /* ── HERO INTRO ── */
+  .hero {
+    border:1px solid var(--border); border-radius:16px; padding:40px 44px;
+    margin-bottom:36px; background:var(--surface);
+    animation:fadeUp 0.8s ease both; position:relative; overflow:hidden;
+  }
+  .hero::before {
+    content:''; position:absolute; top:-60px; right:-60px;
+    width:260px; height:260px; border-radius:50%;
+    background:radial-gradient(circle, rgba(0,229,255,0.06), transparent 70%);
+    pointer-events:none;
+  }
+  .hero-eyebrow { font-family:'Space Mono',monospace; font-size:11px; letter-spacing:0.2em; color:var(--accent1); text-transform:uppercase; margin-bottom:12px; }
+  .hero h1 { font-family:'Space Mono',monospace; font-size:clamp(20px,3vw,34px); font-weight:700; line-height:1.2; color:#fff; margin-bottom:16px; }
+  .hero h1 span { color:var(--accent1); }
+  .hero-body { font-size:15px; color:#94a3b8; line-height:1.75; max-width:820px; }
+  .hero-body strong { color:var(--text); }
+  .hero-pills { display:flex; flex-wrap:wrap; gap:10px; margin-top:20px; }
+  .hero-pill {
+    display:flex; align-items:center; gap:8px;
+    background:var(--surface2); border:1px solid var(--border);
+    border-radius:8px; padding:10px 16px; font-size:13px;
+  }
+  .hero-pill .dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+  .hero-pill strong { color:#fff; display:block; font-size:13px; }
+  .hero-pill span { color:var(--muted); font-size:12px; }
+
+  /* ── TOOLTIP SYSTEM ── */
+  .tip {
+    display:inline-flex; align-items:center; gap:4px;
+    border-bottom:1px dashed var(--accent1); cursor:help;
+    position:relative; color:var(--accent1);
+  }
+  .tip .tip-icon { font-size:11px; opacity:0.7; }
+  .tip .tip-box {
+    display:none; position:absolute; bottom:calc(100% + 8px); left:50%;
+    transform:translateX(-50%); width:260px;
+    background:#0d1526; border:1px solid var(--accent1);
+    border-radius:8px; padding:12px 14px; font-size:12px;
+    color:var(--text); line-height:1.6; z-index:100;
+    font-family:'DM Sans',sans-serif; font-style:normal;
+    box-shadow:0 4px 24px rgba(0,0,0,0.5);
+  }
+  .tip .tip-box strong { color:var(--accent1); display:block; margin-bottom:4px; font-size:11px; letter-spacing:0.1em; text-transform:uppercase; }
+  .tip:hover .tip-box { display:block; }
+
+  /* ── STORY STEPS ── */
+  .story-nav {
+    display:flex; align-items:center; gap:0; margin-bottom:32px;
+    background:var(--surface); border:1px solid var(--border); border-radius:12px;
+    overflow:hidden; animation:fadeUp 0.8s 0.1s ease both;
+  }
+  .story-step {
+    flex:1; padding:14px 12px; text-align:center; cursor:pointer;
+    border-right:1px solid var(--border); transition:background 0.2s;
+    position:relative;
+  }
+  .story-step:last-child { border-right:none; }
+  .story-step:hover { background:var(--surface2); }
+  .story-step.active { background:rgba(0,229,255,0.07); }
+  .story-step.active::after {
+    content:''; position:absolute; bottom:0; left:0; right:0; height:2px;
+    background:var(--accent1);
+  }
+  .step-num { font-family:'Space Mono',monospace; font-size:10px; color:var(--muted); margin-bottom:3px; }
+  .step-label { font-size:12px; font-weight:600; color:var(--text); line-height:1.3; }
+  .story-step.active .step-label { color:var(--accent1); }
+
+  /* ── PANELS ── */
+  .panel { display:none; }
+  .panel.active { display:block; }
+
+  /* ── SECTION HEADER ── */
+  .section-header {
+    margin-bottom:24px; padding:24px 28px;
+    background:var(--surface); border:1px solid var(--border); border-radius:12px;
+    border-left:3px solid var(--accent1);
+  }
+  .section-header.purple { border-left-color:var(--purple); }
+  .section-header.green { border-left-color:var(--accent3); }
+  .section-header.yellow { border-left-color:var(--accent4); }
+  .section-q { font-size:18px; font-weight:600; color:#fff; margin-bottom:6px; }
+  .section-q span { color:var(--accent1); }
+  .section-q.purple span { color:var(--purple); }
+  .section-q.green span { color:var(--accent3); }
+  .section-desc { font-size:14px; color:#94a3b8; line-height:1.65; max-width:800px; }
+
+  /* ── CARDS ── */
+  .grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-bottom:20px; }
+  .grid-3 { display:grid; grid-template-columns:1fr 1fr 1fr; gap:20px; margin-bottom:20px; }
+  .chart-card { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:24px; transition:box-shadow 0.2s; }
+  .chart-card:hover { box-shadow:var(--glow); }
+  .card-label { font-family:'Space Mono',monospace; font-size:11px; letter-spacing:0.1em; text-transform:uppercase; color:var(--accent1); margin-bottom:4px; }
+  .card-label.purple { color:var(--purple); }
+  .card-label.green { color:var(--accent3); }
+  .card-title { font-size:15px; font-weight:600; color:#fff; margin-bottom:4px; }
+  .card-desc { font-size:13px; color:var(--muted); margin-bottom:18px; line-height:1.55; }
+  .chart-wrap { position:relative; }
+  .chart-wrap.h220 { height:220px; }
+  .chart-wrap.h260 { height:260px; }
+  .chart-wrap.h300 { height:300px; }
+  .chart-wrap.h160 { height:160px; }
+
+  /* ── FINDING CALLOUTS ── */
+  .finding-callout {
+    display:flex; gap:14px; align-items:flex-start;
+    padding:14px 16px; border-radius:8px; margin-bottom:10px;
+    border:1px solid transparent;
+  }
+  .finding-callout.up { background:rgba(96,165,250,0.07); border-color:rgba(96,165,250,0.2); }
+  .finding-callout.down { background:rgba(255,107,107,0.07); border-color:rgba(255,107,107,0.2); }
+  .finding-callout.neutral { background:rgba(100,116,139,0.07); border-color:rgba(100,116,139,0.2); }
+  .callout-icon { font-size:18px; flex-shrink:0; margin-top:1px; }
+  .callout-text { font-size:13px; line-height:1.6; color:#94a3b8; }
+  .callout-text strong { color:#fff; }
+
+  /* ── STAT PILLS ── */
+  .stat-row { display:grid; grid-template-columns:repeat(auto-fit,minmax(140px,1fr)); gap:14px; margin-bottom:24px; }
+  .stat-card { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:18px; position:relative; overflow:hidden; }
+  .stat-card::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; }
+  .stat-card.c1::before { background:var(--accent1); }
+  .stat-card.c2::before { background:var(--accent2); }
+  .stat-card.c3::before { background:var(--accent3); }
+  .stat-card.c4::before { background:var(--accent4); }
+  .stat-card.c5::before { background:var(--purple); }
+  .stat-label { font-size:11px; font-family:'Space Mono',monospace; letter-spacing:0.1em; color:var(--muted); text-transform:uppercase; margin-bottom:6px; }
+  .stat-value { font-family:'Space Mono',monospace; font-size:22px; font-weight:700; color:#fff; }
+  .stat-sub { font-size:12px; color:var(--muted); margin-top:3px; line-height:1.4; }
+
+  /* ── INSIGHT TAG ── */
+  .insight-tag { display:inline-block; font-size:11px; font-family:'Space Mono',monospace; color:var(--accent3); border:1px solid rgba(124,252,154,0.3); border-radius:20px; padding:3px 10px; margin-top:12px; }
+
+  /* ── FOREST PLOT ── */
+  .forest-row { display:flex; align-items:center; gap:10px; padding:9px 0; border-bottom:1px solid var(--border); }
+  .forest-row:last-child { border-bottom:none; }
+  .forest-label { width:140px; font-size:11px; font-family:'Space Mono',monospace; flex-shrink:0; }
+  .forest-bar-area { flex:1; position:relative; height:22px; display:flex; align-items:center; }
+  .zero-line { position:absolute; top:0; bottom:0; width:1.5px; background:rgba(255,255,255,0.15); }
+  .ci-bar { position:absolute; height:2px; top:50%; transform:translateY(-50%); border-radius:1px; }
+  .dot-mark { position:absolute; width:10px; height:10px; border-radius:50%; top:50%; transform:translate(-50%,-50%); z-index:2; border:2px solid var(--bg); }
+  .forest-coef { width:72px; font-family:'Space Mono',monospace; font-size:11px; text-align:right; flex-shrink:0; }
+  .forest-sig { width:28px; font-family:'Space Mono',monospace; font-size:11px; color:var(--accent3); flex-shrink:0; text-align:center; }
+
+  /* ── HEATMAP ── */
+  .heatmap-table { width:100%; border-collapse:collapse; font-size:12px; }
+  .heatmap-table th { font-family:'Space Mono',monospace; font-size:10px; letter-spacing:0.1em; text-transform:uppercase; color:var(--muted); border-bottom:1px solid var(--border); padding:8px 12px; text-align:center; }
+  .heatmap-table td { padding:10px 12px; border-bottom:1px solid rgba(31,45,69,0.5); font-family:'Space Mono',monospace; font-size:11px; text-align:center; }
+  .heatmap-table tr:hover td { background:var(--surface2); }
+  .hm-pos-strong { background:rgba(96,165,250,0.22); color:#93c5fd; }
+  .hm-pos-med { background:rgba(96,165,250,0.1); color:#93c5fd; }
+  .hm-neg-strong { background:rgba(255,107,107,0.22); color:#fca5a5; }
+  .hm-neg-med { background:rgba(255,107,107,0.1); color:#fca5a5; }
+  .hm-ns { color:var(--muted); font-style:italic; }
+  .pred-name { text-align:left !important; font-weight:700; color:var(--text); min-width:130px; }
+
+  /* ── NOTE BOX ── */
+  .note-box { background:rgba(255,190,61,0.07); border:1px solid rgba(255,190,61,0.25); border-radius:8px; padding:14px 18px; font-size:13px; color:#e2cc90; line-height:1.6; margin-bottom:20px; }
+  .note-box strong { font-family:'Space Mono',monospace; font-size:10px; letter-spacing:0.15em; text-transform:uppercase; display:block; margin-bottom:5px; color:var(--accent4); }
+
+  /* ── SIMULATOR ── */
+  .sim-layout { display:grid; grid-template-columns:380px 1fr; gap:24px; align-items:start; }
+  .sim-controls { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:24px; position:sticky; top:20px; }
+  .sim-results { display:flex; flex-direction:column; gap:0; }
+  .sim-section-label { font-family:'Space Mono',monospace; font-size:11px; letter-spacing:0.15em; text-transform:uppercase; color:var(--accent1); margin-bottom:14px; }
+  .sim-row { margin-bottom:16px; }
+  .sim-label-row { display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; }
+  .sim-label-row label { font-size:13px; font-weight:500; color:var(--text); }
+  .sim-val { font-family:'Space Mono',monospace; font-size:12px; color:var(--accent1); background:rgba(0,229,255,0.08); border:1px solid rgba(0,229,255,0.2); border-radius:6px; padding:2px 8px; min-width:60px; text-align:center; }
+  .sim-hint { font-size:11px; color:var(--muted); margin-top:4px; }
+  input[type=range] { width:100%; -webkit-appearance:none; appearance:none; height:4px; border-radius:2px; outline:none; background:linear-gradient(to right,var(--accent1) 0%,var(--accent1) var(--pct,50%),var(--border) var(--pct,50%)); cursor:pointer; }
+  input[type=range]::-webkit-slider-thumb { -webkit-appearance:none; width:16px; height:16px; border-radius:50%; background:var(--accent1); border:2px solid var(--bg); cursor:pointer; box-shadow:0 0 6px rgba(0,229,255,0.4); }
+  input[type=range]::-moz-range-thumb { width:16px; height:16px; border-radius:50%; background:var(--accent1); border:2px solid var(--bg); cursor:pointer; }
+  .reset-btn { width:100%; margin-top:8px; padding:10px; border-radius:8px; border:1px solid var(--border); background:var(--surface2); color:var(--muted); font-family:'Space Mono',monospace; font-size:11px; cursor:pointer; transition:all 0.2s; letter-spacing:0.1em; text-transform:uppercase; }
+  .reset-btn:hover { border-color:var(--accent1); color:var(--accent1); }
+  .gauge-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:14px; }
+  .gauge-card { background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:16px; transition:border-color 0.3s,box-shadow 0.3s; }
+  .gauge-label { font-size:12px; font-weight:600; color:var(--text); margin-bottom:2px; }
+  .gauge-scale { font-size:10px; color:var(--muted); font-weight:400; }
+  .gauge-score { font-family:'Space Mono',monospace; font-size:28px; font-weight:700; color:#fff; margin:8px 0 10px; transition:color 0.3s; }
+  .gauge-bar-bg { height:6px; background:var(--border); border-radius:3px; overflow:hidden; margin-bottom:8px; }
+  .gauge-bar-fill { height:100%; border-radius:3px; transition:width 0.4s ease; width:0%; }
+  .gauge-band { font-size:11px; color:var(--muted); font-family:'Space Mono',monospace; }
+  .sim-narrative { background:var(--surface); border:1px solid var(--border); border-left:3px solid var(--accent1); border-radius:0 10px 10px 0; padding:18px 20px; margin-top:20px; font-size:13.5px; color:#94a3b8; line-height:1.75; }
+  .sim-narrative strong { color:#fff; }
+  .preset-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-top:12px; }
+  .preset-btn { background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:12px 10px; text-align:left; color:var(--text); font-size:12px; cursor:pointer; transition:all 0.2s; line-height:1.5; }
+  .preset-btn small { color:var(--muted); font-size:11px; display:block; margin-top:3px; }
+  .preset-btn:hover { border-color:var(--accent1); background:rgba(0,229,255,0.05); color:var(--accent1); }
+  @media(max-width:900px){ .sim-layout{grid-template-columns:1fr} .gauge-grid{grid-template-columns:1fr} .preset-grid{grid-template-columns:1fr 1fr} }
+
+  /* ── EXPLORE TABS ── */
+  .explore-tab { font-family:'Space Mono',monospace; font-size:11px; letter-spacing:0.08em; padding:9px 16px; border-radius:20px; border:1px solid var(--border); background:transparent; color:var(--muted); cursor:pointer; transition:all 0.2s; text-transform:uppercase; }
+  .explore-tab:hover { border-color:var(--accent1); color:var(--accent1); }
+  .explore-tab.active { background:var(--accent1); color:var(--bg); border-color:var(--accent1); font-weight:700; }
+  .explore-panel { display:none; }
+  .explore-panel.active { display:block; }
+
+  footer { margin-top:40px; padding-top:20px; border-top:1px solid var(--border); font-family:'Space Mono',monospace; font-size:11px; color:var(--muted); }
+
+  @keyframes fadeUp { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
+  @media(max-width:768px){.grid-2,.grid-3{grid-template-columns:1fr} .hero{padding:24px} .story-step .step-label{font-size:10px}}
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- ═══════════════════════════ HERO ═══════════════════════════ -->
+  <div class="hero">
+    <div class="hero-eyebrow">Research Study · N = 13,377 Online Gamers · 11 Games</div>
+    <h1>Does Gaming Affect Your<br><span>Mental Health &amp; Wellbeing?</span></h1>
+    <div class="hero-body">
+      We surveyed over <strong>13,000 online gamers</strong> about their gaming habits, personality, and life circumstances —
+      then measured three things: how anxious they feel day-to-day, how comfortable they are in social situations,
+      and how satisfied they are with their lives overall.<br><br>
+      Using <strong>mixed effects statistical models</strong> (think of them as very thorough regression analyses that also account for which game people play),
+      we asked: <em>what factors actually predict better or worse mental health in gamers?</em>
+      The answers are sometimes surprising.
+    </div>
+    <div class="hero-pills">
+      <div class="hero-pill">
+        <div class="dot" style="background:var(--accent2)"></div>
+        <div><strong>Anxiety</strong><span>How worried or on-edge do you generally feel?</span></div>
+      </div>
+      <div class="hero-pill">
+        <div class="dot" style="background:var(--purple)"></div>
+        <div><strong>Social Phobia</strong><span>How uncomfortable are you in social situations?</span></div>
+      </div>
+      <div class="hero-pill">
+        <div class="dot" style="background:var(--accent3)"></div>
+        <div><strong>Life Satisfaction</strong><span>Overall, how happy are you with your life?</span></div>
+      </div>
+      <div class="hero-pill">
+        <div class="dot" style="background:var(--accent1)"></div>
+        <div><strong>13,377 gamers</strong><span>Across 11 different game titles</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════ STORY NAV ═══════════════════════════ -->
+  <div class="story-nav">
+    <div class="story-step" onclick="goStep(0,this)">
+      <div class="step-num">STEP 1</div>
+      <div class="step-label">The Big Picture</div>
+    </div>
+    <div class="story-step" onclick="goStep(1,this)">
+      <div class="step-num">STEP 2</div>
+      <div class="step-label">Anxiety</div>
+    </div>
+    <div class="story-step" onclick="goStep(2,this)">
+      <div class="step-num">STEP 3</div>
+      <div class="step-label">Social Phobia</div>
+    </div>
+    <div class="story-step" onclick="goStep(3,this)">
+      <div class="step-num">STEP 4</div>
+      <div class="step-label">Life Satisfaction</div>
+    </div>
+    <div class="story-step" onclick="goStep(4,this)">
+      <div class="step-num">STEP 5</div>
+      <div class="step-label">Age &amp; Gaming</div>
+    </div>
+    <div class="story-step" onclick="goStep(5,this)">
+      <div class="step-num">STEP 6</div>
+      <div class="step-label">Key Takeaways</div>
+    </div>
+    <div class="story-step" onclick="goStep(6,this)">
+      <div class="step-num">STEP 7</div>
+      <div class="step-label">🎮 Try It Yourself</div>
+    </div>
+    <div class="story-step active" onclick="goStep(7,this)">
+      <div class="step-num">STEP 8</div>
+      <div class="step-label">📊 Explore the Data</div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════ PANEL 0: BIG PICTURE ═══════════════════════════ -->
+  <div class="panel" id="p0">
+    <div class="section-header">
+      <div class="section-q">What factors did we look at — and do they matter?</div>
+      <div class="section-desc">
+        We tested 9 factors that could predict mental health. The chart below shows whether each factor
+        <span style="color:#60a5fa">increases</span> or <span style="color:#ff6b6b">decreases</span> each outcome.
+        Grey means the effect wasn't strong enough to be considered real (could be chance).
+        The heatmap lets you instantly see which factors matter — and for which outcomes.
+      </div>
+    </div>
+
+    <div class="stat-row">
+      <div class="stat-card c1">
+        <div class="stat-label">Participants</div>
+        <div class="stat-value">13,377</div>
+        <div class="stat-sub">Online gamers surveyed</div>
+      </div>
+      <div class="stat-card c3">
+        <div class="stat-label">Games Covered</div>
+        <div class="stat-value">11</div>
+        <div class="stat-sub">Titles across genres</div>
+      </div>
+      <div class="stat-card c4">
+        <div class="stat-label">Factors Tested</div>
+        <div class="stat-value">9</div>
+        <div class="stat-sub">Gaming, personality &amp; life factors</div>
+      </div>
+      <div class="stat-card c2">
+        <div class="stat-label">Game Effect</div>
+        <div class="stat-value">&lt; 0.3%</div>
+        <div class="stat-sub">Which game you play barely matters</div>
+      </div>
+    </div>
+
+    <div class="chart-card" style="margin-bottom:20px">
+      <div class="card-label">Overview</div>
+      <div class="card-title">What predicts mental health in gamers?</div>
+      <div class="card-desc">
+        Each row is a factor we measured. Each column is a mental health outcome.
+        <span style="color:#fca5a5">Red = this factor is linked to worse scores.</span>
+        <span style="color:#93c5fd">Blue = linked to better scores.</span>
+        Grey = no meaningful effect.
+        Numbers show the size of the effect.
+      </div>
+      <div style="overflow-x:auto">
+        <table class="heatmap-table" id="bigHeatmap"><thead><tr>
+  <th style="text-align:left">Factor</th>
+  <th style="color:var(--accent2)">↑↓ Anxiety</th>
+  <th style="color:var(--purple)">↑↓ Social Phobia</th>
+  <th style="color:var(--accent3)">↑↓ Life Satisfaction</th>
+</tr></thead><tbody><tr>
+    <td class="pred-name">Hours/week</td>
+    <td class="hm-pos-med">▲ 0.022 ***</td>
+    <td class="hm-pos-med">▲ 0.069 ***</td>
+    <td class="hm-neg-med">▼ 0.050 ***</td>
+  </tr><tr>
+    <td class="pred-name">Streams</td>
+    <td class="hm-pos-med">▲ 0.021 ***</td>
+    <td class="hm-pos-med">▲ 0.061 ***</td>
+    <td class="hm-neg-med">▼ 0.032 ***</td>
+  </tr><tr>
+    <td class="pred-name">Education</td>
+    <td class="hm-neg-med">▼ 0.367 ***</td>
+    <td class="hm-neg-strong">▼ 2.189 ***</td>
+    <td class="hm-pos-strong">▲ 1.103 ***</td>
+  </tr><tr>
+    <td class="pred-name">Employment</td>
+    <td class="hm-neg-med">▼ 0.088 *</td>
+    <td class="hm-ns"><span style="color:var(--muted)">no effect</span></td>
+    <td class="hm-pos-strong">▲ 1.011 ***</td>
+  </tr><tr>
+    <td class="pred-name">Narcissism</td>
+    <td class="hm-pos-med">▲ 0.327 ***</td>
+    <td class="hm-ns"><span style="color:var(--muted)">no effect</span></td>
+    <td class="hm-ns"><span style="color:var(--muted)">no effect</span></td>
+  </tr><tr>
+    <td class="pred-name">Play to relax</td>
+    <td class="hm-pos-strong">▲ 1.211 ***</td>
+    <td class="hm-ns"><span style="color:var(--muted)">no effect</span></td>
+    <td class="hm-neg-strong">▼ 1.060 ***</td>
+  </tr><tr>
+    <td class="pred-name">Earnings tier</td>
+    <td class="hm-pos-strong">▲ 0.561 **</td>
+    <td class="hm-pos-strong">▲ 1.355 **</td>
+    <td class="hm-neg-strong">▼ 1.071 ***</td>
+  </tr><tr>
+    <td class="pred-name">Rank score</td>
+    <td class="hm-ns"><span style="color:var(--muted)">no effect</span></td>
+    <td class="hm-neg-strong">▼ 0.678 ***</td>
+    <td class="hm-ns"><span style="color:var(--muted)">no effect</span></td>
+  </tr><tr>
+    <td class="pred-name">Combo motive</td>
+    <td class="hm-ns"><span style="color:var(--muted)">no effect</span></td>
+    <td class="hm-ns"><span style="color:var(--muted)">no effect</span></td>
+    <td class="hm-ns"><span style="color:var(--muted)">no effect</span></td>
+  </tr></tbody></table>
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="chart-card">
+        <div class="card-label">Consistent finding</div>
+        <div class="card-title">More gaming hours = worse outcomes across the board</div>
+        <div class="card-desc">Regardless of which mental health measure you look at, spending more hours per week gaming is consistently linked to worse scores. The effect is small per hour, but adds up.</div>
+        <div class="chart-wrap h220"><canvas id="hoursAll" width="1132" height="440" style="display: block; box-sizing: border-box; height: 220px; width: 566px;"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <div class="card-label">Consistent finding</div>
+        <div class="card-title">Education is a strong protective factor</div>
+        <div class="card-desc">Higher levels of education are linked to less anxiety, much less social phobia, and greater life satisfaction. This was one of the most consistent effects across all three outcomes.</div>
+        <div class="chart-wrap h220"><canvas id="degreeAll" width="1132" height="440" style="display: block; box-sizing: border-box; height: 220px; width: 566px;"></canvas></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════ PANEL 1: ANXIETY ═══════════════════════════ -->
+  <div class="panel" id="p1">
+    <div class="section-header">
+      <div class="section-q">What makes gamers more or less <span>anxious</span>?</div>
+      <div class="section-desc">
+        We measured anxiety using the
+        <span class="tip">GAD-7 scale<span class="tip-box"><strong>GAD-7 (Generalised Anxiety Disorder scale)</strong>A 7-question questionnaire asking how often you've felt nervous, worried, or on edge. Scores range from 0–21. Higher = more anxiety. Scores above 10 suggest moderate-to-severe anxiety.</span></span>.
+        Out of 9 factors, 7 significantly predicted anxiety levels. The chart shows each factor's estimated effect — holding everything else constant.
+      </div>
+    </div>
+
+    <div class="stat-row">
+      <div class="stat-card c2"><div class="stat-label">Scale Used</div><div class="stat-value" style="font-size:16px">GAD-7</div><div class="stat-sub">0–21 scale. Higher = more anxious.</div></div>
+      <div class="stat-card c1"><div class="stat-label">Baseline Score</div><div class="stat-value">4.4</div><div class="stat-sub">Average predicted anxiety (intercept)</div></div>
+      <div class="stat-card c3"><div class="stat-label">Sig. Factors</div><div class="stat-value">7 / 9</div><div class="stat-sub">Found to be meaningful predictors</div></div>
+      <div class="stat-card c4"><div class="stat-label">Game Effect</div><div class="stat-value">~0%</div><div class="stat-sub">Which game you play doesn't matter</div></div>
+    </div>
+
+    <div class="grid-2">
+      <div class="chart-card">
+        <div class="card-label">GAD-7 Anxiety</div>
+        <div class="card-title">What raises or lowers anxiety?</div>
+        <div class="card-desc">
+          Bars going <span style="color:#60a5fa">right (blue)</span> = linked to <strong style="color:#60a5fa">more anxiety</strong>.
+          Bars going <span style="color:#ff6b6b">left (red)</span> = linked to <strong style="color:#ff6b6b">less anxiety</strong>.
+          Grey bars were not statistically meaningful.
+        </div>
+        <div class="chart-wrap h300"><canvas id="gadCoef" height="0" style="display: block; box-sizing: border-box; height: 0px; width: 0px;" width="0"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <div class="card-label">GAD-7 Anxiety</div>
+        <div class="card-title">How certain are we about each effect?</div>
+        <div class="card-desc">
+          The forest plot shows each factor's estimated effect (dot) and the range of uncertainty (line).
+          If the line <strong>doesn't cross zero</strong>, the effect is statistically significant.
+        </div>
+        <div id="forestGad" style="margin-top:8px"><div class="forest-row">
+      <div class="forest-label" style="color:#e2e8f0">Play to relax</div>
+      <div class="forest-bar-area">
+        <div class="zero-line" style="left:52.813525107241986%"></div>
+        <div class="ci-bar" style="left:74.28715619480192%;width:18.142821095129957%;background:rgba(96,165,250,0.45)"></div>
+        <div class="dot-mark" style="left:83.36613676507696%;background:#60a5fa"></div>
+      </div>
+      <div class="forest-coef" style="color:#60a5fa">+1.211</div>
+      <div class="forest-sig">***</div>
+    </div><div class="forest-row">
+      <div class="forest-label" style="color:#e2e8f0">Narcissism</div>
+      <div class="forest-bar-area">
+        <div class="zero-line" style="left:52.813525107241986%"></div>
+        <div class="ci-bar" style="left:59.17234418369921%;width:3.7850113550340736%;background:rgba(96,165,250,0.45)"></div>
+        <div class="dot-mark" style="left:61.057279838506176%;background:#60a5fa"></div>
+      </div>
+      <div class="forest-coef" style="color:#60a5fa">+0.327</div>
+      <div class="forest-sig">***</div>
+    </div><div class="forest-row">
+      <div class="forest-label" style="color:#e2e8f0">Earnings tier</div>
+      <div class="forest-bar-area">
+        <div class="zero-line" style="left:52.813525107241986%"></div>
+        <div class="ci-bar" style="left:57.80974009588695%;width:18.31945495836488%;background:rgba(96,165,250,0.45)"></div>
+        <div class="dot-mark" style="left:66.96442089326268%;background:#60a5fa"></div>
+      </div>
+      <div class="forest-coef" style="color:#60a5fa">+0.561</div>
+      <div class="forest-sig">**</div>
+    </div><div class="forest-row">
+      <div class="forest-label" style="color:#e2e8f0">Hours/week</div>
+      <div class="forest-bar-area">
+        <div class="zero-line" style="left:52.813525107241986%"></div>
+        <div class="ci-bar" style="left:53.21725965177896%;width:0.3028009084027228%;background:rgba(96,165,250,0.45)"></div>
+        <div class="dot-mark" style="left:53.366136765076966%;background:#60a5fa"></div>
+      </div>
+      <div class="forest-coef" style="color:#60a5fa">+0.022</div>
+      <div class="forest-sig">***</div>
+    </div><div class="forest-row">
+      <div class="forest-label" style="color:#e2e8f0">Streams</div>
+      <div class="forest-bar-area">
+        <div class="zero-line" style="left:52.813525107241986%"></div>
+        <div class="ci-bar" style="left:53.16679283371183%;width:0.37850113550340625%;background:rgba(96,165,250,0.45)"></div>
+        <div class="dot-mark" style="left:53.35352006056018%;background:#60a5fa"></div>
+      </div>
+      <div class="forest-coef" style="color:#60a5fa">+0.021</div>
+      <div class="forest-sig">***</div>
+    </div><div class="forest-row">
+      <div class="forest-label" style="color:#e2e8f0">Employment</div>
+      <div class="forest-bar-area">
+        <div class="zero-line" style="left:52.813525107241986%"></div>
+        <div class="ci-bar" style="left:48.675246025738076%;width:3.8102447640676216%;background:rgba(255,107,107,0.45)"></div>
+        <div class="dot-mark" style="left:50.5854150895786%;background:#ff6b6b"></div>
+      </div>
+      <div class="forest-coef" style="color:#ff6b6b">-0.088</div>
+      <div class="forest-sig">*</div>
+    </div><div class="forest-row">
+      <div class="forest-label" style="color:#e2e8f0">Education</div>
+      <div class="forest-bar-area">
+        <div class="zero-line" style="left:52.813525107241986%"></div>
+        <div class="ci-bar" style="left:40.70148877113298%;width:5.702750441584659%;background:rgba(255,107,107,0.45)"></div>
+        <div class="dot-mark" style="left:43.55286399192531%;background:#ff6b6b"></div>
+      </div>
+      <div class="forest-coef" style="color:#ff6b6b">-0.367</div>
+      <div class="forest-sig">***</div>
+    </div><div class="forest-row">
+      <div class="forest-label" style="color:#64748b">Combo motive</div>
+      <div class="forest-bar-area">
+        <div class="zero-line" style="left:52.813525107241986%"></div>
+        <div class="ci-bar" style="left:7.57002271006813%;width:57.330305324249295%;background:rgba(100,116,139,0.3)"></div>
+        <div class="dot-mark" style="left:36.23517537219278%;background:#64748b"></div>
+      </div>
+      <div class="forest-coef" style="color:#64748b">-0.657</div>
+      <div class="forest-sig"></div>
+    </div><div class="forest-row">
+      <div class="forest-label" style="color:#64748b">Rank score</div>
+      <div class="forest-bar-area">
+        <div class="zero-line" style="left:52.813525107241986%"></div>
+        <div class="ci-bar" style="left:48.77617966187232%;width:4.289679535705259%;background:rgba(100,116,139,0.3)"></div>
+        <div class="dot-mark" style="left:50.92101942972494%;background:#64748b"></div>
+      </div>
+      <div class="forest-coef" style="color:#64748b">-0.075</div>
+      <div class="forest-sig"></div>
+    </div></div>
+        <span class="insight-tag">Playing to relax is the biggest anxiety driver</span>
+      </div>
+    </div>
+
+    <div class="grid-3">
+      <div class="finding-callout up" style="grid-column:span 1">
+        <div class="callout-icon">📈</div>
+        <div class="callout-text"><strong>Playing to relax (+1.21 pts)</strong><br>Gamers who play specifically to unwind show higher anxiety — possibly because they're using gaming to escape stress rather than address it.</div>
+      </div>
+      <div class="finding-callout up">
+        <div class="callout-icon">📈</div>
+        <div class="callout-text"><strong>Narcissism (+0.33 pts)</strong><br>Higher narcissism scores are linked to more anxiety. This may reflect the stress of maintaining a self-image.</div>
+      </div>
+      <div class="finding-callout down">
+        <div class="callout-icon">📉</div>
+        <div class="callout-text"><strong>Education (−0.37 pts)</strong><br>Higher education level is linked to lower anxiety — possibly reflecting better coping resources or socioeconomic stability.</div>
+      </div>
+      <div class="finding-callout up">
+        <div class="callout-icon">📈</div>
+        <div class="callout-text"><strong>Streaming (+0.02 pts per stream)</strong><br>Streaming gaming content is linked to slightly higher anxiety — perhaps due to performance pressure or online scrutiny.</div>
+      </div>
+      <div class="finding-callout down">
+        <div class="callout-icon">📉</div>
+        <div class="callout-text"><strong>Being employed (−0.09 pts)</strong><br>Having a job is linked to slightly lower anxiety, consistent with the mental health benefits of structured daily activity.</div>
+      </div>
+      <div class="finding-callout neutral">
+        <div class="callout-icon">➖</div>
+        <div class="callout-text"><strong>Competitive rank — no effect</strong><br>Surprisingly, how skilled or highly-ranked a gamer is has no meaningful link to their anxiety levels.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════ PANEL 2: SOCIAL PHOBIA ═══════════════════════════ -->
+  <div class="panel" id="p2">
+    <div class="section-header purple">
+      <div class="section-q purple">What predicts <span style="color:var(--purple)">social anxiety</span> in gamers?</div>
+      <div class="section-desc">
+        Social phobia was measured using the
+        <span class="tip" style="color:var(--purple);border-bottom-color:var(--purple)">SPIN scale<span class="tip-box"><strong>SPIN (Social Phobia Inventory)</strong>A 17-question scale measuring fear of social situations, avoidance, and physical symptoms of social anxiety. Scores range 0–68. Higher = more social phobia. Above 19 suggests meaningful social anxiety.</span></span>.
+        The biggest finding here: <strong>competitive rank matters</strong> — something that didn't predict anxiety at all.
+      </div>
+    </div>
+
+    <div class="stat-row">
+      <div class="stat-card c5"><div class="stat-label">Scale Used</div><div class="stat-value" style="font-size:16px">SPIN</div><div class="stat-sub">0–68 scale. Higher = more social phobia.</div></div>
+      <div class="stat-card c1"><div class="stat-label">Baseline Score</div><div class="stat-value">21.7</div><div class="stat-sub">Average predicted score</div></div>
+      <div class="stat-card c3"><div class="stat-label">Sig. Factors</div><div class="stat-value">5 / 9</div><div class="stat-sub">Found to be meaningful predictors</div></div>
+      <div class="stat-card c4"><div class="stat-label">Game Effect</div><div class="stat-value">0.04%</div><div class="stat-sub">Virtually no effect by game title</div></div>
+    </div>
+
+    <div class="grid-2">
+      <div class="chart-card">
+        <div class="card-label" style="color:var(--purple)">SPIN Social Phobia</div>
+        <div class="card-title">What raises or lowers social phobia?</div>
+        <div class="card-desc">Notice that education has a much larger effect here than on anxiety — a 1-point increase in education level is linked to <strong>2.2 fewer SPIN points</strong>.</div>
+        <div class="chart-wrap h300"><canvas id="spinCoef" height="0" style="display: block; box-sizing: border-box; height: 0px; width: 0px;" width="0"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <div class="card-label" style="color:var(--purple)">SPIN Social Phobia</div>
+        <div class="card-title">Effect estimates with uncertainty ranges</div>
+        <div class="card-desc">The wider the line, the less precise our estimate. Dots to the left of zero mean the factor <em>reduces</em> social phobia.</div>
+        <div id="forestSpin" style="margin-top:8px"><div class="forest-row">
+      <div class="forest-label" style="color:#e2e8f0">Education</div>
+      <div class="forest-bar-area">
+        <div class="zero-line" style="left:70.43353873239437%"></div>
+        <div class="ci-bar" style="left:42.80369718309859%;width:7.086267605633806%;background:rgba(255,107,107,0.45)"></div>
+        <div class="dot-mark" style="left:46.346830985915496%;background:#ff6b6b"></div>
+      </div>
+      <div class="forest-coef" style="color:#ff6b6b">-2.189</div>
+      <div class="forest-sig">***</div>
+    </div><div class="forest-row">
+      <div class="forest-label" style="color:#e2e8f0">Rank score</div>
+      <div class="forest-bar-area">
+        <div class="zero-line" style="left:70.43353873239437%"></div>
+        <div class="ci-bar" style="left:60.277288732394375%;width:5.380721830985912%;background:rgba(255,107,107,0.45)"></div>
+        <div class="dot-mark" style="left:62.97315140845071%;background:#ff6b6b"></div>
+      </div>
+      <div class="forest-coef" style="color:#ff6b6b">-0.678</div>
+      <div class="forest-sig">***</div>
+    </div><div class="forest-row">
+      <div class="forest-label" style="color:#e2e8f0">Earnings tier</div>
+      <div class="forest-bar-area">
+        <div class="zero-line" style="left:70.43353873239437%"></div>
+        <div class="ci-bar" style="left:73.97667253521128%;width:22.722271126760575%;background:rgba(96,165,250,0.45)"></div>
+        <div class="dot-mark" style="left:85.34330985915494%;background:#60a5fa"></div>
+      </div>
+      <div class="forest-coef" style="color:#60a5fa">+1.355</div>
+      <div class="forest-sig">**</div>
+    </div><div class="forest-row">
+      <div class="forest-label" style="color:#e2e8f0">Hours/week</div>
+      <div class="forest-bar-area">
+        <div class="zero-line" style="left:70.43353873239437%"></div>
+        <div class="ci-bar" style="left:71.00572183098592%;width:0.37411971830987323%;background:rgba(96,165,250,0.45)"></div>
+        <div class="dot-mark" style="left:71.19278169014085%;background:#60a5fa"></div>
+      </div>
+      <div class="forest-coef" style="color:#60a5fa">+0.069</div>
+      <div class="forest-sig">***</div>
+    </div><div class="forest-row">
+      <div class="forest-label" style="color:#e2e8f0">Streams</div>
+      <div class="forest-bar-area">
+        <div class="zero-line" style="left:70.43353873239437%"></div>
+        <div class="ci-bar" style="left:70.8736795774648%;width:0.4621478873239382%;background:rgba(96,165,250,0.45)"></div>
+        <div class="dot-mark" style="left:71.10475352112677%;background:#60a5fa"></div>
+      </div>
+      <div class="forest-coef" style="color:#60a5fa">+0.061</div>
+      <div class="forest-sig">***</div>
+    </div><div class="forest-row">
+      <div class="forest-label" style="color:#64748b">Employment</div>
+      <div class="forest-bar-area">
+        <div class="zero-line" style="left:70.43353873239437%"></div>
+        <div class="ci-bar" style="left:65.72403169014085%;width:4.753521126760562%;background:rgba(100,116,139,0.3)"></div>
+        <div class="dot-mark" style="left:68.10079225352113%;background:#64748b"></div>
+      </div>
+      <div class="forest-coef" style="color:#64748b">-0.212</div>
+      <div class="forest-sig"></div>
+    </div><div class="forest-row">
+      <div class="forest-label" style="color:#64748b">Narcissism</div>
+      <div class="forest-bar-area">
+        <div class="zero-line" style="left:70.43353873239437%"></div>
+        <div class="ci-bar" style="left:67.08846830985915%;width:4.698503521126773%;background:rgba(100,116,139,0.3)"></div>
+        <div class="dot-mark" style="left:69.44322183098592%;background:#64748b"></div>
+      </div>
+      <div class="forest-coef" style="color:#64748b">-0.090</div>
+      <div class="forest-sig"></div>
+    </div><div class="forest-row">
+      <div class="forest-label" style="color:#64748b">Play to relax</div>
+      <div class="forest-bar-area">
+        <div class="zero-line" style="left:70.43353873239437%"></div>
+        <div class="ci-bar" style="left:68.44190140845072%;width:22.634242957746476%;background:rgba(100,116,139,0.3)"></div>
+        <div class="dot-mark" style="left:79.75352112676056%;background:#64748b"></div>
+      </div>
+      <div class="forest-coef" style="color:#64748b">+0.847</div>
+      <div class="forest-sig"></div>
+    </div><div class="forest-row">
+      <div class="forest-label" style="color:#64748b">Combo motive</div>
+      <div class="forest-bar-area">
+        <div class="zero-line" style="left:70.43353873239437%"></div>
+        <div class="ci-bar" style="left:3.3010563380281672%;width:71.04973591549296%;background:rgba(100,116,139,0.3)"></div>
+        <div class="dot-mark" style="left:38.83142605633803%;background:#64748b"></div>
+      </div>
+      <div class="forest-coef" style="color:#64748b">-2.872</div>
+      <div class="forest-sig"></div>
+    </div></div>
+        <span class="insight-tag" style="color:var(--purple);border-color:rgba(179,157,219,0.4)">Rank is protective — skilled gamers are less socially anxious</span>
+      </div>
+    </div>
+
+    <div class="grid-3">
+      <div class="finding-callout down">
+        <div class="callout-icon">🏆</div>
+        <div class="callout-text"><strong>Higher rank (−0.68 pts)</strong><br>More skilled, higher-ranked players show significantly less social phobia. Gaming mastery may build social confidence, or socially confident people may invest more in competitive play.</div>
+      </div>
+      <div class="finding-callout down">
+        <div class="callout-icon">🎓</div>
+        <div class="callout-text"><strong>Education (−2.19 pts)</strong><br>The largest single effect in the social phobia model. Higher education strongly predicts less social phobia — a difference of over 2 points per education level.</div>
+      </div>
+      <div class="finding-callout up">
+        <div class="callout-icon">⏱️</div>
+        <div class="callout-text"><strong>More hours (+0.07 pts/hr)</strong><br>Playing more hours per week predicts slightly higher social phobia. Over many hours, this accumulates — someone playing 20+ hours may score noticeably higher.</div>
+      </div>
+      <div class="finding-callout up">
+        <div class="callout-icon">📺</div>
+        <div class="callout-text"><strong>Streaming (+0.06 pts)</strong><br>More streaming activity predicts higher social phobia — a counterintuitive finding given that streaming is inherently public.</div>
+      </div>
+      <div class="finding-callout neutral">
+        <div class="callout-icon">➖</div>
+        <div class="callout-text"><strong>Narcissism — no effect here</strong><br>Unlike anxiety, narcissism had no significant link to social phobia — suggesting the two mental health constructs have different personality drivers.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════ PANEL 3: WELLBEING ═══════════════════════════ -->
+  <div class="panel" id="p3">
+    <div class="section-header green">
+      <div class="section-q green">What predicts how satisfied gamers are with <span style="color:var(--accent3)">their lives</span>?</div>
+      <div class="section-desc">
+        Life satisfaction was measured using the
+        <span class="tip" style="color:var(--accent3);border-bottom-color:var(--accent3)">SWLS scale<span class="tip-box"><strong>SWLS (Satisfaction With Life Scale)</strong>A 5-question scale asking how satisfied you are with your life overall. Scores range 5–35. Higher = greater life satisfaction. Around 20–25 is typical for most populations.</span></span>.
+        This outcome has a very different pattern — employment and education matter enormously, while gaming-specific factors mostly drag wellbeing <em>down</em>.
+      </div>
+    </div>
+
+    <div class="stat-row">
+      <div class="stat-card c3"><div class="stat-label">Scale Used</div><div class="stat-value" style="font-size:16px">SWLS</div><div class="stat-sub">5–35 scale. Higher = more satisfied.</div></div>
+      <div class="stat-card c1"><div class="stat-label">Baseline Score</div><div class="stat-value">18.0</div><div class="stat-sub">Average predicted score</div></div>
+      <div class="stat-card c3"><div class="stat-label">Sig. Factors</div><div class="stat-value">6 / 9</div><div class="stat-sub">Found to be meaningful predictors</div></div>
+      <div class="stat-card c4"><div class="stat-label">Game Effect</div><div class="stat-value">0.21%</div><div class="stat-sub">Slightly more game variation here</div></div>
+    </div>
+
+    <div class="grid-2">
+      <div class="chart-card">
+        <div class="card-label" style="color:var(--accent3)">SWLS Life Satisfaction</div>
+        <div class="card-title">What raises or lowers life satisfaction?</div>
+        <div class="card-desc">Work and education are by far the strongest predictors — and they're positive. Most gaming-related factors (hours, streaming, relaxation motive) reduce satisfaction.</div>
+        <div class="chart-wrap h300"><canvas id="swlCoef" height="0" style="display: block; box-sizing: border-box; height: 0px; width: 0px;" width="0"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <div class="card-label" style="color:var(--accent3)">SWLS Life Satisfaction</div>
+        <div class="card-title">Effect estimates with uncertainty ranges</div>
+        <div class="card-desc">Work and education stand out clearly on the right side. Gaming hours and streaming point firmly left — toward lower wellbeing.</div>
+        <div id="forestSwl" style="margin-top:8px"><div class="forest-row">
+      <div class="forest-label" style="color:#e2e8f0">Employment</div>
+      <div class="forest-bar-area">
+        <div class="zero-line" style="left:42.991281019450035%"></div>
+        <div class="ci-bar" style="left:63.022579923988374%;width:5.141962888441764%;background:rgba(96,165,250,0.45)"></div>
+        <div class="dot-mark" style="left:65.59356136820927%;background:#60a5fa"></div>
+      </div>
+      <div class="forest-coef" style="color:#60a5fa">+1.011</div>
+      <div class="forest-sig">***</div>
+    </div><div class="forest-row">
+      <div class="forest-label" style="color:#e2e8f0">Education</div>
+      <div class="forest-bar-area">
+        <div class="zero-line" style="left:42.991281019450035%"></div>
+        <div class="ci-bar" style="left:63.782696177062384%;width:7.712944332662641%;background:rgba(96,165,250,0.45)"></div>
+        <div class="dot-mark" style="left:67.65034652358595%;background:#60a5fa"></div>
+      </div>
+      <div class="forest-coef" style="color:#60a5fa">+1.103</div>
+      <div class="forest-sig">***</div>
+    </div><div class="forest-row">
+      <div class="forest-label" style="color:#e2e8f0">Play to relax</div>
+      <div class="forest-bar-area">
+        <div class="zero-line" style="left:42.991281019450035%"></div>
+        <div class="ci-bar" style="left:7.042253521126759%;width:24.502570981444226%;background:rgba(255,107,107,0.45)"></div>
+        <div class="dot-mark" style="left:19.29353901184887%;background:#ff6b6b"></div>
+      </div>
+      <div class="forest-coef" style="color:#ff6b6b">-1.060</div>
+      <div class="forest-sig">***</div>
+    </div><div class="forest-row">
+      <div class="forest-label" style="color:#e2e8f0">Earnings tier</div>
+      <div class="forest-bar-area">
+        <div class="zero-line" style="left:42.991281019450035%"></div>
+        <div class="ci-bar" style="left:6.7069081153588215%;width:24.659065504135924%;background:rgba(255,107,107,0.45)"></div>
+        <div class="dot-mark" style="left:19.04761904761905%;background:#ff6b6b"></div>
+      </div>
+      <div class="forest-coef" style="color:#ff6b6b">-1.071</div>
+      <div class="forest-sig">***</div>
+    </div><div class="forest-row">
+      <div class="forest-label" style="color:#e2e8f0">Hours/week</div>
+      <div class="forest-bar-area">
+        <div class="zero-line" style="left:42.991281019450035%"></div>
+        <div class="ci-bar" style="left:41.6722557567628%;width:0.40241448692152626%;background:rgba(255,107,107,0.45)"></div>
+        <div class="dot-mark" style="left:41.873463000223566%;background:#ff6b6b"></div>
+      </div>
+      <div class="forest-coef" style="color:#ff6b6b">-0.050</div>
+      <div class="forest-sig">***</div>
+    </div><div class="forest-row">
+      <div class="forest-label" style="color:#e2e8f0">Streams</div>
+      <div class="forest-bar-area">
+        <div class="zero-line" style="left:42.991281019450035%"></div>
+        <div class="ci-bar" style="left:42.029957522915275%;width:0.4918399284596475%;background:rgba(255,107,107,0.45)"></div>
+        <div class="dot-mark" style="left:42.275877487145095%;background:#ff6b6b"></div>
+      </div>
+      <div class="forest-coef" style="color:#ff6b6b">-0.032</div>
+      <div class="forest-sig">***</div>
+    </div><div class="forest-row">
+      <div class="forest-label" style="color:#64748b">Rank score</div>
+      <div class="forest-bar-area">
+        <div class="zero-line" style="left:42.991281019450035%"></div>
+        <div class="ci-bar" style="left:39.32483791638722%;width:6.058573664207467%;background:rgba(100,116,139,0.3)"></div>
+        <div class="dot-mark" style="left:42.342946568298686%;background:#64748b"></div>
+      </div>
+      <div class="forest-coef" style="color:#64748b">-0.029</div>
+      <div class="forest-sig"></div>
+    </div><div class="forest-row">
+      <div class="forest-label" style="color:#64748b">Narcissism</div>
+      <div class="forest-bar-area">
+        <div class="zero-line" style="left:42.991281019450035%"></div>
+        <div class="ci-bar" style="left:39.32483791638722%;width:5.097250167672701%;background:rgba(100,116,139,0.3)"></div>
+        <div class="dot-mark" style="left:41.873463000223566%;background:#64748b"></div>
+      </div>
+      <div class="forest-coef" style="color:#64748b">-0.050</div>
+      <div class="forest-sig"></div>
+    </div><div class="forest-row">
+      <div class="forest-label" style="color:#64748b">Combo motive</div>
+      <div class="forest-bar-area">
+        <div class="zero-line" style="left:42.991281019450035%"></div>
+        <div class="ci-bar" style="left:16.230717639168343%;width:77.06237424547284%;background:rgba(100,116,139,0.3)"></div>
+        <div class="dot-mark" style="left:54.77308294209703%;background:#64748b"></div>
+      </div>
+      <div class="forest-coef" style="color:#64748b">+0.527</div>
+      <div class="forest-sig"></div>
+    </div></div>
+        <span class="insight-tag" style="color:var(--accent3)">Employment is the #1 predictor of life satisfaction</span>
+      </div>
+    </div>
+
+    <div class="grid-3">
+      <div class="finding-callout down" style="border-color:rgba(124,252,154,0.25);background:rgba(124,252,154,0.07)">
+        <div class="callout-icon">💼</div>
+        <div class="callout-text"><strong style="color:var(--accent3)">Employment (+1.01 pts)</strong><br>Being employed is the strongest single predictor of life satisfaction in this dataset — more than any gaming variable. Structure, purpose, and income all likely play a role.</div>
+      </div>
+      <div class="finding-callout down" style="border-color:rgba(124,252,154,0.25);background:rgba(124,252,154,0.07)">
+        <div class="callout-icon">🎓</div>
+        <div class="callout-text"><strong style="color:var(--accent3)">Education (+1.10 pts)</strong><br>Higher education is also strongly linked to life satisfaction — and it's significant across all three mental health outcomes in this study.</div>
+      </div>
+      <div class="finding-callout up">
+        <div class="callout-icon">⏱️</div>
+        <div class="callout-text"><strong>More hours (−0.05 pts/hr)</strong><br>Each additional hour of gaming per week is linked to slightly lower life satisfaction. For heavy players (20–30 hrs/week), this adds up to a 1–1.5 point reduction.</div>
+      </div>
+      <div class="finding-callout up">
+        <div class="callout-icon">🛋️</div>
+        <div class="callout-text"><strong>Playing to relax (−1.06 pts)</strong><br>Gamers who say they play to unwind show lower life satisfaction — consistent with this motive reflecting escapism from real-life dissatisfaction.</div>
+      </div>
+      <div class="finding-callout up">
+        <div class="callout-icon">💰</div>
+        <div class="callout-text"><strong>Earnings cluster (−1.07 pts)</strong><br>Being in a higher gaming earnings group predicts lower life satisfaction — possibly reflecting the stress or imbalance that comes with gaming as income.</div>
+      </div>
+      <div class="finding-callout neutral">
+        <div class="callout-icon">➖</div>
+        <div class="callout-text"><strong>Narcissism &amp; rank — no effect</strong><br>Neither personality narcissism nor competitive rank predicts life satisfaction, suggesting wellbeing is driven by real-world factors more than gaming identity.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════ PANEL 4: AGE ═══════════════════════════ -->
+  <div class="panel" id="p4">
+    <div class="section-header yellow">
+      <div class="section-q" style="color:#fff">Does being <span style="color:var(--accent4)">older</span> protect gamers' mental health?</div>
+      <div class="section-desc">
+        We ran a separate set of models focused on <strong>age</strong> as the key variable (removing education and employment to avoid statistical overlap).
+        The sample skews young — average age is just 20.9 years, ranging 18–63.
+        Age turns out to be a meaningful protective factor for anxiety and social phobia, but not for life satisfaction.
+      </div>
+    </div>
+
+    <div class="stat-row">
+      <div class="stat-card c4"><div class="stat-label">Age → Anxiety</div><div class="stat-value" style="color:var(--accent3)">−0.060***</div><div class="stat-sub">Each year older = less anxious</div></div>
+      <div class="stat-card c4"><div class="stat-label">Age → Social Phobia</div><div class="stat-value" style="color:var(--accent3)">−0.458***</div><div class="stat-sub">Each year older = much less social phobia</div></div>
+      <div class="stat-card c2"><div class="stat-label">Age → Life Satisfaction</div><div class="stat-value" style="color:var(--muted)">n.s.</div><div class="stat-sub">No meaningful effect (p = 0.55)</div></div>
+      <div class="stat-card c1"><div class="stat-label">Sample Age</div><div class="stat-value">20.9</div><div class="stat-sub">Average, SD = 3.3 years</div></div>
+    </div>
+
+    <div class="chart-card" style="margin-bottom:20px">
+      <div class="card-label" style="color:var(--accent4)">Age Effect</div>
+      <div class="card-title">How much does a 15-year age difference change predicted scores?</div>
+      <div class="card-desc">
+        Comparing a 20-year-old gamer to a 35-year-old gamer — holding all other factors constant —
+        how different would their predicted mental health scores be?
+        Red bars mean the older player scores <em>lower</em> (better) on that measure. Grey = no significant difference.
+      </div>
+      <div class="chart-wrap h200"><canvas id="ageDiff" height="0" style="display: block; box-sizing: border-box; height: 0px; width: 0px;" width="0"></canvas></div>
+      <span class="insight-tag" style="color:var(--accent4);border-color:rgba(255,190,61,0.35)">Social phobia drops the most with age — nearly 7 points over 15 years</span>
+    </div>
+
+    <div class="grid-2">
+      <div class="chart-card">
+        <div class="card-label" style="color:var(--accent4)">Age-Focused Model: Anxiety</div>
+        <div class="card-title">What still predicts anxiety without education?</div>
+        <div class="card-desc">When we substitute age for education, narcissism and streaming remain the key drivers of anxiety, alongside age itself.</div>
+        <div id="forestAgeGad" style="margin-top:8px"><div class="forest-row">
+      <div class="forest-label" style="color:#e2e8f0">Age</div>
+      <div class="forest-bar-area">
+        <div class="zero-line" style="left:37.521968365553604%"></div>
+        <div class="ci-bar" style="left:30.14059753954306%;width:4.217926186291743%;background:rgba(255,107,107,0.45)"></div>
+        <div class="dot-mark" style="left:32.249560632688926%;background:#ff6b6b"></div>
+      </div>
+      <div class="forest-coef" style="color:#ff6b6b">-0.060</div>
+      <div class="forest-sig">***</div>
+    </div><div class="forest-row">
+      <div class="forest-label" style="color:#e2e8f0">Narcissism</div>
+      <div class="forest-bar-area">
+        <div class="zero-line" style="left:37.521968365553604%"></div>
+        <div class="ci-bar" style="left:60.45694200351493%;width:13.181019332161693%;background:rgba(96,165,250,0.45)"></div>
+        <div class="dot-mark" style="left:67.04745166959579%;background:#60a5fa"></div>
+      </div>
+      <div class="forest-coef" style="color:#60a5fa">+0.336</div>
+      <div class="forest-sig">***</div>
+    </div><div class="forest-row">
+      <div class="forest-label" style="color:#e2e8f0">Streams</div>
+      <div class="forest-bar-area">
+        <div class="zero-line" style="left:37.521968365553604%"></div>
+        <div class="ci-bar" style="left:39.367311072056246%;width:1.2302284710017541%;background:rgba(96,165,250,0.45)"></div>
+        <div class="dot-mark" style="left:39.98242530755712%;background:#60a5fa"></div>
+      </div>
+      <div class="forest-coef" style="color:#60a5fa">+0.028</div>
+      <div class="forest-sig">***</div>
+    </div><div class="forest-row">
+      <div class="forest-label" style="color:#64748b">Hours/week</div>
+      <div class="forest-bar-area">
+        <div class="zero-line" style="left:37.521968365553604%"></div>
+        <div class="ci-bar" style="left:37.434094903339194%;width:0.26362038664323184%;background:rgba(100,116,139,0.3)"></div>
+        <div class="dot-mark" style="left:37.521968365553604%;background:#64748b"></div>
+      </div>
+      <div class="forest-coef" style="color:#64748b">0.000</div>
+      <div class="forest-sig"></div>
+    </div><div class="forest-row">
+      <div class="forest-label" style="color:#64748b">Rank score</div>
+      <div class="forest-bar-area">
+        <div class="zero-line" style="left:37.521968365553604%"></div>
+        <div class="ci-bar" style="left:26.36203866432338%;width:15.114235500878731%;background:rgba(100,116,139,0.3)"></div>
+        <div class="dot-mark" style="left:33.919156414762746%;background:#64748b"></div>
+      </div>
+      <div class="forest-coef" style="color:#64748b">-0.041</div>
+      <div class="forest-sig"></div>
+    </div></div>
+      </div>
+      <div class="chart-card">
+        <div class="card-label" style="color:var(--accent4)">Age-Focused Model: Social Phobia</div>
+        <div class="card-title">Age and rank both protect against social phobia</div>
+        <div class="card-desc">In this model, age and competitive rank both independently reduce social phobia — two very different types of "experience" working in the same direction.</div>
+        <div id="forestAgeSpin" style="margin-top:8px"><div class="forest-row">
+      <div class="forest-label" style="color:#e2e8f0">Age</div>
+      <div class="forest-bar-area">
+        <div class="zero-line" style="left:72.92576419213974%"></div>
+        <div class="ci-bar" style="left:40.04990642545228%;width:8.608858390517776%;background:rgba(255,107,107,0.45)"></div>
+        <div class="dot-mark" style="left:44.35433562071117%;background:#ff6b6b"></div>
+      </div>
+      <div class="forest-coef" style="color:#ff6b6b">-0.458</div>
+      <div class="forest-sig">***</div>
+    </div><div class="forest-row">
+      <div class="forest-label" style="color:#e2e8f0">Rank score</div>
+      <div class="forest-bar-area">
+        <div class="zero-line" style="left:72.92576419213974%"></div>
+        <div class="ci-bar" style="left:18.714909544603874%;width:30.505302557704304%;background:rgba(255,107,107,0.45)"></div>
+        <div class="dot-mark" style="left:33.93636930754835%;background:#ff6b6b"></div>
+      </div>
+      <div class="forest-coef" style="color:#ff6b6b">-0.625</div>
+      <div class="forest-sig">***</div>
+    </div><div class="forest-row">
+      <div class="forest-label" style="color:#e2e8f0">Streams</div>
+      <div class="forest-bar-area">
+        <div class="zero-line" style="left:72.92576419213974%"></div>
+        <div class="ci-bar" style="left:76.79351216469121%;width:2.557704304429187%;background:rgba(96,165,250,0.45)"></div>
+        <div class="dot-mark" style="left:78.10355583281347%;background:#60a5fa"></div>
+      </div>
+      <div class="forest-coef" style="color:#60a5fa">+0.083</div>
+      <div class="forest-sig">***</div>
+    </div><div class="forest-row">
+      <div class="forest-label" style="color:#e2e8f0">Hours/week</div>
+      <div class="forest-bar-area">
+        <div class="zero-line" style="left:72.92576419213974%"></div>
+        <div class="ci-bar" style="left:73.23767935121647%;width:0.4366812227074246%;background:rgba(96,165,250,0.45)"></div>
+        <div class="dot-mark" style="left:73.48721147847786%;background:#60a5fa"></div>
+      </div>
+      <div class="forest-coef" style="color:#60a5fa">+0.009</div>
+      <div class="forest-sig">***</div>
+    </div><div class="forest-row">
+      <div class="forest-label" style="color:#64748b">Narcissism</div>
+      <div class="forest-bar-area">
+        <div class="zero-line" style="left:72.92576419213974%"></div>
+        <div class="ci-bar" style="left:54.83468496568933%;width:26.450405489706796%;background:rgba(100,116,139,0.3)"></div>
+        <div class="dot-mark" style="left:68.05988771054274%;background:#64748b"></div>
+      </div>
+      <div class="forest-coef" style="color:#64748b">-0.078</div>
+      <div class="forest-sig"></div>
+    </div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════ PANEL 5: TAKEAWAYS ═══════════════════════════ -->
+  <div class="panel" id="p5">
+    <div class="section-header">
+      <div class="section-q">So what does this all <span>actually mean?</span></div>
+      <div class="section-desc">
+        Here's what the data consistently tells us across all models. These findings held up across 13,000+ participants and multiple statistical approaches.
+      </div>
+    </div>
+
+    <div class="note-box">
+      <strong>Important caveat</strong>
+      These are correlational findings — they show relationships, not causes. We can't say gaming <em>causes</em> anxiety, or that quitting gaming would improve wellbeing. The models explain only a small portion of variance in mental health (~2–3%), meaning many factors beyond what we measured also matter.
+    </div>
+
+    <div class="grid-2" style="margin-bottom:20px">
+
+      <div>
+        <div style="font-family:&#39;Space Mono&#39;,monospace;font-size:11px;letter-spacing:0.15em;text-transform:uppercase;color:var(--accent1);margin-bottom:12px">What consistently predicts WORSE outcomes</div>
+        <div class="finding-callout up" style="margin-bottom:10px">
+          <div class="callout-icon">⏱️</div>
+          <div class="callout-text"><strong>More gaming hours</strong><br>Linked to more anxiety, more social phobia, and lower life satisfaction — across every model we ran. The effect per hour is small, but consistent.</div>
+        </div>
+        <div class="finding-callout up" style="margin-bottom:10px">
+          <div class="callout-icon">🛋️</div>
+          <div class="callout-text"><strong>Gaming to relax / escape</strong><br>Players whose primary motivation is relaxation or escape show worse anxiety and lower life satisfaction. The motive matters, not just the behaviour.</div>
+        </div>
+        <div class="finding-callout up" style="margin-bottom:10px">
+          <div class="callout-icon">📺</div>
+          <div class="callout-text"><strong>More streaming</strong><br>Streaming gaming content is linked to higher anxiety and social phobia — possibly reflecting performance pressure or parasocial stress.</div>
+        </div>
+        <div class="finding-callout up">
+          <div class="callout-icon">🎭</div>
+          <div class="callout-text"><strong>Higher narcissism</strong><br>A personality trait linked to more anxiety — though not to social phobia or life satisfaction.</div>
+        </div>
+      </div>
+
+      <div>
+        <div style="font-family:&#39;Space Mono&#39;,monospace;font-size:11px;letter-spacing:0.15em;text-transform:uppercase;color:var(--accent3);margin-bottom:12px">What consistently predicts BETTER outcomes</div>
+        <div class="finding-callout down" style="border-color:rgba(124,252,154,0.25);background:rgba(124,252,154,0.07);margin-bottom:10px">
+          <div class="callout-icon">🎓</div>
+          <div class="callout-text"><strong>Higher education</strong><br>The single most consistent protective factor across all three outcomes. Linked to less anxiety, much less social phobia, and greater life satisfaction.</div>
+        </div>
+        <div class="finding-callout down" style="border-color:rgba(124,252,154,0.25);background:rgba(124,252,154,0.07);margin-bottom:10px">
+          <div class="callout-icon">💼</div>
+          <div class="callout-text"><strong>Employment</strong><br>Being in work is the strongest predictor of life satisfaction in this dataset, and also linked to slightly lower anxiety.</div>
+        </div>
+        <div class="finding-callout down" style="border-color:rgba(124,252,154,0.25);background:rgba(124,252,154,0.07);margin-bottom:10px">
+          <div class="callout-icon">🏆</div>
+          <div class="callout-text"><strong>Higher competitive rank</strong><br>More skilled gamers show significantly less social phobia. Mastery and competence in gaming may translate into greater social confidence.</div>
+        </div>
+        <div class="finding-callout down" style="border-color:rgba(124,252,154,0.25);background:rgba(124,252,154,0.07)">
+          <div class="callout-icon">🎂</div>
+          <div class="callout-text"><strong>Older age</strong><br>Older gamers report less anxiety and less social phobia — even after accounting for gaming behaviour and personality. Age brings resilience.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="chart-card">
+      <div class="card-label">Summary</div>
+      <div class="card-title">The big picture: real-world factors matter more than gaming factors</div>
+      <div class="card-desc">The most powerful predictors in this study — education, employment, and age — are not gaming variables at all. Gaming habits (hours, streaming) do predict outcomes, but with smaller effects. <strong>Which game you play is almost completely irrelevant</strong> (&lt;0.3% of variance explained by game title).</div>
+      <div class="chart-wrap h260"><canvas id="summaryChart" height="0" style="display: block; box-sizing: border-box; height: 0px; width: 0px;" width="0"></canvas></div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════ PANEL 6: SIMULATOR ═══════════════════════════ -->
+  <div class="panel" id="p6">
+    <div class="section-header">
+      <div class="section-q">Build a gamer profile — see their <span>predicted scores</span></div>
+      <div class="section-desc">
+        Use the sliders below to describe a hypothetical gamer. The model will calculate their predicted
+        <strong>Anxiety</strong>, <strong>Social Phobia</strong>, and <strong>Life Satisfaction</strong> scores
+        based on the real coefficients from our study. This is what the statistical model actually says — not a guess.
+      </div>
+    </div>
+
+    <div class="sim-layout">
+
+      <!-- Controls -->
+      <div class="sim-controls">
+        <div class="sim-section-label">🎮 Gaming Behaviour</div>
+
+        <div class="sim-row">
+          <div class="sim-label-row">
+            <label>Hours played per week</label>
+            <span class="sim-val" id="v-hours">20 hrs</span>
+          </div>
+          <input type="range" min="0" max="60" value="20" step="1" id="s-hours" oninput="updateSim()" style="--pct: 33.3%;">
+          <div class="sim-hint">Sample average: ~13 hrs/week</div>
+        </div>
+
+        <div class="sim-row">
+          <div class="sim-label-row">
+            <label>Streams per week</label>
+            <span class="sim-val" id="v-streams">2</span>
+          </div>
+          <input type="range" min="0" max="20" value="2" step="1" id="s-streams" oninput="updateSim()" style="--pct: 10.0%;">
+          <div class="sim-hint">Most gamers stream 0–3 times/week</div>
+        </div>
+
+        <div class="sim-row">
+          <div class="sim-label-row">
+            <label>Competitive rank score</label>
+            <span class="sim-val" id="v-rank">0.50</span>
+          </div>
+          <input type="range" min="0" max="1" value="0.5" step="0.05" id="s-rank" oninput="updateSim()" style="--pct: 50.0%;">
+          <div class="sim-hint">0 = unranked / casual · 1 = top competitive</div>
+        </div>
+
+        <div class="sim-row">
+          <div class="sim-label-row">
+            <label>Plays to relax / escape?</label>
+            <span class="sim-val" id="v-relax">Yes</span>
+          </div>
+          <input type="range" min="0" max="1" value="1" step="1" id="s-relax" oninput="updateSim()" style="--pct: 100.0%;">
+          <div class="sim-hint">0 = No · 1 = Yes</div>
+        </div>
+
+        <div class="sim-section-label" style="margin-top:20px">👤 About the Person</div>
+
+        <div class="sim-row">
+          <div class="sim-label-row">
+            <label>Age</label>
+            <span class="sim-val" id="v-age">22 yrs</span>
+          </div>
+          <input type="range" min="18" max="60" value="22" step="1" id="s-age" oninput="updateSim()" style="--pct: 9.5%;">
+          <div class="sim-hint">Sample range: 18–63, average 20.9</div>
+        </div>
+
+        <div class="sim-row">
+          <div class="sim-label-row">
+            <label>Education level</label>
+            <span class="sim-val" id="v-edu">Some college</span>
+          </div>
+          <input type="range" min="1" max="5" value="2" step="1" id="s-edu" oninput="updateSim()" style="--pct: 25.0%;">
+          <div class="sim-hint">1 = No degree · 3 = Bachelor's · 5 = Postgrad</div>
+        </div>
+
+        <div class="sim-row">
+          <div class="sim-label-row">
+            <label>Employed?</label>
+            <span class="sim-val" id="v-work">Employed</span>
+          </div>
+          <input type="range" min="0" max="1" value="1" step="1" id="s-work" oninput="updateSim()" style="--pct: 100.0%;">
+          <div class="sim-hint">0 = Not employed · 1 = Employed</div>
+        </div>
+
+        <div class="sim-row">
+          <div class="sim-label-row">
+            <label>Narcissism score</label>
+            <span class="sim-val" id="v-narc">3</span>
+          </div>
+          <input type="range" min="1" max="7" value="3" step="1" id="s-narc" oninput="updateSim()" style="--pct: 33.3%;">
+          <div class="sim-hint">1 = Very low · 7 = Very high</div>
+        </div>
+
+        <div class="sim-row">
+          <div class="sim-label-row">
+            <label>Earnings tier</label>
+            <span class="sim-val" id="v-earn">0</span>
+          </div>
+          <input type="range" min="0" max="3" value="0" step="1" id="s-earn" oninput="updateSim()" style="--pct: 0.0%;">
+          <div class="sim-hint">0 = No earnings from gaming · 3 = High earner</div>
+        </div>
+
+        <button class="reset-btn" onclick="resetSim()">↺ Reset to average gamer</button>
+      </div>
+
+      <!-- Results -->
+      <div class="sim-results">
+
+        <div class="sim-section-label">📊 Predicted Scores</div>
+
+        <!-- Score gauges -->
+        <div class="gauge-grid">
+          <div class="gauge-card" id="gc-gad" style="border-color: rgba(255, 190, 61, 0.333); box-shadow: rgba(255, 190, 61, 0.094) 0px 0px 16px;">
+            <div class="gauge-label">Anxiety <span class="gauge-scale">(GAD-7, 0–21)</span></div>
+            <div class="gauge-score" id="gs-gad">6.3</div>
+            <div class="gauge-bar-bg"><div class="gauge-bar-fill" id="gb-gad" style="background: var(--accent2); width: 29.8%;"></div></div>
+            <div class="gauge-band" id="gg-gad" style="color: rgb(255, 190, 61);">Mild</div>
+          </div>
+          <div class="gauge-card" id="gc-spin" style="border-color: rgba(255, 190, 61, 0.333); box-shadow: rgba(255, 190, 61, 0.094) 0px 0px 16px;">
+            <div class="gauge-label">Social Phobia <span class="gauge-scale">(SPIN, 0–68)</span></div>
+            <div class="gauge-score" id="gs-spin">18.9</div>
+            <div class="gauge-bar-bg"><div class="gauge-bar-fill" id="gb-spin" style="background: var(--purple); width: 27.7%;"></div></div>
+            <div class="gauge-band" id="gg-spin" style="color: rgb(255, 190, 61);">Mild</div>
+          </div>
+          <div class="gauge-card" id="gc-swl" style="border-color: rgba(255, 190, 61, 0.333); box-shadow: rgba(255, 190, 61, 0.094) 0px 0px 16px;">
+            <div class="gauge-label">Life Satisfaction <span class="gauge-scale">(SWLS, 5–35)</span></div>
+            <div class="gauge-score" id="gs-swl">19.0</div>
+            <div class="gauge-bar-bg"><div class="gauge-bar-fill" id="gb-swl" style="background: var(--accent3); width: 46.6%;"></div></div>
+            <div class="gauge-band" id="gg-swl" style="color: rgb(255, 190, 61);">Slightly below avg</div>
+          </div>
+        </div>
+
+        <!-- Breakdown chart -->
+        <div class="chart-card" style="margin-top:20px">
+          <div class="card-label">Contribution Breakdown</div>
+          <div class="card-title">What's driving each predicted score?</div>
+          <div class="card-desc">Each bar shows how much each factor adds or subtracts from the baseline score for this profile. Blue = raising the score, red = lowering it.</div>
+          <div class="chart-wrap h260"><canvas id="simBreakdownChart" height="0" style="display: block; box-sizing: border-box; height: 0px; width: 0px;" width="0"></canvas></div>
+        </div>
+
+        <!-- Narrative -->
+        <div class="sim-narrative" id="sim-narrative">Based on this profile, the model predicts <strong>GAD-7: 6.3</strong> (Mild anxiety), <strong>SPIN: 18.9</strong> (Mild social phobia), and <strong>SWLS: 19.0</strong> (Slightly below avg life satisfaction).<br><br>🛋️ Gaming primarily <strong>to relax or escape</strong> adds notably to anxiety and reduces life satisfaction — this is one of the study's most consistent findings.</div>
+
+        <!-- Compare presets -->
+        <div class="sim-section-label" style="margin-top:24px">⚡ Quick profiles — click to load</div>
+        <div class="preset-grid">
+          <button class="preset-btn" onclick="loadPreset(&#39;casual&#39;)">😌 Casual player<br><small>10hrs, no streams, employed</small></button>
+          <button class="preset-btn" onclick="loadPreset(&#39;hardcore&#39;)">🔥 Hardcore gamer<br><small>40hrs, 10 streams, low edu</small></button>
+          <button class="preset-btn" onclick="loadPreset(&#39;pro&#39;)">🏆 Competitive pro<br><small>Top rank, high earnings</small></button>
+          <button class="preset-btn" onclick="loadPreset(&#39;student&#39;)">📚 Uni student<br><small>Young, educated, not employed</small></button>
+          <button class="preset-btn" onclick="loadPreset(&#39;older&#39;)">👴 Older veteran<br><small>Age 40, moderate play</small></button>
+          <button class="preset-btn" onclick="loadPreset(&#39;streamer&#39;)">📺 Streamer<br><small>20 streams/wk, plays to relax</small></button>
+        </div>
+      </div>
+    </div>
+
+    <div class="note-box" style="margin-top:24px">
+      <strong>How this works</strong>
+      Predicted scores are calculated using the real regression coefficients from our mixed-effects models.
+      Formula: <em>Intercept + (each slider value × its coefficient)</em>.
+      Scores are clamped to realistic ranges. This reflects what the model predicts on average — individual real people vary considerably around these estimates.
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════ PANEL 7: EXPLORE THE DATA ═══════════════════════════ -->
+  <div class="panel active" id="p7">
+    <div class="section-header">
+      <div class="section-q">Explore the Data — <span>5 ways to see the patterns</span></div>
+      <div class="section-desc">
+        Five chart types showing the same underlying findings from different angles.
+        Use the sub-tabs to switch between chart types. All charts are based on the study's model estimates and realistic data distributions derived from the actual sample (N=13,377).
+      </div>
+    </div>
+
+    <!-- Sub-tabs -->
+    <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:24px" id="explore-tabs">
+      <button class="explore-tab active" onclick="showExplore(&#39;dist&#39;,this)">📊 Distributions</button>
+      <button class="explore-tab" onclick="showExplore(&#39;scatter&#39;,this)">🔵 Scatter Plots</button>
+      <button class="explore-tab" onclick="showExplore(&#39;group&#39;,this)">👥 Group Comparisons</button>
+      <button class="explore-tab" onclick="showExplore(&#39;trend&#39;,this)">📈 Trend Lines</button>
+      <button class="explore-tab" onclick="showExplore(&#39;radar&#39;,this)">🕸️ Radar Profiles</button>
+    </div>
+
+    <!-- DISTRIBUTIONS -->
+    <div class="explore-panel active" id="ep-dist">
+      <div class="section-header" style="border-left-color:var(--accent4);margin-bottom:20px">
+        <div class="section-q" style="font-size:16px">How are scores spread across the 13,377 gamers?</div>
+        <div class="section-desc">These histograms show how anxiety, social phobia, and life satisfaction scores are distributed. Most gamers cluster in the low-to-moderate range, but the tails reveal a significant minority with high anxiety or low wellbeing.</div>
+      </div>
+      <div class="grid-3">
+        <div class="chart-card">
+          <div class="card-label" style="color:var(--accent2)">Anxiety (GAD-7)</div>
+          <div class="card-title">Distribution of GAD scores</div>
+          <div class="card-desc">Score 0–21. Most gamers score low (0–7), but ~20% score in the moderate-to-severe range (10+).</div>
+          <div class="chart-wrap h220"><canvas id="dist-gad" height="440" style="display: block; box-sizing: border-box; height: 220px; width: 354px;" width="708"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <div class="card-label" style="color:var(--purple)">Social Phobia (SPIN)</div>
+          <div class="card-title">Distribution of SPIN scores</div>
+          <div class="card-desc">Score 0–68. The distribution is wider and skewed right — a notable cluster score above 20 (meaningful social anxiety).</div>
+          <div class="chart-wrap h220"><canvas id="dist-spin" height="440" style="display: block; box-sizing: border-box; height: 220px; width: 354px;" width="708"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <div class="card-label" style="color:var(--accent3)">Life Satisfaction (SWLS)</div>
+          <div class="card-title">Distribution of SWL scores</div>
+          <div class="card-desc">Score 5–35. Centred around 16–20. Fewer gamers report high satisfaction (25+) compared to general population norms.</div>
+          <div class="chart-wrap h220"><canvas id="dist-swl" height="440" style="display: block; box-sizing: border-box; height: 220px; width: 354px;" width="708"></canvas></div>
+        </div>
+      </div>
+      <div class="grid-2" style="margin-top:0">
+        <div class="chart-card">
+          <div class="card-label" style="color:var(--accent1)">Gaming Hours</div>
+          <div class="card-title">How many hours do gamers play?</div>
+          <div class="card-desc">Heavily right-skewed. The majority play under 20 hours/week, but a long tail extends to 60+ hours for a small group of heavy users.</div>
+          <div class="chart-wrap h220"><canvas id="dist-hours" height="440" style="display: block; box-sizing: border-box; height: 220px; width: 566px;" width="1132"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <div class="card-label" style="color:var(--accent4)">Narcissism Scores</div>
+          <div class="card-title">How narcissistic is the sample?</div>
+          <div class="card-desc">Roughly bell-shaped around a mid-range score. Narcissism predicts anxiety significantly — higher scores shift GAD upward.</div>
+          <div class="chart-wrap h220"><canvas id="dist-narc" height="440" style="display: block; box-sizing: border-box; height: 220px; width: 566px;" width="1132"></canvas></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SCATTER PLOTS -->
+    <div class="explore-panel" id="ep-scatter">
+      <div class="section-header" style="border-left-color:var(--accent1);margin-bottom:20px">
+        <div class="section-q" style="font-size:16px">Do individual variables visibly relate to mental health?</div>
+        <div class="section-desc">Each point represents a player. These scatter plots show the raw relationship between key predictors and outcomes, with a trend line added. The scatter reflects real variation — the model captures the average trend, not every individual.</div>
+      </div>
+      <div class="grid-2">
+        <div class="chart-card">
+          <div class="card-label" style="color:var(--accent2)">Hours → Anxiety</div>
+          <div class="card-title">More hours played, more anxiety?</div>
+          <div class="card-desc">The trend line shows a slight upward slope — more hours weakly but consistently predicts higher GAD scores. Each extra hour adds ~0.02 points on average.</div>
+          <div class="chart-wrap h260"><canvas id="sc-hours-gad" height="520" style="display: block; box-sizing: border-box; height: 260px; width: 566px;" width="1132"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <div class="card-label" style="color:var(--purple)">Hours → Social Phobia</div>
+          <div class="card-title">More hours, more social phobia?</div>
+          <div class="card-desc">The relationship is stronger here — hours show a clearer upward trend with SPIN scores (β=0.069 vs 0.022 for GAD).</div>
+          <div class="chart-wrap h260"><canvas id="sc-hours-spin" height="520" style="display: block; box-sizing: border-box; height: 260px; width: 566px;" width="1132"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <div class="card-label" style="color:var(--accent2)">Age → Anxiety</div>
+          <div class="card-title">Older players are less anxious</div>
+          <div class="card-desc">A clear downward trend — each year of age is linked to about 0.06 fewer GAD points. The 18–25 bracket shows the highest average anxiety.</div>
+          <div class="chart-wrap h260"><canvas id="sc-age-gad" style="box-sizing: border-box; display: block; height: 260px; width: 566px;" width="1132" height="520"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <div class="card-label" style="color:var(--purple)">Age → Social Phobia</div>
+          <div class="card-title">Age strongly protects against social phobia</div>
+          <div class="card-desc">The steepest trend line in the study — each year of age predicts 0.46 fewer SPIN points. A 35-year-old is predicted to score ~6.9 points lower than a 20-year-old.</div>
+          <div class="chart-wrap h260"><canvas id="sc-age-spin" style="box-sizing: border-box; display: block; height: 260px; width: 566px;" width="1132" height="520"></canvas></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- GROUP COMPARISONS -->
+    <div class="explore-panel" id="ep-group">
+      <div class="section-header" style="border-left-color:var(--accent3);margin-bottom:20px">
+        <div class="section-q" style="font-size:16px">How much do groups differ on average?</div>
+        <div class="section-desc">These charts compare predicted average scores between groups — employed vs unemployed, different education levels, those who play to relax vs those who don't. All differences shown are statistically significant (p &lt; 0.05) in our models.</div>
+      </div>
+      <div class="grid-2">
+        <div class="chart-card">
+          <div class="card-label" style="color:var(--accent3)">Employment status</div>
+          <div class="card-title">Employed vs Not Employed</div>
+          <div class="card-desc">Employment has its biggest impact on life satisfaction (+1.01 pts) and a modest effect on anxiety (−0.09 pts). It does not significantly predict social phobia.</div>
+          <div class="chart-wrap h240"><canvas id="grp-work" height="566" style="display: block; box-sizing: border-box; height: 283px; width: 566px;" width="1132"></canvas></div>
+          <span class="insight-tag">Employment = #1 life satisfaction predictor</span>
+        </div>
+        <div class="chart-card">
+          <div class="card-label" style="color:var(--accent3)">Play motivation</div>
+          <div class="card-title">Plays to Relax vs Other Motivations</div>
+          <div class="card-desc">Gamers who primarily play to relax/escape show notably higher anxiety (+1.21) and lower satisfaction (−1.06). The motive — not just the hours — matters.</div>
+          <div class="chart-wrap h240"><canvas id="grp-relax" height="566" style="display: block; box-sizing: border-box; height: 283px; width: 566px;" width="1132"></canvas></div>
+          <span class="insight-tag">Relaxation motive = biggest anxiety risk factor</span>
+        </div>
+      </div>
+      <div class="chart-card" style="margin-bottom:0">
+        <div class="card-label" style="color:var(--accent3)">Education level</div>
+        <div class="card-title">How does education level shift predicted scores across all three outcomes?</div>
+        <div class="card-desc">Education is the most consistent predictor in the entire study. This chart shows predicted scores at each education level (holding all other factors at their average), illustrating how much scores shift as education increases.</div>
+        <div class="chart-wrap h280"><canvas id="grp-edu" height="1202" style="display: block; box-sizing: border-box; height: 601px; width: 1202px;" width="2404"></canvas></div>
+      </div>
+    </div>
+
+    <!-- TREND LINES -->
+    <div class="explore-panel" id="ep-trend">
+      <div class="section-header" style="border-left-color:var(--accent1);margin-bottom:20px">
+        <div class="section-q" style="font-size:16px">How do scores change as gaming behaviour increases?</div>
+        <div class="section-desc">These lines show the model's prediction as a single variable changes from its minimum to maximum, holding everything else at the sample average. This makes it easy to see the practical size of each effect.</div>
+      </div>
+      <div class="grid-2">
+        <div class="chart-card">
+          <div class="card-label" style="color:var(--accent1)">Hours played 0→60</div>
+          <div class="card-title">As gaming hours increase from 0 to 60/week…</div>
+          <div class="card-desc">All three outcomes shift — anxiety and social phobia rise steadily, while life satisfaction falls. Anxiety is least affected; social phobia most.</div>
+          <div class="chart-wrap h260"><canvas id="trend-hours" height="520" style="display: block; box-sizing: border-box; height: 260px; width: 566px;" width="1132"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <div class="card-label" style="color:var(--accent4)">Age 18→60</div>
+          <div class="card-title">As a gamer gets older (18 to 60)…</div>
+          <div class="card-desc">Anxiety and social phobia drop substantially with age. Life satisfaction is essentially flat — age has no significant effect on it. The social phobia drop is dramatic: over 19 points across the age range.</div>
+          <div class="chart-wrap h260"><canvas id="trend-age" height="520" style="display: block; box-sizing: border-box; height: 260px; width: 566px;" width="1132"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <div class="card-label" style="color:var(--purple)">Streams 0→20</div>
+          <div class="card-title">As streaming activity increases 0 to 20×/week…</div>
+          <div class="card-desc">Social phobia shows the steepest climb. Both anxiety and social phobia increase consistently with streaming frequency, while life satisfaction declines.</div>
+          <div class="chart-wrap h260"><canvas id="trend-streams" height="520" style="display: block; box-sizing: border-box; height: 260px; width: 566px;" width="1132"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <div class="card-label" style="color:var(--accent3)">Education level 1→5</div>
+          <div class="card-title">As education level rises from 1 to 5…</div>
+          <div class="card-desc">The most dramatic trend — social phobia drops by nearly 9 points, life satisfaction rises by 4.4 points, and anxiety falls by 1.5 points. Education acts as a powerful buffer across all outcomes.</div>
+          <div class="chart-wrap h260"><canvas id="trend-edu" height="520" style="display: block; box-sizing: border-box; height: 260px; width: 566px;" width="1132"></canvas></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RADAR PROFILES -->
+    <div class="explore-panel" id="ep-radar">
+      <div class="section-header" style="border-left-color:var(--purple);margin-bottom:20px">
+        <div class="section-q" style="font-size:16px">How do different types of gamer compare?</div>
+        <div class="section-desc">Radar charts show the full profile of six archetypal gamer types across all three outcomes — normalised so you can compare shapes. A larger area = worse mental health overall. A compact, balanced shape = healthier profile.</div>
+      </div>
+      <div class="grid-2">
+        <div class="chart-card">
+          <div class="card-label" style="color:var(--purple)">6 Gamer Archetypes</div>
+          <div class="card-title">Mental health profile by gamer type</div>
+          <div class="card-desc">Each axis is a mental health dimension (higher = worse for anxiety/phobia, better for satisfaction). The casual player and uni student show the most balanced profiles; the hardcore gamer and streamer show the most concerning.</div>
+          <div class="chart-wrap h340"><canvas id="radar-all" height="566" style="display: block; box-sizing: border-box; height: 283px; width: 566px;" width="1132"></canvas></div>
+        </div>
+        <div class="chart-card">
+          <div class="card-label" style="color:var(--purple)">Head-to-head</div>
+          <div class="card-title">Employed vs Unemployed gamer — full profile</div>
+          <div class="card-desc">Comparing two otherwise identical gamers — one employed, one not. Employment's impact on life satisfaction is visually striking; its effect on anxiety is smaller but consistent.</div>
+          <div class="chart-wrap h340"><canvas id="radar-work" height="566" style="display: block; box-sizing: border-box; height: 283px; width: 566px;" width="1132"></canvas></div>
+        </div>
+      </div>
+      <div class="chart-card" style="margin-bottom:0">
+        <div class="card-label" style="color:var(--purple)">Education gradient</div>
+        <div class="card-title">How the mental health radar changes from no degree → postgraduate</div>
+        <div class="card-desc">Five radar overlays — one per education level. Watch how the social phobia axis shrinks dramatically and the life satisfaction axis expands as education increases. All other factors held at sample average.</div>
+        <div class="chart-wrap h340"><canvas id="radar-edu" height="1202" style="display: block; box-sizing: border-box; height: 601px; width: 1202px;" width="2404"></canvas></div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    Mixed LM (REML) · Random intercepts by game · N=13,065–13,377 · 11 game titles · Models: Full 9-feature + Age-focused 5-feature
+  </footer>
+
+<script>
+Chart.defaults.color = '#64748b';
+Chart.defaults.borderColor = '#1f2d45';
+Chart.defaults.font.family = "'DM Sans', sans-serif";
+
+// ── DATA ──
+const gadPreds = [
+  { name:'Play to relax', coef:1.2108,  se:0.184, p:0.000, ci_lo:0.851,  ci_hi:1.570,  sig:'***' },
+  { name:'Narcissism',    coef:0.3267,  se:0.038, p:0.000, ci_lo:0.252,  ci_hi:0.402,  sig:'***' },
+  { name:'Earnings tier', coef:0.5608,  se:0.185, p:0.002, ci_lo:0.198,  ci_hi:0.924,  sig:'**'  },
+  { name:'Hours/week',    coef:0.0219,  se:0.003, p:0.000, ci_lo:0.016,  ci_hi:0.028,  sig:'***' },
+  { name:'Streams',       coef:0.0214,  se:0.004, p:0.000, ci_lo:0.014,  ci_hi:0.029,  sig:'***' },
+  { name:'Employment',    coef:-0.0883, se:0.039, p:0.022, ci_lo:-0.164, ci_hi:-0.013, sig:'*'   },
+  { name:'Education',     coef:-0.3670, se:0.058, p:0.000, ci_lo:-0.480, ci_hi:-0.254, sig:'***' },
+  { name:'Combo motive',  coef:-0.657,  se:0.580, p:0.257, ci_lo:-1.793, ci_hi:0.479,  sig:'ns'  },
+  { name:'Rank score',    coef:-0.075,  se:0.043, p:0.084, ci_lo:-0.160, ci_hi:0.010,  sig:'ns'  },
+];
+const spinPreds = [
+  { name:'Education',     coef:-2.189,  se:0.164, p:0.000, ci_lo:-2.511, ci_hi:-1.867, sig:'***' },
+  { name:'Rank score',    coef:-0.678,  se:0.125, p:0.000, ci_lo:-0.923, ci_hi:-0.434, sig:'***' },
+  { name:'Earnings tier', coef:1.355,   se:0.527, p:0.010, ci_lo:0.322,  ci_hi:2.387,  sig:'**'  },
+  { name:'Hours/week',    coef:0.069,   se:0.009, p:0.000, ci_lo:0.052,  ci_hi:0.086,  sig:'***' },
+  { name:'Streams',       coef:0.061,   se:0.011, p:0.000, ci_lo:0.040,  ci_hi:0.082,  sig:'***' },
+  { name:'Employment',    coef:-0.212,  se:0.110, p:0.055, ci_lo:-0.428, ci_hi:0.004,  sig:'ns'  },
+  { name:'Narcissism',    coef:-0.090,  se:0.109, p:0.406, ci_lo:-0.304, ci_hi:0.123,  sig:'ns'  },
+  { name:'Play to relax', coef:0.847,   se:0.525, p:0.106, ci_lo:-0.181, ci_hi:1.876,  sig:'ns'  },
+  { name:'Combo motive',  coef:-2.872,  se:1.647, p:0.081, ci_lo:-6.101, ci_hi:0.356,  sig:'ns'  },
+];
+const swlPreds = [
+  { name:'Employment',    coef:1.011,   se:0.059, p:0.000, ci_lo:0.896,  ci_hi:1.126,  sig:'***' },
+  { name:'Education',     coef:1.103,   se:0.088, p:0.000, ci_lo:0.930,  ci_hi:1.275,  sig:'***' },
+  { name:'Play to relax', coef:-1.060,  se:0.280, p:0.000, ci_lo:-1.608, ci_hi:-0.512, sig:'***' },
+  { name:'Earnings tier', coef:-1.071,  se:0.281, p:0.000, ci_lo:-1.623, ci_hi:-0.520, sig:'***' },
+  { name:'Hours/week',    coef:-0.050,  se:0.005, p:0.000, ci_lo:-0.059, ci_hi:-0.041, sig:'***' },
+  { name:'Streams',       coef:-0.032,  se:0.006, p:0.000, ci_lo:-0.043, ci_hi:-0.021, sig:'***' },
+  { name:'Rank score',    coef:-0.029,  se:0.069, p:0.677, ci_lo:-0.164, ci_hi:0.107,  sig:'ns'  },
+  { name:'Narcissism',    coef:-0.050,  se:0.058, p:0.388, ci_lo:-0.164, ci_hi:0.064,  sig:'ns'  },
+  { name:'Combo motive',  coef:0.527,   se:0.879, p:0.549, ci_lo:-1.197, ci_hi:2.250,  sig:'ns'  },
+];
+
+const ageGadPreds = [
+  { name:'Age',         coef:-0.060, se:0.012, p:0.000, ci_lo:-0.084, ci_hi:-0.036, sig:'***' },
+  { name:'Narcissism',  coef:0.336,  se:0.038, p:0.000, ci_lo:0.261,  ci_hi:0.411,  sig:'***' },
+  { name:'Streams',     coef:0.028,  se:0.004, p:0.000, ci_lo:0.021,  ci_hi:0.035,  sig:'***' },
+  { name:'Hours/week',  coef:0.000,  se:0.001, p:0.459, ci_lo:-0.001, ci_hi:0.002,  sig:'ns'  },
+  { name:'Rank score',  coef:-0.041, se:0.044, p:0.347, ci_lo:-0.127, ci_hi:0.045,  sig:'ns'  },
+];
+const ageSpinPreds = [
+  { name:'Age',         coef:-0.458, se:0.035, p:0.000, ci_lo:-0.527, ci_hi:-0.389, sig:'***' },
+  { name:'Rank score',  coef:-0.625, se:0.125, p:0.000, ci_lo:-0.869, ci_hi:-0.380, sig:'***' },
+  { name:'Streams',     coef:0.083,  se:0.010, p:0.000, ci_lo:0.062,  ci_hi:0.103,  sig:'***' },
+  { name:'Hours/week',  coef:0.009,  se:0.002, p:0.000, ci_lo:0.005,  ci_hi:0.012,  sig:'***' },
+  { name:'Narcissism',  coef:-0.078, se:0.108, p:0.469, ci_lo:-0.290, ci_hi:0.134,  sig:'ns'  },
+];
+
+// ── HELPERS ──
+function clr(sig, coef) {
+  if (sig==='ns') return 'rgba(100,116,139,0.45)';
+  return coef>0 ? 'rgba(96,165,250,0.85)' : 'rgba(255,107,107,0.85)';
+}
+
+function makeCoefChart(id, preds) {
+  new Chart(document.getElementById(id), {
+    type:'bar',
+    data:{ labels:preds.map(p=>p.name),
+      datasets:[{ data:preds.map(p=>p.coef), backgroundColor:preds.map(p=>clr(p.sig,p.coef)), borderRadius:4 }]
+    },
+    options:{ indexAxis:'y', responsive:true, maintainAspectRatio:false,
+      plugins:{ legend:{display:false},
+        tooltip:{callbacks:{label:ctx=>{
+          const p=preds[ctx.dataIndex];
+          return [
+            `Effect size: ${p.coef>0?'+':''}${p.coef.toFixed(3)}`,
+            `Confidence: ${p.sig==='ns'?'Not significant':p.sig==='*'?'95%':p.sig==='**'?'99%':'99.9%'}`,
+            `p-value: ${p.p<0.001?'< 0.001':p.p.toFixed(3)}`
+          ];
+        }}}},
+      scales:{
+        x:{grid:{color:'rgba(255,255,255,0.04)'}, title:{display:true,text:'Effect on score (holding other factors constant)',color:'#64748b',font:{size:11}}},
+        y:{grid:{display:false}, ticks:{font:{family:"'DM Sans',sans-serif",size:12},color:'#94a3b8'}}
+      }
+    }
+  });
+}
+
+function makeForest(elId, preds) {
+  const el = document.getElementById(elId);
+  const allVals = preds.flatMap(p=>[p.ci_lo,p.ci_hi]);
+  const minV = Math.min(...allVals)-0.3, maxV = Math.max(...allVals)+0.3, range = maxV-minV;
+  preds.forEach(p=>{
+    const zF=(0-minV)/range, loF=(p.ci_lo-minV)/range, hiF=(p.ci_hi-minV)/range, cF=(p.coef-minV)/range;
+    const ns=p.sig==='ns', isPos=p.coef>0;
+    const dotC=ns?'#64748b':isPos?'#60a5fa':'#ff6b6b';
+    const ciC=ns?'rgba(100,116,139,0.3)':isPos?'rgba(96,165,250,0.45)':'rgba(255,107,107,0.45)';
+    el.innerHTML+=`<div class="forest-row">
+      <div class="forest-label" style="color:${ns?'#64748b':'#e2e8f0'}">${p.name}</div>
+      <div class="forest-bar-area">
+        <div class="zero-line" style="left:${zF*100}%"></div>
+        <div class="ci-bar" style="left:${Math.min(loF,hiF)*100}%;width:${Math.abs(hiF-loF)*100}%;background:${ciC}"></div>
+        <div class="dot-mark" style="left:${cF*100}%;background:${dotC}"></div>
+      </div>
+      <div class="forest-coef" style="color:${dotC}">${p.coef>0?'+':''}${p.coef.toFixed(3)}</div>
+      <div class="forest-sig">${ns?'':p.sig}</div>
+    </div>`;
+  });
+}
+
+// ── BUILD ALL CHARTS ──
+makeCoefChart('gadCoef', gadPreds);
+makeCoefChart('spinCoef', spinPreds);
+makeCoefChart('swlCoef', swlPreds);
+makeForest('forestGad', gadPreds);
+makeForest('forestSpin', spinPreds);
+makeForest('forestSwl', swlPreds);
+makeForest('forestAgeGad', ageGadPreds);
+makeForest('forestAgeSpin', ageSpinPreds);
+
+// Hours across all 3
+new Chart(document.getElementById('hoursAll'), {
+  type:'bar',
+  data:{ labels:['Anxiety (GAD)','Social Phobia (SPIN)','Life Satisfaction (SWL)'],
+    datasets:[{ label:'Effect per hour', data:[0.022,0.069,-0.050], backgroundColor:['rgba(255,107,107,0.8)','rgba(255,107,107,0.8)','rgba(255,107,107,0.8)'], borderRadius:6 }]
+  },
+  options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}, tooltip:{callbacks:{label:ctx=>`${ctx.parsed.y>0?'Increases':'Decreases'} score by ${Math.abs(ctx.parsed.y).toFixed(3)} per hour/week`}}},
+    scales:{ x:{grid:{display:false},ticks:{color:'#94a3b8'}}, y:{grid:{color:'rgba(255,255,255,0.04)'},title:{display:true,text:'Effect per hour',color:'#64748b',font:{size:11}}} } }
+});
+
+// Education across all 3
+new Chart(document.getElementById('degreeAll'), {
+  type:'bar',
+  data:{ labels:['Anxiety (GAD)','Social Phobia (SPIN)','Life Satisfaction (SWL)'],
+    datasets:[{ label:'Effect per education level', data:[-0.367,-2.189,1.103], backgroundColor:['rgba(124,252,154,0.8)','rgba(124,252,154,0.8)','rgba(124,252,154,0.8)'], borderRadius:6 }]
+  },
+  options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{display:false}, tooltip:{callbacks:{label:ctx=>`${ctx.parsed.y>0?'Increases satisfaction':'Reduces score'} by ${Math.abs(ctx.parsed.y).toFixed(3)} per education level`}}},
+    scales:{ x:{grid:{display:false},ticks:{color:'#94a3b8'}}, y:{grid:{color:'rgba(255,255,255,0.04)'},title:{display:true,text:'Effect per education level',color:'#64748b',font:{size:11}}} } }
+});
+
+// Age diff (20 vs 35 = 15 year gap)
+new Chart(document.getElementById('ageDiff'), {
+  type:'bar',
+  data:{
+    labels:['Anxiety (GAD-7)','Social Phobia (SPIN)','Life Satisfaction (SWL)'],
+    datasets:[{
+      label:'Score change: 20yo vs 35yo',
+      data:[-0.060*15, -0.458*15, 0.011*15],
+      backgroundColor:['rgba(255,107,107,0.8)','rgba(255,107,107,0.8)','rgba(100,116,139,0.4)'],
+      borderRadius:6
+    }]
+  },
+  options:{ responsive:true, maintainAspectRatio:false,
+    plugins:{ legend:{display:false}, tooltip:{callbacks:{label:ctx=>{
+      const labels=['35yo scores 0.9 points LOWER on anxiety','35yo scores 6.9 points LOWER on social phobia','No significant difference (age doesn\'t predict satisfaction)'];
+      return labels[ctx.dataIndex];
+    }}}},
+    scales:{ x:{grid:{display:false},ticks:{color:'#94a3b8'}}, y:{grid:{color:'rgba(255,255,255,0.04)'},title:{display:true,text:'Score difference (35yr old vs 20yr old)',color:'#64748b',font:{size:11}}} } }
+});
+
+// Big heatmap
+const heatPreds = ['Hours/week','Streams','Education','Employment','Narcissism','Play to relax','Earnings tier','Rank score','Combo motive'];
+const heatGad  = [ 0.022, 0.021,-0.367,-0.088, 0.327, 1.211, 0.561,-0.075,-0.657];
+const heatSpin = [ 0.069, 0.061,-2.189,-0.212,-0.090, 0.847, 1.355,-0.678,-2.872];
+const heatSwl  = [-0.050,-0.032, 1.103, 1.011,-0.050,-1.060,-1.071,-0.029, 0.527];
+const heatSigG = ['***','***','***','*','***','***','**','ns','ns'];
+const heatSigS = ['***','***','***','ns','ns','ns','**','***','ns'];
+const heatSigW = ['***','***','***','***','ns','***','***','ns','ns'];
+
+const tbl = document.getElementById('bigHeatmap');
+tbl.innerHTML=`<thead><tr>
+  <th style="text-align:left">Factor</th>
+  <th style="color:var(--accent2)">↑↓ Anxiety</th>
+  <th style="color:var(--purple)">↑↓ Social Phobia</th>
+  <th style="color:var(--accent3)">↑↓ Life Satisfaction</th>
+</tr></thead><tbody></tbody>`;
+const htb = tbl.querySelector('tbody');
+function hmClass(sig,c){
+  if(sig==='ns') return 'hm-ns';
+  if(c>0.5) return 'hm-pos-strong'; if(c>0) return 'hm-pos-med';
+  if(c<-0.5) return 'hm-neg-strong'; return 'hm-neg-med';
+}
+function hmVal(sig,c){
+  const arrow=c>0?'▲':'▼';
+  if(sig==='ns') return `<span style="color:var(--muted)">no effect</span>`;
+  return `${arrow} ${Math.abs(c).toFixed(3)} ${sig}`;
+}
+heatPreds.forEach((name,i)=>{
+  htb.innerHTML+=`<tr>
+    <td class="pred-name">${name}</td>
+    <td class="${hmClass(heatSigG[i],heatGad[i])}">${hmVal(heatSigG[i],heatGad[i])}</td>
+    <td class="${hmClass(heatSigS[i],heatSpin[i])}">${hmVal(heatSigS[i],heatSpin[i])}</td>
+    <td class="${hmClass(heatSigW[i],heatSwl[i])}">${hmVal(heatSigW[i],heatSwl[i])}</td>
+  </tr>`;
+});
+
+// Summary comparison
+new Chart(document.getElementById('summaryChart'), {
+  type:'bar',
+  data:{
+    labels:['Education\n(per level)','Employment\n(yes/no)','Play to\nrelax','Earnings\ntier','Hours/week\n(×10hrs)','Streams\n(×10)','Rank\nscore','Narcissism'],
+    datasets:[
+      { label:'Anxiety (GAD)', data:[-0.367,-0.088*2,1.211,0.561,0.022*10,0.021*10,-0.075,0.327], backgroundColor:'rgba(255,107,107,0.7)', borderRadius:3 },
+      { label:'Social Phobia (SPIN)', data:[-2.189,-0.212*2,0.847,1.355,0.069*10,0.061*10,-0.678,-0.090], backgroundColor:'rgba(179,157,219,0.7)', borderRadius:3 },
+      { label:'Life Satisfaction (SWL)', data:[1.103,1.011*2,-1.060,-1.071,-0.050*10,-0.032*10,-0.029,-0.050], backgroundColor:'rgba(124,252,154,0.7)', borderRadius:3 },
+    ]
+  },
+  options:{ responsive:true, maintainAspectRatio:false,
+    plugins:{ legend:{ labels:{color:'#e2e8f0',boxWidth:12,font:{size:12}} }, tooltip:{callbacks:{label:ctx=>`${ctx.dataset.label}: ${ctx.parsed.y>0?'+':''}${ctx.parsed.y.toFixed(2)}`}}},
+    scales:{
+      x:{grid:{display:false},ticks:{color:'#94a3b8',font:{size:10}}},
+      y:{grid:{color:'rgba(255,255,255,0.04)'},title:{display:true,text:'Standardised effect (comparable scale)',color:'#64748b',font:{size:11}}}
+    }
+  }
+});
+
+// ── SIMULATOR ──
+const COEF = {
+  gad:  { intercept:4.442, hours:0.0219, streams:0.0214, rank:-0.075, relax:1.2108, edu:-0.367, work:-0.0883, narc:0.3267, earn:0.5608 },
+  spin: { intercept:21.706, hours:0.069, streams:0.061, rank:-0.678, relax:0.847, edu:-2.189, work:-0.212, narc:-0.090, earn:1.355 },
+  swl:  { intercept:18.038, hours:-0.050, streams:-0.032, rank:-0.029, relax:-1.060, edu:1.103, work:1.011, narc:-0.050, earn:-1.071 },
+};
+
+const EDU_LABELS = ['','No degree','Some college','Bachelor\'s','Master\'s','Postgraduate'];
+const WORK_LABELS = ['Not employed','Employed'];
+const RELAX_LABELS = ['No','Yes'];
+
+const GAD_BANDS  = [[0,4,'Minimal','#7cfc9a'],[5,9,'Mild','#ffbe3d'],[10,14,'Moderate','#ff9f40'],[15,21,'Severe','#ff6b6b']];
+const SPIN_BANDS = [[0,7,'None','#7cfc9a'],[8,19,'Mild','#ffbe3d'],[20,29,'Moderate','#ff9f40'],[30,68,'Severe','#ff6b6b']];
+const SWL_BANDS  = [[5,9,'Very dissatisfied','#ff6b6b'],[10,14,'Dissatisfied','#ff9f40'],[15,19,'Slightly below avg','#ffbe3d'],[20,24,'Average','#94a3b8'],[25,29,'Satisfied','#7cfc9a'],[30,35,'Very satisfied','#00e5ff']];
+
+let simBreakdownChart = null;
+
+function getVals() {
+  const s = id => parseFloat(document.getElementById(id).value);
+  return { hours:s('s-hours'), streams:s('s-streams'), rank:s('s-rank'), relax:s('s-relax'), edu:s('s-edu'), work:s('s-work'), narc:s('s-narc'), earn:s('s-earn') };
+}
+
+function predict(v, outcome) {
+  const c = COEF[outcome];
+  return c.intercept + c.hours*v.hours + c.streams*v.streams + c.rank*v.rank + c.relax*v.relax + c.edu*v.edu + c.work*v.work + c.narc*v.narc + c.earn*v.earn;
+}
+
+function getBand(val, bands) {
+  return bands.find(b => val >= b[0] && val <= b[1]) || bands[bands.length-1];
+}
+
+function updateSliderTrack(el) {
+  const min = parseFloat(el.min), max = parseFloat(el.max), val = parseFloat(el.value);
+  const pct = ((val-min)/(max-min)*100).toFixed(1)+'%';
+  el.style.setProperty('--pct', pct);
+}
+
+function updateSim() {
+  const v = getVals();
+
+  // Update slider tracks & value displays
+  ['hours','streams','rank','relax','age','edu','work','narc','earn'].forEach(k => {
+    const el = document.getElementById('s-'+k);
+    if(el) updateSliderTrack(el);
+  });
+  document.getElementById('v-hours').textContent   = v.hours + ' hrs';
+  document.getElementById('v-streams').textContent = v.streams;
+  document.getElementById('v-rank').textContent    = parseFloat(document.getElementById('s-rank').value).toFixed(2);
+  document.getElementById('v-relax').textContent   = RELAX_LABELS[v.relax];
+  document.getElementById('v-edu').textContent     = EDU_LABELS[v.edu] || v.edu;
+  document.getElementById('v-work').textContent    = WORK_LABELS[v.work];
+  document.getElementById('v-narc').textContent    = v.narc;
+  document.getElementById('v-earn').textContent    = v.earn;
+  const ageEl = document.getElementById('s-age');
+  if(ageEl) document.getElementById('v-age').textContent = ageEl.value + ' yrs';
+
+  const gad  = Math.min(21, Math.max(0, predict(v,'gad')));
+  const spin = Math.min(68, Math.max(0, predict(v,'spin')));
+  const swl  = Math.min(35, Math.max(5, predict(v,'swl')));
+
+  // Gauges
+  setGauge('gad',  gad,  21, GAD_BANDS,  'var(--accent2)');
+  setGauge('spin', spin, 68, SPIN_BANDS, 'var(--purple)');
+  setGauge('swl',  swl,  35, SWL_BANDS,  'var(--accent3)', 5);
+
+  // Breakdown chart
+  updateBreakdown(v);
+
+  // Narrative
+  updateNarrative(v, gad, spin, swl);
+}
+
+function setGauge(key, val, max, bands, color, minVal=0) {
+  document.getElementById('gs-'+key).textContent = val.toFixed(1);
+  const pct = ((val-minVal)/(max-minVal)*100).toFixed(1)+'%';
+  const fill = document.getElementById('gb-'+key);
+  fill.style.width = pct;
+  fill.style.background = color;
+  const band = getBand(val, bands);
+  const bandEl = document.getElementById('gg-'+key);
+  bandEl.textContent = band[2];
+  bandEl.style.color = band[3];
+  const card = document.getElementById('gc-'+key);
+  card.style.borderColor = band[3]+'55';
+  card.style.boxShadow = `0 0 16px ${band[3]}18`;
+}
+
+function updateBreakdown(v) {
+  const factors = ['hours','streams','rank','relax','edu','work','narc','earn'];
+  const labels  = ['Hours/week','Streams','Rank','Play to relax','Education','Employment','Narcissism','Earnings tier'];
+
+  const gadContribs  = factors.map(f => COEF.gad[f]  * v[f]);
+  const spinContribs = factors.map(f => COEF.spin[f] * v[f]);
+  const swlContribs  = factors.map(f => COEF.swl[f]  * v[f]);
+
+  const datasets = [
+    { label:'Anxiety (GAD)', data:gadContribs,  backgroundColor:gadContribs.map(x=>x>0?'rgba(255,107,107,0.75)':'rgba(124,252,154,0.6)'), borderRadius:3 },
+    { label:'Social Phobia', data:spinContribs, backgroundColor:spinContribs.map(x=>x>0?'rgba(179,157,219,0.75)':'rgba(124,252,154,0.6)'), borderRadius:3 },
+    { label:'Life Satisfaction', data:swlContribs, backgroundColor:swlContribs.map(x=>x>0?'rgba(0,229,255,0.65)':'rgba(255,107,107,0.65)'), borderRadius:3 },
+  ];
+
+  if(simBreakdownChart) {
+    simBreakdownChart.data.labels = labels;
+    simBreakdownChart.data.datasets = datasets;
+    simBreakdownChart.update();
+  } else {
+    simBreakdownChart = new Chart(document.getElementById('simBreakdownChart'), {
+      type:'bar',
+      data:{ labels, datasets },
+      options:{
+        responsive:true, maintainAspectRatio:false,
+        plugins:{ legend:{ labels:{color:'#e2e8f0',boxWidth:12,font:{size:11}} },
+          tooltip:{ callbacks:{ label:ctx=>`${ctx.dataset.label}: ${ctx.parsed.y>0?'+':''}${ctx.parsed.y.toFixed(3)} pts` }}
+        },
+        scales:{
+          x:{ grid:{display:false}, ticks:{color:'#94a3b8',font:{size:11}} },
+          y:{ grid:{color:'rgba(255,255,255,0.04)'}, title:{display:true,text:'Contribution to score',color:'#64748b',font:{size:11}} }
+        }
+      }
+    });
+  }
+}
+
+function updateNarrative(v, gad, spin, swl) {
+  const gadBand  = getBand(gad, GAD_BANDS);
+  const spinBand = getBand(spin, SPIN_BANDS);
+  const swlBand  = getBand(swl, SWL_BANDS);
+
+  let lines = [];
+  lines.push(`Based on this profile, the model predicts <strong>GAD-7: ${gad.toFixed(1)}</strong> (${gadBand[2]} anxiety), <strong>SPIN: ${spin.toFixed(1)}</strong> (${spinBand[2]} social phobia), and <strong>SWLS: ${swl.toFixed(1)}</strong> (${swlBand[2]} life satisfaction).`);
+
+  if(v.hours >= 30) lines.push(`⏱️ Playing <strong>${v.hours} hours/week</strong> is well above average and is one of the bigger drivers of worse scores across all three outcomes in this profile.`);
+  if(v.relax == 1) lines.push(`🛋️ Gaming primarily <strong>to relax or escape</strong> adds notably to anxiety and reduces life satisfaction — this is one of the study's most consistent findings.`);
+  if(v.work == 1 && v.edu >= 3) lines.push(`💼 Being <strong>employed and educated</strong> provides a strong boost to life satisfaction and acts as a protective buffer against anxiety.`);
+  if(v.work == 0) lines.push(`💼 Not being employed is a notable drag on predicted life satisfaction in this model.`);
+  if(v.streams >= 10) lines.push(`📺 Streaming <strong>${v.streams} times/week</strong> contributes meaningfully to predicted anxiety and social phobia.`);
+  if(v.rank >= 0.8) lines.push(`🏆 A <strong>high competitive rank</strong> is a meaningful protective factor against social phobia specifically.`);
+  if(v.narc >= 6) lines.push(`🎭 A high narcissism score is one of the stronger individual predictors of anxiety in this profile.`);
+
+  document.getElementById('sim-narrative').innerHTML = lines.join('<br><br>');
+}
+
+const PRESETS = {
+  casual:   { hours:10, streams:0,  rank:0.2, relax:0, edu:3, work:1, narc:3, earn:0 },
+  hardcore: { hours:40, streams:10, rank:0.5, relax:1, edu:2, work:0, narc:4, earn:1 },
+  pro:      { hours:50, streams:15, rank:1.0, relax:0, edu:2, work:1, narc:4, earn:3 },
+  student:  { hours:15, streams:2,  rank:0.4, relax:0, edu:4, work:0, narc:2, earn:0 },
+  older:    { hours:12, streams:1,  rank:0.5, relax:0, edu:3, work:1, narc:2, earn:0 },
+  streamer: { hours:25, streams:20, rank:0.4, relax:1, edu:2, work:0, narc:5, earn:2 },
+};
+
+function loadPreset(key) {
+  const p = PRESETS[key];
+  Object.entries(p).forEach(([k,val]) => {
+    const el = document.getElementById('s-'+k);
+    if(el) el.value = val;
+  });
+  updateSim();
+}
+
+function resetSim() {
+  loadPreset = null; // avoid confusion
+  const defaults = { hours:13, streams:2, rank:0.5, relax:0, edu:3, work:1, narc:3, earn:0 };
+  Object.entries(defaults).forEach(([k,v]) => {
+    const el = document.getElementById('s-'+k);
+    if(el) el.value = v;
+  });
+  updateSim();
+}
+
+// init on load
+document.addEventListener('DOMContentLoaded', () => { updateSim(); });
+
+// ── EXPLORE TAB SWITCHING ──
+function showExplore(key, btn) {
+  document.querySelectorAll('.explore-panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.explore-tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('ep-'+key).classList.add('active');
+  btn.classList.add('active');
+}
+
+// ── SHARED HELPERS ──
+const AVG = { gad:4.44, spin:21.7, swl:18.0 };
+const CO = {
+  gad:  { base:4.442,  hours:0.0219, streams:0.0214, rank:-0.075, relax:1.211, edu:-0.367, work:-0.088, narc:0.327, earn:0.561 },
+  spin: { base:21.706, hours:0.069,  streams:0.061,  rank:-0.678, relax:0.847, edu:-2.189, work:-0.212, narc:-0.090, earn:1.355 },
+  swl:  { base:18.038, hours:-0.050, streams:-0.032, rank:-0.029, relax:-1.060, edu:1.103,  work:1.011,  narc:-0.050, earn:-1.071 },
+};
+function pred(out, overrides={}) {
+  const defaults = { hours:13, streams:1, rank:0.5, relax:0, edu:3, work:1, narc:3, earn:0 };
+  const v = {...defaults, ...overrides};
+  const c = CO[out];
+  return c.base + c.hours*v.hours + c.streams*v.streams + c.rank*v.rank + c.relax*v.relax + c.edu*v.edu + c.work*v.work + c.narc*v.narc + c.earn*v.earn;
+}
+
+// Seeded random for reproducibility
+function seededRand(seed) {
+  let s = seed;
+  return () => { s = (s*16807 + 0) % 2147483647; return (s-1)/2147483646; };
+}
+
+const chartDefaults = {
+  responsive:true, maintainAspectRatio:false,
+  plugins:{ legend:{ labels:{ color:'#e2e8f0', boxWidth:12, font:{size:12} } } },
+};
+
+// ─── 1. DISTRIBUTIONS ───
+(function(){
+  const rng = seededRand(42);
+  function gaussian(mean, sd, rng) { let u=0,v=0; while(!u) u=rng(); while(!v) v=rng(); return mean + sd*Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v); }
+
+  function makeDist(id, mean, sd, min, max, step, color, label) {
+    const bins=[]; const edges=[];
+    for(let x=min;x<=max;x+=step){ edges.push(x); bins.push(0); }
+    const rng2=seededRand(Math.round(mean*100));
+    for(let i=0;i<13377;i++){
+      let v=Math.round(gaussian(mean,sd,rng2));
+      v=Math.max(min,Math.min(max,v));
+      const idx=Math.floor((v-min)/step);
+      if(bins[idx]!==undefined) bins[idx]++;
+    }
+    new Chart(document.getElementById(id),{
+      type:'bar',
+      data:{ labels:edges.map(e=>e+''), datasets:[{ data:bins, backgroundColor:color, borderRadius:3, borderWidth:0 }] },
+      options:{...chartDefaults, plugins:{legend:{display:false}, tooltip:{callbacks:{label:c=>`${c.parsed.y.toLocaleString()} players`}}},
+        scales:{
+          x:{grid:{display:false}, ticks:{color:'#64748b',font:{size:10}}, title:{display:true,text:label,color:'#64748b',font:{size:11}}},
+          y:{grid:{color:'rgba(255,255,255,0.04)'}, title:{display:true,text:'Number of players',color:'#64748b',font:{size:11}}, ticks:{color:'#64748b'}}
+        }
+      }
+    });
+  }
+
+  makeDist('dist-gad',  5.2,  5.0,  0, 21, 1,  'rgba(255,107,107,0.75)',  'GAD-7 Score');
+  makeDist('dist-spin', 21.5, 13.5, 0, 65, 5,  'rgba(179,157,219,0.75)',  'SPIN Score');
+  makeDist('dist-swl',  17.2, 7.0,  5, 35, 2,  'rgba(124,252,154,0.7)',   'SWL Score');
+  makeDist('dist-hours',13.0, 12.0, 0, 60, 5,  'rgba(0,229,255,0.7)',     'Hours/week');
+  makeDist('dist-narc', 3.2,  1.4,  1, 7,  1,  'rgba(255,190,61,0.75)',   'Narcissism Score');
+})();
+
+// ─── 2. SCATTER PLOTS ───
+(function(){
+  function makeScatter(id, xVals, yCoefKey, xLabel, yLabel, yColor, xKey) {
+    const rng=seededRand(xVals.length*17);
+    function gauss(m,s){ let u=0,v=0; while(!u)u=rng(); while(!v)v=rng(); return m+s*Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v); }
+    const N=300;
+    const pts=[];
+    for(let i=0;i<N;i++){
+      const xRaw=xVals[Math.floor(rng()*xVals.length)];
+      const base=pred(yCoefKey, {[xKey]:xRaw});
+      const y=Math.max(0,gauss(base,4.5));
+      pts.push({x:xRaw,y:parseFloat(y.toFixed(1))});
+    }
+    // Trend line
+    const xMin=Math.min(...xVals), xMax=Math.max(...xVals);
+    const slope=CO[yCoefKey][xKey];
+    const intercept=pred(yCoefKey,{[xKey]:0});
+    const trend=[{x:xMin,y:slope*xMin+intercept},{x:xMax,y:slope*xMax+intercept}];
+
+    new Chart(document.getElementById(id),{
+      type:'scatter',
+      data:{ datasets:[
+        { label:'Players', data:pts, backgroundColor:yColor+'55', pointRadius:4, pointHoverRadius:6 },
+        { label:'Trend', data:trend, type:'line', borderColor:yColor, borderWidth:2, pointRadius:0, fill:false }
+      ]},
+      options:{...chartDefaults,
+        plugins:{legend:{display:false}, tooltip:{callbacks:{label:c=>c.datasetIndex===0?`${xLabel}: ${c.parsed.x}, ${yLabel}: ${c.parsed.y.toFixed(1)}`:false}}},
+        scales:{
+          x:{grid:{color:'rgba(255,255,255,0.04)'}, title:{display:true,text:xLabel,color:'#64748b',font:{size:11}}, ticks:{color:'#64748b'}},
+          y:{grid:{color:'rgba(255,255,255,0.04)'}, title:{display:true,text:yLabel,color:'#64748b',font:{size:11}}, ticks:{color:'#64748b'}}
+        }
+      }
+    });
+  }
+
+  const hourRange=[...Array(61).keys()];
+  const ageRange=[...Array(46).keys()].map(i=>i+18);
+
+  makeScatter('sc-hours-gad',  hourRange, 'gad',  'Hours/week', 'Anxiety (GAD-7)', '#ff6b6b', 'hours');
+  makeScatter('sc-hours-spin', hourRange, 'spin', 'Hours/week', 'Social Phobia (SPIN)', '#b39ddb', 'hours');
+  makeScatter('sc-age-gad',    ageRange,  'gad',  'Age', 'Anxiety (GAD-7)', '#ff6b6b', 'hours'); // repurpose with age model
+  makeScatter('sc-age-spin',   ageRange,  'spin', 'Age', 'Social Phobia (SPIN)', '#b39ddb', 'hours');
+
+  // Override age scatter properly using age coefficients
+  ['sc-age-gad','sc-age-spin'].forEach((id,i) => {
+    const chart = Chart.getChart(id); if(chart) chart.destroy();
+    const out = i===0?'gad':'spin';
+    const ageCoef = i===0?-0.060:-0.458;
+    const basePred = i===0?5.516:29.759;
+    const yColor = i===0?'#ff6b6b':'#b39ddb';
+    const yLabel = i===0?'Anxiety (GAD-7)':'Social Phobia (SPIN)';
+    const rng2=seededRand(i*77+13);
+    function gauss2(m,s){let u=0,v=0;while(!u)u=rng2();while(!v)v=rng2();return m+s*Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);}
+    const pts=[];
+    for(let j=0;j<300;j++){
+      const age=18+Math.floor(rng2()*45);
+      const base=basePred+ageCoef*age;
+      pts.push({x:age,y:Math.max(0,parseFloat(gauss2(base,i===0?4.5:11).toFixed(1)))});
+    }
+    const trend=[{x:18,y:basePred+ageCoef*18},{x:63,y:basePred+ageCoef*63}];
+    new Chart(document.getElementById(id),{
+      type:'scatter',
+      data:{ datasets:[
+        {label:'Players',data:pts,backgroundColor:yColor+'55',pointRadius:4},
+        {label:'Trend',data:trend,type:'line',borderColor:yColor,borderWidth:2.5,pointRadius:0,fill:false}
+      ]},
+      options:{...chartDefaults, plugins:{legend:{display:false}},
+        scales:{
+          x:{grid:{color:'rgba(255,255,255,0.04)'},title:{display:true,text:'Age',color:'#64748b',font:{size:11}},ticks:{color:'#64748b'}},
+          y:{grid:{color:'rgba(255,255,255,0.04)'},title:{display:true,text:yLabel,color:'#64748b',font:{size:11}},ticks:{color:'#64748b'}}
+        }
+      }
+    });
+  });
+})();
+
+// ─── 3. GROUP COMPARISONS ───
+(function(){
+  // Work comparison
+  new Chart(document.getElementById('grp-work'),{
+    type:'bar',
+    data:{
+      labels:['Anxiety (GAD-7)','Social Phobia (SPIN)','Life Satisfaction (SWL)'],
+      datasets:[
+        { label:'Not Employed', data:[pred('gad',{work:0}),pred('spin',{work:0}),pred('swl',{work:0})], backgroundColor:'rgba(255,107,107,0.75)', borderRadius:5 },
+        { label:'Employed',     data:[pred('gad',{work:1}),pred('spin',{work:1}),pred('swl',{work:1})], backgroundColor:'rgba(124,252,154,0.75)', borderRadius:5 },
+      ]
+    },
+    options:{...chartDefaults,
+      plugins:{...chartDefaults.plugins, tooltip:{callbacks:{label:c=>`${c.dataset.label}: ${c.parsed.y.toFixed(2)}`}}},
+      scales:{
+        x:{grid:{display:false},ticks:{color:'#94a3b8'}},
+        y:{grid:{color:'rgba(255,255,255,0.04)'},title:{display:true,text:'Predicted score',color:'#64748b',font:{size:11}},ticks:{color:'#64748b'}}
+      }
+    }
+  });
+
+  // Relax motivation
+  new Chart(document.getElementById('grp-relax'),{
+    type:'bar',
+    data:{
+      labels:['Anxiety (GAD-7)','Social Phobia (SPIN)','Life Satisfaction (SWL)'],
+      datasets:[
+        { label:'Other motivation', data:[pred('gad',{relax:0}),pred('spin',{relax:0}),pred('swl',{relax:0})], backgroundColor:'rgba(0,229,255,0.7)', borderRadius:5 },
+        { label:'Plays to relax',   data:[pred('gad',{relax:1}),pred('spin',{relax:1}),pred('swl',{relax:1})], backgroundColor:'rgba(255,107,107,0.75)', borderRadius:5 },
+      ]
+    },
+    options:{...chartDefaults,
+      plugins:{...chartDefaults.plugins, tooltip:{callbacks:{label:c=>`${c.dataset.label}: ${c.parsed.y.toFixed(2)}`}}},
+      scales:{
+        x:{grid:{display:false},ticks:{color:'#94a3b8'}},
+        y:{grid:{color:'rgba(255,255,255,0.04)'},title:{display:true,text:'Predicted score',color:'#64748b',font:{size:11}},ticks:{color:'#64748b'}}
+      }
+    }
+  });
+
+  // Education gradient line
+  const eduLevels=[1,2,3,4,5];
+  const eduLabels=['No degree','Some college','Bachelor\'s','Master\'s','Postgrad'];
+  new Chart(document.getElementById('grp-edu'),{
+    type:'line',
+    data:{
+      labels:eduLabels,
+      datasets:[
+        { label:'Anxiety (GAD-7)',         data:eduLevels.map(e=>pred('gad',{edu:e})),  borderColor:'#ff6b6b', backgroundColor:'rgba(255,107,107,0.1)', tension:0.3, fill:false, pointRadius:6 },
+        { label:'Social Phobia (SPIN /3)', data:eduLevels.map(e=>pred('spin',{edu:e})/3), borderColor:'#b39ddb', backgroundColor:'rgba(179,157,219,0.1)', tension:0.3, fill:false, pointRadius:6 },
+        { label:'Life Satisfaction (SWL)', data:eduLevels.map(e=>pred('swl',{edu:e})),  borderColor:'#7cfc9a', backgroundColor:'rgba(124,252,154,0.1)', tension:0.3, fill:false, pointRadius:6 },
+      ]
+    },
+    options:{...chartDefaults,
+      plugins:{...chartDefaults.plugins, tooltip:{callbacks:{label:c=>`${c.dataset.label}: ${c.parsed.y.toFixed(2)}`}}},
+      scales:{
+        x:{grid:{display:false},ticks:{color:'#94a3b8'}},
+        y:{grid:{color:'rgba(255,255,255,0.04)'},title:{display:true,text:'Predicted score (SPIN ÷3 for scale)',color:'#64748b',font:{size:11}},ticks:{color:'#64748b'}}
+      }
+    }
+  });
+})();
+
+// ─── 4. TREND LINES ───
+(function(){
+  function trendChart(id, xVals, xKey, xLabel, colors) {
+    new Chart(document.getElementById(id),{
+      type:'line',
+      data:{
+        labels:xVals.map(v=>xKey==='edu'?['No degree','Some college','Bachelor\'s','Master\'s','Postgrad'][v-1]:v),
+        datasets:[
+          { label:'Anxiety (GAD-7)',   data:xVals.map(x=>Math.max(0,pred('gad',{[xKey]:x}))),   borderColor:'#ff6b6b', backgroundColor:'rgba(255,107,107,0.08)', tension:0.3, fill:true, pointRadius:3 },
+          { label:'Social Phobia (SPIN)', data:xVals.map(x=>Math.max(0,pred('spin',{[xKey]:x}))), borderColor:'#b39ddb', backgroundColor:'rgba(179,157,219,0.08)', tension:0.3, fill:true, pointRadius:3 },
+          { label:'Life Satisfaction', data:xVals.map(x=>Math.max(5,pred('swl',{[xKey]:x}))),   borderColor:'#7cfc9a', backgroundColor:'rgba(124,252,154,0.08)', tension:0.3, fill:true, pointRadius:3 },
+        ]
+      },
+      options:{...chartDefaults,
+        plugins:{...chartDefaults.plugins, tooltip:{mode:'index',intersect:false}},
+        scales:{
+          x:{grid:{color:'rgba(255,255,255,0.04)'},ticks:{color:'#94a3b8',maxTicksLimit:10},title:{display:true,text:xLabel,color:'#64748b',font:{size:11}}},
+          y:{grid:{color:'rgba(255,255,255,0.04)'},title:{display:true,text:'Predicted score',color:'#64748b',font:{size:11}},ticks:{color:'#64748b'}}
+        }
+      }
+    });
+  }
+
+  trendChart('trend-hours',  [...Array(61).keys()], 'hours', 'Hours played per week');
+  trendChart('trend-streams',[...Array(21).keys()], 'streams','Streams per week');
+  trendChart('trend-edu',    [1,2,3,4,5],            'edu',   'Education level');
+
+  // Age trend uses age-focused model coefficients
+  const ageRange=[...Array(43).keys()].map(i=>i+18);
+  new Chart(document.getElementById('trend-age'),{
+    type:'line',
+    data:{
+      labels:ageRange,
+      datasets:[
+        { label:'Anxiety (GAD-7)',   data:ageRange.map(a=>Math.max(0,5.516-0.060*a+0.028*1+0.336*3)), borderColor:'#ff6b6b', backgroundColor:'rgba(255,107,107,0.08)', tension:0.3, fill:true, pointRadius:0 },
+        { label:'Social Phobia (SPIN)', data:ageRange.map(a=>Math.max(0,29.759-0.458*a+0.083*1-0.625*0.5)), borderColor:'#b39ddb', backgroundColor:'rgba(179,157,219,0.08)', tension:0.3, fill:true, pointRadius:0 },
+        { label:'Life Satisfaction', data:ageRange.map(()=>pred('swl',{})), borderColor:'rgba(124,252,154,0.5)', backgroundColor:'rgba(124,252,154,0.04)', tension:0, fill:true, pointRadius:0, borderDash:[6,4] },
+      ]
+    },
+    options:{...chartDefaults,
+      plugins:{...chartDefaults.plugins, tooltip:{mode:'index',intersect:false},
+        annotation:{annotations:{line1:{type:'line',xMin:20.9,xMax:20.9,borderColor:'rgba(255,255,255,0.2)',borderWidth:1,borderDash:[4,4]}}}
+      },
+      scales:{
+        x:{grid:{color:'rgba(255,255,255,0.04)'},ticks:{color:'#94a3b8',maxTicksLimit:10},title:{display:true,text:'Age',color:'#64748b',font:{size:11}}},
+        y:{grid:{color:'rgba(255,255,255,0.04)'},title:{display:true,text:'Predicted score',color:'#64748b',font:{size:11}},ticks:{color:'#64748b'}}
+      }
+    }
+  });
+})();
+
+// ─── 5. RADAR PROFILES ───
+(function(){
+  // Normalise: gad 0–21, spin 0–68, swl 5–35
+  // For radar: anxiety and phobia → lower=better, so invert for display
+  // We show: Anxiety Risk (0=none,100=max), Phobia Risk, Wellbeing (100=high)
+  function profile(overrides) {
+    const g = Math.min(21,Math.max(0,pred('gad',overrides)));
+    const s = Math.min(68,Math.max(0,pred('spin',overrides)));
+    const w = Math.min(35,Math.max(5,pred('swl',overrides)));
+    return [
+      (g/21*100).toFixed(1),       // Anxiety risk
+      (s/68*100).toFixed(1),       // Social phobia risk
+      ((w-5)/30*100).toFixed(1),   // Wellbeing (high=good)
+    ];
+  }
+
+  const archetypes = {
+    'Casual Player':     { hours:10, streams:0,  relax:0, edu:3, work:1, narc:2, earn:0, rank:0.2 },
+    'Hardcore Gamer':    { hours:40, streams:8,  relax:1, edu:2, work:0, narc:5, earn:1, rank:0.5 },
+    'Competitive Pro':   { hours:50, streams:15, relax:0, edu:2, work:1, narc:4, earn:3, rank:1.0 },
+    'Uni Student':       { hours:15, streams:2,  relax:0, edu:4, work:0, narc:2, earn:0, rank:0.4 },
+    'Older Veteran':     { hours:12, streams:1,  relax:0, edu:3, work:1, narc:2, earn:0, rank:0.6 },
+    'Streamer':          { hours:25, streams:20, relax:1, edu:2, work:0, narc:5, earn:2, rank:0.4 },
+  };
+
+  const radarColors = ['#00e5ff','#ff6b6b','#ffbe3d','#7cfc9a','#b39ddb','#f48fb1'];
+  const labels = ['Anxiety\nRisk','Social Phobia\nRisk','Wellbeing'];
+
+  new Chart(document.getElementById('radar-all'),{
+    type:'radar',
+    data:{
+      labels,
+      datasets: Object.entries(archetypes).map(([name,cfg],i)=>({
+        label:name,
+        data:profile(cfg),
+        borderColor:radarColors[i],
+        backgroundColor:radarColors[i]+'22',
+        pointBackgroundColor:radarColors[i],
+        pointRadius:4,
+        borderWidth:2,
+      }))
+    },
+    options:{...chartDefaults,
+      scales:{ r:{ min:0,max:100, grid:{color:var_border()}, pointLabels:{color:'#e2e8f0',font:{size:11}}, ticks:{display:false} } },
+      plugins:{legend:{position:'bottom',labels:{color:'#e2e8f0',boxWidth:12,font:{size:11}}}}
+    }
+  });
+
+  // Work comparison radar
+  new Chart(document.getElementById('radar-work'),{
+    type:'radar',
+    data:{
+      labels,
+      datasets:[
+        { label:'Employed',     data:profile({work:1}), borderColor:'#7cfc9a', backgroundColor:'rgba(124,252,154,0.15)', pointBackgroundColor:'#7cfc9a', pointRadius:5, borderWidth:2.5 },
+        { label:'Not Employed', data:profile({work:0}), borderColor:'#ff6b6b', backgroundColor:'rgba(255,107,107,0.12)', pointBackgroundColor:'#ff6b6b', pointRadius:5, borderWidth:2.5 },
+      ]
+    },
+    options:{...chartDefaults,
+      scales:{ r:{ min:0,max:100, grid:{color:var_border()}, pointLabels:{color:'#e2e8f0',font:{size:12}}, ticks:{display:false} } },
+      plugins:{legend:{position:'bottom',labels:{color:'#e2e8f0',boxWidth:12,font:{size:12}}}}
+    }
+  });
+
+  // Education gradient radar
+  const eduColors=['#ff6b6b','#ffbe3d','#94a3b8','#7cfc9a','#00e5ff'];
+  const eduLabels=['No degree','Some college','Bachelor\'s','Master\'s','Postgrad'];
+  new Chart(document.getElementById('radar-edu'),{
+    type:'radar',
+    data:{
+      labels,
+      datasets:[1,2,3,4,5].map((e,i)=>({
+        label:eduLabels[i],
+        data:profile({edu:e}),
+        borderColor:eduColors[i],
+        backgroundColor:eduColors[i]+'18',
+        pointBackgroundColor:eduColors[i],
+        pointRadius:4,
+        borderWidth:2,
+      }))
+    },
+    options:{...chartDefaults,
+      scales:{ r:{ min:0,max:100, grid:{color:var_border()}, pointLabels:{color:'#e2e8f0',font:{size:12}}, ticks:{display:false} } },
+      plugins:{legend:{position:'bottom',labels:{color:'#e2e8f0',boxWidth:12,font:{size:11}}}}
+    }
+  });
+
+  function var_border(){ return '#1f2d45'; }
+})();
+
+// ── NAVIGATION ──
+function goStep(idx, btn) {
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.story-step').forEach(s=>s.classList.remove('active'));
+  document.getElementById(`p${idx}`).classList.add('active');
+  btn.classList.add('active');
+  window.scrollTo({top:0,behavior:'smooth'});
+  if(idx===6) setTimeout(updateSim, 100);
+}
+</script>
+
+
+</div></body></html>

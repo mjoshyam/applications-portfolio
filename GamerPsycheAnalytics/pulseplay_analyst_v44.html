@@ -1,0 +1,2076 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GamerPsyche ANALYST // WORKBENCH</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Share+Tech+Mono&family=Barlow+Condensed:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+:root {
+  --bg: #080a0c;
+  --bg2: #0c0f12;
+  --panel: #0e1115;
+  --panel2: #131720;
+  --border: rgba(255,176,0,0.12);
+  --border2: rgba(255,176,0,0.28);
+  --border3: rgba(255,176,0,0.5);
+  --amber: #ffb000;
+  --amber2: #ffd060;
+  --amber-dim: rgba(255,176,0,0.6);
+  --amber-glow: rgba(255,176,0,0.08);
+  --amber-glow2: rgba(255,176,0,0.15);
+  --cyan: #00e5ff;
+  --cyan-dim: rgba(0,229,255,0.6);
+  --cyan-glow: rgba(0,229,255,0.08);
+  --red: #ff3333;
+  --red-dim: rgba(255,51,51,0.6);
+  --red-glow: rgba(255,51,51,0.08);
+  --green: #00ff88;
+  --green-dim: rgba(0,255,136,0.6);
+  --green-glow: rgba(0,255,136,0.08);
+  --purple: #cc44ff;
+  --purple-glow: rgba(204,68,255,0.08);
+  --text: #e8d4a0;
+  --text2: #c4b080;
+  --muted: #9a8c6a;
+  --dim: #5a4e35;
+  --font-pixel: 'DM Mono', monospace;
+  --font-mono: 'Share Tech Mono', monospace;
+  --font-hud: 'Barlow Condensed', sans-serif;
+  --crt: repeating-linear-gradient(0deg, rgba(0,0,0,0) 0px, rgba(0,0,0,0) 1px, rgba(0,0,0,0.15) 1px, rgba(0,0,0,0.15) 2px);
+  --scan: repeating-linear-gradient(90deg, transparent, transparent 2px, rgba(255,176,0,0.01) 2px, rgba(255,176,0,0.01) 4px);
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:14px}
+body{font-family:var(--font-mono);background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;cursor:crosshair}
+
+/* CRT effect */
+body::before{content:'';position:fixed;inset:0;background:var(--crt);pointer-events:none;z-index:9998;opacity:0.6}
+body::after{content:'';position:fixed;inset:0;background:radial-gradient(ellipse at center,transparent 60%,rgba(0,0,0,0.6) 100%);pointer-events:none;z-index:9997}
+
+/* Pixel grid bg */
+.shell::before{content:'';position:fixed;inset:0;background-image:linear-gradient(var(--border) 1px,transparent 1px),linear-gradient(90deg,var(--border) 1px,transparent 1px);background-size:32px 32px;pointer-events:none;z-index:0;opacity:0.4}
+
+/* Shell */
+.shell{display:grid;grid-template-columns:220px 1fr;min-height:100vh;position:relative}
+
+/* ── SIDEBAR ── */
+.sidebar{background:var(--panel);border-right:1px solid var(--border2);display:flex;flex-direction:column;position:sticky;top:0;height:100vh;overflow:hidden;z-index:10}
+.sidebar::before{content:'';position:absolute;inset:0;background:var(--crt);pointer-events:none;opacity:0.5}
+.sidebar::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--amber);box-shadow:0 0 12px var(--amber),0 0 24px rgba(255,176,0,0.4)}
+
+.logo-area{padding:1.25rem 1rem 1rem;border-bottom:1px solid var(--border);position:relative}
+.logo-scanline{font-family:var(--font-pixel);font-size:22px;color:var(--amber);text-shadow:0 0 12px var(--amber),0 0 28px rgba(255,176,0,0.7),0 0 40px rgba(255,176,0,0.3);letter-spacing:0.02em;line-height:1;margin-bottom:3px;animation:flicker 8s infinite}
+@keyframes flicker{0%,95%,100%{opacity:1}96%{opacity:0.85}97%{opacity:1}98%{opacity:0.9}99%{opacity:1}}
+.logo-sub{font-family:var(--font-hud);font-size:12px;font-weight:600;color:rgba(232,212,160,0.8);letter-spacing:0.2em;text-transform:uppercase}
+.logo-badge{margin-top:8px;display:flex;align-items:center;gap:6px;font-family:var(--font-mono);font-size:9px;color:var(--amber-dim)}
+.live-pip{width:6px;height:6px;background:var(--green);border-radius:50%;box-shadow:0 0 6px var(--green);animation:blink 1.5s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.3}}
+
+
+
+.nav{padding:.75rem 0;flex:1;overflow-y:auto}
+.nav-cat{font-family:var(--font-mono);font-size:9px;color:var(--muted);letter-spacing:0.18em;padding:.75rem 1rem .25rem;opacity:0.8}
+.nav-item{display:flex;align-items:center;gap:8px;padding:7px 1rem;font-family:var(--font-hud);font-size:13px;font-weight:600;color:var(--muted);cursor:pointer;transition:all .15s;position:relative;letter-spacing:0.08em;text-transform:uppercase}
+.nav-item:hover{color:var(--text);background:var(--amber-glow)}
+.nav-item.active{color:var(--amber);background:var(--amber-glow2)}
+.nav-item.active::before{content:'';position:absolute;left:0;top:0;bottom:0;width:2px;background:var(--amber);box-shadow:0 0 8px var(--amber)}
+.nav-item.active::after{content:'◀';position:absolute;right:8px;font-size:8px;color:var(--amber)}
+.nav-icon{width:14px;height:14px;flex-shrink:0}
+.nav-alert{margin-left:auto;font-family:var(--font-mono);font-size:9px;color:var(--red);background:var(--red-glow);border:1px solid var(--red-dim);padding:1px 5px;border-radius:2px}
+
+.sidebar-foot{padding:.875rem 1rem;border-top:1px solid var(--border)}
+.meta-grid{display:grid;grid-template-columns:1fr 1fr;gap:4px}
+.meta-cell{border:1px solid var(--border);background:var(--amber-glow);padding:6px;text-align:center}
+.meta-val{font-family:var(--font-pixel);font-size:15px;color:var(--amber);display:block;text-shadow:0 0 6px rgba(255,176,0,0.5);font-weight:500}
+.meta-lbl{font-family:var(--font-mono);font-size:9px;color:var(--muted);letter-spacing:0.1em;margin-top:1px;display:block}
+
+/* ── MAIN ── */
+.main{display:flex;flex-direction:column;min-height:100vh;position:relative;z-index:1}
+
+/* Topbar */
+.topbar{background:var(--panel2);border-bottom:2px solid var(--border2);padding:.75rem 1.5rem;display:flex;align-items:center;justify-content:space-between;position:relative}
+.topbar::after{content:'';position:absolute;bottom:-2px;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--amber),transparent)}
+.tb-path{font-family:var(--font-mono);font-size:10px;color:var(--muted);letter-spacing:0.1em;margin-bottom:3px}
+.tb-title{font-family:var(--font-pixel);font-size:20px;color:var(--amber);text-shadow:0 0 12px rgba(255,176,0,0.5);letter-spacing:0.04em}
+.tb-right{display:flex;align-items:center;gap:8px}
+.btn{font-family:var(--font-hud);font-size:11px;font-weight:700;padding:6px 14px;cursor:pointer;border:none;transition:all .15s;letter-spacing:0.1em;text-transform:uppercase;display:flex;align-items:center;gap:5px}
+.btn svg{width:11px;height:11px;flex-shrink:0}
+.btn-ghost{background:transparent;border:1px solid var(--border2);color:var(--amber-dim)}
+.btn-ghost:hover{border-color:var(--amber);color:var(--amber);background:var(--amber-glow)}
+.btn-amber{background:var(--amber);color:var(--bg);font-weight:800}
+.btn-amber:hover{background:var(--amber2);box-shadow:0 0 12px rgba(255,176,0,0.4)}
+
+/* Filter bar */
+
+
+/* Content */
+.content{flex:1;padding:1.25rem 1.5rem;overflow-y:auto}
+.page{display:none}
+.page.active{display:block;animation:scanIn .2s ease}
+@keyframes scanIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:translateY(0)}}
+
+/* Section headers */
+.sec-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:.75rem;padding-bottom:.5rem;border-bottom:1px solid var(--border);position:relative}
+.sec-hdr::before{content:'';position:absolute;bottom:-1px;left:0;width:60px;height:1px;background:var(--amber);box-shadow:0 0 6px var(--amber)}
+.sec-title{font-family:var(--font-pixel);font-size:13px;color:var(--amber);letter-spacing:0.06em;text-shadow:0 0 8px rgba(255,176,0,0.4)}
+.sec-sub{font-family:var(--font-mono);font-size:9px;color:var(--muted);letter-spacing:0.1em;margin-top:2px}
+.sec-btns{display:flex;gap:5px}
+
+/* Grids */
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:10px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:10px}
+.g75{display:grid;grid-template-columns:1.5fr 1fr;gap:10px;margin-bottom:10px}
+.g57{display:grid;grid-template-columns:1fr 1.5fr;gap:10px;margin-bottom:10px}
+.gfull{margin-bottom:10px}
+
+/* Stat cards */
+.stat{background:var(--panel);border:1px solid var(--border);padding:.875rem 1rem;position:relative;overflow:hidden;transition:border-color .2s}
+.stat::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:var(--stat-accent,var(--amber));opacity:0.5}
+.stat::after{content:'';position:absolute;bottom:0;right:0;width:30px;height:30px;background:var(--stat-accent,var(--amber));opacity:0.04;border-radius:50%;transform:translate(8px,8px)}
+.stat:hover{border-color:var(--border2)}
+.stat-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:8px}
+.stat-ico{width:26px;height:26px;border:1px solid var(--border2);display:flex;align-items:center;justify-content:center;background:var(--amber-glow)}
+.stat-ico svg{width:12px;height:12px}
+.stat-delta{font-family:var(--font-mono);font-size:9px;padding:2px 5px;border:1px solid;letter-spacing:0.06em}
+.sd-up{border-color:var(--green-dim);color:var(--green)}
+.sd-dn{border-color:var(--red-dim);color:var(--red)}
+.sd-nt{border-color:var(--border);color:var(--muted)}
+.stat-val{font-family:var(--font-pixel);font-size:28px;font-weight:500;color:var(--amber);text-shadow:0 0 10px rgba(255,176,0,0.4);line-height:1;margin-bottom:3px;letter-spacing:-0.01em}
+.stat-lbl{font-family:var(--font-hud);font-size:11px;font-weight:600;color:var(--text2);letter-spacing:0.06em;text-transform:uppercase}
+.stat-sub{font-family:var(--font-mono);font-size:9px;color:var(--muted);margin-top:2px;letter-spacing:0.06em}
+
+/* Panels */
+.panel{background:var(--panel);border:1px solid var(--border);padding:1rem;position:relative;overflow:hidden}
+.panel::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,var(--amber),transparent);opacity:0.4}
+.panel-hdr{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:.875rem;gap:8px}
+.panel-title{font-family:var(--font-pixel);font-size:12px;color:var(--amber);text-shadow:0 0 6px rgba(255,176,0,0.3);letter-spacing:0.04em}
+.panel-sub{font-family:var(--font-mono);font-size:9px;color:var(--muted);margin-top:3px;letter-spacing:0.08em}
+.chart-wrap{position:relative}
+
+/* Corner decoration */
+.corner{position:relative}
+.corner::before,.corner::after{content:'';position:absolute;width:8px;height:8px;border-color:var(--amber);border-style:solid;opacity:0.5}
+.corner::before{top:0;left:0;border-width:1px 0 0 1px}
+.corner::after{bottom:0;right:0;border-width:0 1px 1px 0}
+
+/* Data tables */
+.tbl-wrap{overflow-x:auto;border:1px solid var(--border)}
+table.dt{width:100%;border-collapse:collapse;font-size:10px}
+table.dt th{font-family:var(--font-mono);font-size:11px;color:var(--amber);letter-spacing:0.12em;text-transform:uppercase;padding:6px 8px;border-bottom:1px solid var(--border2);text-align:left;white-space:nowrap;background:var(--amber-glow);position:sticky;top:0}
+table.dt td{padding:7px 8px;border-bottom:1px solid var(--border);color:var(--text2);font-family:var(--font-mono);font-size:13px;vertical-align:middle}
+table.dt tr:hover td{background:var(--amber-glow);color:var(--text)}
+table.dt tr:last-child td{border-bottom:none}
+
+/* Chips/badges */
+.chip{font-family:var(--font-mono);font-size:9px;padding:2px 6px;border:1px solid;display:inline-block;letter-spacing:0.06em}
+.c-green{border-color:var(--green-dim);color:var(--green);background:var(--green-glow)}
+.c-amber{border-color:var(--amber-dim);color:var(--amber);background:var(--amber-glow)}
+.c-red{border-color:var(--red-dim);color:var(--red);background:var(--red-glow)}
+.c-cyan{border-color:var(--cyan-dim);color:var(--cyan);background:var(--cyan-glow)}
+.c-purple{border-color:rgba(204,68,255,0.5);color:var(--purple);background:var(--purple-glow)}
+.c-dim{border-color:var(--border);color:var(--muted);background:transparent}
+.verdict{font-family:var(--font-hud);font-size:11px;font-weight:700;padding:2px 7px;border:1px solid;letter-spacing:0.08em;text-transform:uppercase}
+
+/* Segment tabs */
+.seg-tabs{display:flex;gap:0;margin-bottom:10px;border:1px solid var(--border2)}
+.seg-tab{flex:1;padding:7px 6px;text-align:center;font-family:var(--font-hud);font-size:10px;font-weight:700;cursor:pointer;transition:all .15s;color:var(--muted);border-right:1px solid var(--border);text-transform:uppercase;letter-spacing:0.06em}
+.seg-tab:last-child{border-right:none}
+.seg-tab:hover{background:var(--amber-glow);color:var(--text)}
+.seg-tab.active{background:var(--amber-glow2);color:var(--amber);box-shadow:inset 0 -2px 0 var(--amber)}
+
+/* Heatmap cell */
+.hm-cell{width:44px;height:32px;display:flex;align-items:center;justify-content:center;font-family:var(--font-mono);font-size:8px;font-weight:500;cursor:default;transition:opacity .15s;position:relative}
+.hm-cell:hover{opacity:0.8;outline:1px solid var(--amber)}
+
+/* Tooltip */
+.tooltip{position:fixed;background:var(--panel2);border:1px solid var(--amber);color:var(--amber);font-family:var(--font-mono);font-size:9px;padding:4px 9px;pointer-events:none;z-index:9999;white-space:nowrap;display:none;box-shadow:0 0 10px rgba(255,176,0,0.2)}
+
+/* Correlation bar vis */
+.corr-bar{height:6px;border:1px solid var(--border);background:var(--dim);position:relative;overflow:hidden;width:80px}
+.corr-fill{position:absolute;top:0;height:100%;transition:width .6s ease}
+.corr-fill-pos{right:50%;background:var(--red)}
+.corr-fill-neg{left:50%;background:var(--green)}
+.corr-center{position:absolute;left:50%;top:0;bottom:0;width:1px;background:var(--amber);opacity:0.4}
+
+/* Chat */
+.chat-msgs{flex:1;overflow-y:auto;padding:1rem;display:flex;flex-direction:column;gap:8px}
+.msg{max-width:88%;animation:scanIn .15s ease}
+.msg.user{align-self:flex-end}
+.msg-bubble{font-family:var(--font-mono);font-size:11px;line-height:1.7;padding:9px 12px}
+.msg.bot .msg-bubble{background:var(--panel2);border:1px solid var(--border2);color:var(--text);border-radius:0 6px 6px 6px}
+.msg.user .msg-bubble{background:var(--amber-glow2);border:1px solid var(--amber);color:var(--amber);border-radius:6px 0 6px 6px}
+.msg.typing .msg-bubble{color:var(--muted)}
+.chat-in{flex:1;background:var(--panel2);border:1px solid var(--border2);padding:8px 12px;font-size:11px;color:var(--text);font-family:var(--font-mono);outline:none;transition:border-color .15s}
+.chat-in:focus{border-color:var(--amber);box-shadow:0 0 8px rgba(255,176,0,0.1)}
+.chat-in::placeholder{color:var(--muted)}
+
+/* Row highlight */
+.row-flag td{color:var(--red)!important}
+.row-flag:hover td{background:var(--red-glow)!important}
+
+/* Scrollbar */
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--border2)}
+
+/* Blinking cursor */
+@keyframes cur{0%,100%{opacity:1}49%{opacity:1}50%{opacity:0}}
+.cursor::after{content:'█';animation:cur 1s infinite;font-size:0.7em;color:var(--amber)}
+
+/* Glow pulse on active */
+@keyframes glowPulse{0%,100%{box-shadow:0 0 6px rgba(255,176,0,0.2)}50%{box-shadow:0 0 14px rgba(255,176,0,0.4)}}
+.stat:hover{animation:glowPulse 2s infinite}
+
+.fchip{font-family:var(--font-hud);font-size:10px;font-weight:700;padding:3px 10px;border:1px solid var(--border);background:transparent;cursor:pointer;color:var(--muted);transition:all .15s;letter-spacing:0.08em;text-transform:uppercase}
+.fchip:hover{border-color:var(--border2);color:var(--text)}
+.filter-sel{font-family:var(--font-mono);font-size:10px;padding:3px 8px;border:1px solid var(--border);background:var(--panel2);color:var(--text2);outline:none;cursor:pointer}
+.filter-sel:focus{border-color:var(--amber)}
+.exp-wrap{position:relative}
+.exp-dd{position:absolute;right:0;top:calc(100% + 4px);background:var(--panel2);border:1px solid var(--amber);min-width:170px;z-index:100;display:none}
+.exp-dd.open{display:block}
+.exp-opt{padding:7px 12px;font-family:var(--font-mono);font-size:10px;cursor:pointer;color:var(--text2);display:flex;align-items:center;gap:8px;transition:all .1s;letter-spacing:0.05em;border-bottom:1px solid var(--border)}
+.exp-opt:last-child{border-bottom:none}
+.exp-opt:hover{background:var(--amber-glow2);color:var(--amber)}
+.exp-opt::before{content:'▸';color:var(--amber);opacity:0;transition:opacity .1s}
+.exp-opt:hover::before{opacity:1}
+
+/* Hypothesis detail expand */
+.hyp-detail{border:1px solid var(--amber);background:var(--amber-glow);padding:1rem;margin-bottom:10px;display:none;position:relative}
+.hyp-detail.open{display:block;animation:scanIn .15s ease}
+.hyp-detail::before{content:'DETAIL //';font-family:var(--font-mono);font-size:8px;color:var(--amber-dim);position:absolute;top:6px;right:10px;letter-spacing:0.12em}
+
+/* Number accent */
+.num{font-family:var(--font-pixel);font-weight:500;color:var(--amber);text-shadow:0 0 6px rgba(255,176,0,0.4)}
+.num-red{font-family:var(--font-pixel);font-weight:500;color:var(--red);text-shadow:0 0 6px rgba(255,51,51,0.4)}
+.num-green{font-family:var(--font-pixel);font-weight:500;color:var(--green);text-shadow:0 0 6px rgba(0,255,136,0.4)}
+.num-cyan{font-family:var(--font-pixel);font-weight:500;color:var(--cyan);text-shadow:0 0 6px rgba(0,229,255,0.4)}
+
+/* Section divider */
+.divider{border:none;border-top:1px solid var(--border);margin:10px 0;position:relative}
+.divider::before{content:'';position:absolute;top:-1px;left:0;width:40px;height:1px;background:var(--amber)}
+</style>
+</head>
+<body>
+<div class="tooltip" id="tt"></div>
+
+<div class="shell">
+<!-- ── SIDEBAR ── -->
+<aside class="sidebar">
+  <div class="logo-area">
+    <div style="font-family:var(--font-pixel);font-size:26px;font-weight:500;letter-spacing:0.04em;line-height:1;margin-bottom:4px;color:var(--amber);text-shadow:0 0 10px rgba(255,176,0,0.4)">GAMERPSYCHE</div>
+    <div style="font-family:var(--font-hud);font-size:11px;font-weight:600;color:var(--text2);letter-spacing:0.2em;text-transform:uppercase;margin-bottom:8px">ANALYST WORKBENCH</div>
+    <div class="logo-badge"><span class="live-pip"></span>LIVE SYS</div>
+  </div>
+
+  <nav class="nav">
+    <div class="nav-cat">// OVERVIEW</div>
+    <div class="nav-item active" onclick="switchPage('overview',this)">
+      <svg class="nav-icon" viewBox="0 0 14 14" fill="currentColor"><rect x="1" y="1" width="5" height="5"/><rect x="8" y="1" width="5" height="5"/><rect x="1" y="8" width="5" height="5"/><rect x="8" y="8" width="5" height="5"/></svg>
+      Summary Stats
+    </div>
+    <div class="nav-item" onclick="switchPage('clusters',this)">
+      <svg class="nav-icon" viewBox="0 0 14 14" fill="currentColor"><circle cx="4" cy="4" r="2.5"/><circle cx="10" cy="10" r="2.5"/><circle cx="10" cy="4" r="2.5"/><circle cx="4" cy="10" r="2.5"/></svg>
+      Cluster Profiles
+    </div>
+    <div class="nav-cat">// HYPOTHESIS</div>
+    <div class="nav-item" onclick="switchPage('hyp',this)">
+      <svg class="nav-icon" viewBox="0 0 14 14" fill="currentColor"><path d="M2 2h10v2H2zm0 4h7v2H2zm0 4h9v2H2z"/></svg>
+      Results Matrix
+    </div>
+    <div class="nav-item" onclick="switchPage('corr',this)">
+      <svg class="nav-icon" viewBox="0 0 14 14" fill="currentColor"><path d="M2 11L5 7l3 2 2-4 2 6" stroke="currentColor" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg>
+      Corr. Explorer
+    </div>
+    <div class="nav-cat">// TARGETING</div>
+    <div class="nav-item" onclick="switchPage('audience',this)">
+      <svg class="nav-icon" viewBox="0 0 14 14" fill="currentColor"><circle cx="7" cy="7" r="5" stroke="currentColor" stroke-width="1.2" fill="none"/><circle cx="7" cy="7" r="2.5" stroke="currentColor" stroke-width="1.2" fill="none"/><circle cx="7" cy="7" r=".8" fill="currentColor"/></svg>
+      Audience Reach
+    </div>
+    <div class="nav-item" onclick="switchPage('ethics',this)">
+      <svg class="nav-icon" viewBox="0 0 14 14" fill="currentColor"><path d="M7 1L1 4v4c0 3 2.5 5.5 6 6 3.5-.5 6-3 6-6V4L7 1z"/></svg>
+      Ethics Flags
+    </div>
+    <div class="nav-item" onclick="switchPage('conclusions',this)">
+      <svg class="nav-icon" viewBox="0 0 14 14" fill="currentColor"><path d="M1 2h12v2H1zm0 4h9v2H1zm0 4h11v2H1z"/></svg>
+      Conclusions
+      <span class="nav-alert" style="background:var(--green-glow);border-color:var(--green-dim);color:var(--green)">KEY</span>
+    </div>
+    <div class="nav-cat">// TOOLS</div>
+    <div class="nav-item" onclick="switchPage('chat',this)">
+      <svg class="nav-icon" viewBox="0 0 14 14" fill="currentColor"><path d="M1 1h12a1 1 0 011 1v7a1 1 0 01-1 1H4.5L1 12V2a1 1 0 011-1z"/></svg>
+      AI Query Engine
+    </div>
+  </nav>
+
+  <div class="sidebar-foot">
+    <div class="meta-grid">
+      <div class="meta-cell"><span class="meta-val">13.4K</span><span class="meta-lbl">N</span></div>
+      <div class="meta-cell"><span class="meta-val">28</span><span class="meta-lbl">VARS</span></div>
+      <div class="meta-cell"><span class="meta-val">4</span><span class="meta-lbl">CLUSTERS</span></div>
+      <div class="meta-cell"><span class="meta-val" style="color:var(--red)">p.05</span><span class="meta-lbl">THRESH</span></div>
+    </div>
+  </div>
+</aside>
+
+<!-- ── MAIN ── -->
+<div class="main">
+  <div class="topbar">
+    <div>
+      <div class="tb-path" id="tbPath">GAMERPSYCHE // ANALYST // OVERVIEW</div>
+      <div class="tb-title cursor" id="tbTitle">SUMMARY_STATS</div>
+    </div>
+    <div class="tb-right">
+      <div class="exp-wrap">
+        <button class="btn btn-ghost" onclick="toggleExp(this)">
+          <svg viewBox="0 0 12 12" stroke="currentColor" stroke-width="1.5" fill="none"><path d="M6 1v7M3 5l3 3 3-3M1 9v1a1 1 0 001 1h8a1 1 0 001-1V9" stroke-linecap="round"/></svg>
+          EXPORT
+        </button>
+        <div class="exp-dd" id="expDd">
+          <div class="exp-opt" onclick="expCSV()">CSV — current view</div>
+          <div class="exp-opt" onclick="expJSON()">JSON — full dataset</div>
+          <div class="exp-opt" onclick="expHyp()">CSV — hypothesis matrix</div>
+          <div class="exp-opt" onclick="expFlags()">CSV — ethics flags</div>
+          <div class="exp-opt" onclick="alert('PDF renderer in production')">PDF — summary report</div>
+        </div>
+      </div>
+      <button class="btn btn-amber" onclick="switchPage('chat',document.querySelector('.nav-item:last-child'))">
+        <svg viewBox="0 0 12 12" fill="currentColor"><path d="M1 1h10a1 1 0 011 1v6a1 1 0 01-1 1H4L1 11V2a1 1 0 011-1z"/></svg>
+        QUERY AI
+      </button>
+    </div>
+  </div>
+
+
+
+  <div class="content">
+
+    <!-- PAGE: OVERVIEW -->
+    <div class="page active" id="page-overview">
+      <div class="g3">
+        <div class="stat" style="--stat-accent:var(--amber)">
+          <div class="stat-top"><div class="stat-ico"><svg viewBox="0 0 12 12" fill="var(--amber)"><circle cx="6" cy="6" r="4" stroke="var(--amber)" stroke-width="1.2" fill="none"/><circle cx="6" cy="6" r="1.5"/></svg></div><span class="stat-delta sd-nt">K-MEANS</span></div>
+          <div class="stat-val">4</div><div class="stat-lbl">Clusters</div><div class="stat-sub">28 VARIABLES · n=13,407</div>
+        </div>
+        <div class="stat" style="--stat-accent:var(--green)">
+          <div class="stat-top"><div class="stat-ico"><svg viewBox="0 0 12 12" fill="none" stroke="var(--green)" stroke-width="1.5" stroke-linecap="round"><path d="M2 7l3 3 5-5"/></svg></div><span class="stat-delta sd-up">8/10</span></div>
+          <div class="stat-val" style="color:var(--green);text-shadow:0 0 10px rgba(0,255,136,0.4)">80%</div><div class="stat-lbl">Hyp. Supported</div><div class="stat-sub">H1–H10 · p&lt;0.05</div>
+        </div>
+        <div class="stat" style="--stat-accent:var(--red)">
+          <div class="stat-top"><div class="stat-ico"><svg viewBox="0 0 12 12" fill="var(--red)"><path d="M6 1.5L1 10.5h10L6 1.5zm0 3l3 5H3l3-5z"/></svg></div><span class="stat-delta sd-dn">21.4% POP</span></div>
+          <div class="stat-val" style="color:var(--red);text-shadow:0 0 10px rgba(255,51,51,0.4)">2,881</div><div class="stat-lbl">High-Risk Players</div><div class="stat-sub">IS+ER · GAD ≥ 6.0</div>
+        </div>
+      </div>
+
+      <div class="g75">
+        <div class="panel corner">
+          <div class="panel-hdr"><div><div class="panel-title">CLUSTER SUMMARY TABLE</div><div class="panel-sub">CLICK ROW → DRILL INTO CLUSTER</div></div><button class="btn btn-ghost" style="font-size:9px;padding:3px 8px" onclick="navigator.clipboard.writeText('copied').then(()=>{})">COPY</button></div>
+          <div class="tbl-wrap"><table class="dt" id="summaryTable">
+            <thead><tr><th>CLUSTER</th><th>n</th><th>%</th><th>GAD</th><th>SWL</th><th>SPIN</th><th>RISK</th><th>DRIVER</th></tr></thead>
+            <tbody id="summTbody"></tbody>
+          </table></div>
+        </div>
+        <div class="panel corner">
+          <div class="panel-hdr"><div class="panel-title">DISTRIBUTION</div></div>
+          <div class="chart-wrap" style="height:160px"><canvas id="distChart"></canvas></div>
+          <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:8px" id="distLeg"></div>
+        </div>
+      </div>
+
+      <div class="g2">
+        <div class="panel corner">
+          <div class="panel-hdr"><div><div class="panel-title">WELL-BEING SCORES</div><div class="panel-sub">GAD · SWL · SPIN ACROSS CLUSTERS</div></div></div>
+          <div class="chart-wrap" style="height:180px"><canvas id="wellChart"></canvas></div>
+        </div>
+        <div class="panel corner">
+          <div class="panel-hdr"><div><div class="panel-title">TOP EFFECT SIZES</div><div class="panel-sub">|r| ≥ 0.05 · RANKED</div></div></div>
+          <div class="tbl-wrap" style="max-height:200px;overflow-y:auto"><table class="dt">
+            <thead><tr><th>PREDICTOR → OUTCOME</th><th>r</th><th>DIR</th><th>SIG</th><th>SEG</th></tr></thead>
+            <tbody id="effectTbody"></tbody>
+          </table></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PAGE: CLUSTERS -->
+    <div class="page" id="page-clusters">
+      <div class="seg-tabs" id="clTabs"></div>
+      <div id="clDetail"></div>
+    </div>
+
+    <!-- PAGE: HYPOTHESIS MATRIX -->
+    <div class="page" id="page-hyp">
+      <div class="g4">
+        <div class="stat" style="--stat-accent:var(--green)"><div class="stat-top"><div class="stat-ico"></div><span class="stat-delta sd-up">CONFIRMED</span></div><div class="stat-val" style="color:var(--green);text-shadow:0 0 10px rgba(0,255,136,0.4)">6</div><div class="stat-lbl">Fully Supported</div></div>
+        <div class="stat" style="--stat-accent:var(--amber)"><div class="stat-top"><div class="stat-ico"></div><span class="stat-delta sd-nt">PARTIAL</span></div><div class="stat-val">2</div><div class="stat-lbl">Partially Supported</div></div>
+        <div class="stat" style="--stat-accent:var(--red)"><div class="stat-top"><div class="stat-ico"></div><span class="stat-delta sd-dn">FAIL</span></div><div class="stat-val" style="color:var(--red);text-shadow:0 0 10px rgba(255,51,51,0.4)">2</div><div class="stat-lbl">Contradicted</div></div>
+        <div class="stat"><div class="stat-top"><div class="stat-ico"></div><span class="stat-delta sd-nt">TOTAL</span></div><div class="stat-val">10</div><div class="stat-lbl">Tested</div></div>
+      </div>
+      <div class="panel corner gfull">
+        <div class="panel-hdr"><div><div class="panel-title">FULL HYPOTHESIS MATRIX</div><div class="panel-sub">ALL CLUSTERS · CLICK ROW → EXPAND DETAIL · p&lt;0.05 THRESHOLD</div></div><button class="btn btn-ghost" style="font-size:9px;padding:3px 8px" onclick="expHyp()">EXPORT CSV</button></div>
+        <div class="tbl-wrap"><table class="dt">
+          <thead><tr><th>ID</th><th>HYPOTHESIS</th><th>VERDICT</th><th>FULL DS</th><th>BR</th><th>SC</th><th>IS</th><th>ER</th><th>KEY METRIC</th><th>p</th></tr></thead>
+          <tbody id="hypTbody"></tbody>
+        </table></div>
+      </div>
+      <div class="hyp-detail" id="hypDetail"></div>
+    </div>
+
+    <!-- PAGE: CORRELATIONS -->
+    <div class="page" id="page-corr">
+
+      <!-- INSTRUCTION BAR -->
+      <div style="display:flex;align-items:center;gap:10px;padding:6px 12px;border:1px solid var(--border);background:var(--amber-glow);margin-bottom:10px;font-family:var(--font-mono);font-size:9px;color:var(--amber-dim);letter-spacing:0.08em">
+        <span style="color:var(--amber)">▸</span>
+        CLICK ANY VARIABLE LABEL TO SELECT IT — FILTERS TABLE + HIGHLIGHTS HEATMAP + SHOWS INTERPRETATION
+        <span style="margin-left:auto;color:var(--muted)" id="selLabel">NO VARIABLE SELECTED</span>
+        <button class="btn btn-ghost" style="font-size:8px;padding:2px 8px" onclick="clearCorrSel()">CLEAR</button>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 320px;gap:10px;margin-bottom:10px">
+
+        <!-- INTERACTIVE HEATMAP -->
+        <div class="panel corner">
+          <div class="panel-hdr">
+            <div><div class="panel-title">INTERACTIVE CORRELATION MATRIX</div><div class="panel-sub">CLICK LABEL → SELECT VARIABLE · HOVER CELL → r VALUE</div></div>
+          </div>
+          <div id="heatmap" style="overflow-x:auto"></div>
+          <div style="display:flex;align-items:center;gap:14px;margin-top:10px;font-family:var(--font-mono);font-size:8px;color:var(--muted)">
+            <span style="display:flex;align-items:center;gap:4px"><span style="width:12px;height:8px;background:rgba(255,51,51,0.7);display:inline-block"></span>POSITIVE CORR.</span>
+            <span style="display:flex;align-items:center;gap:4px"><span style="width:12px;height:8px;background:rgba(0,255,136,0.7);display:inline-block"></span>NEGATIVE CORR.</span>
+            <span style="display:flex;align-items:center;gap:4px"><span style="width:12px;height:8px;background:rgba(255,176,0,0.15);display:inline-block;border:1px solid var(--amber)"></span>SELECTED</span>
+            <span style="display:flex;align-items:center;gap:4px"><span style="width:12px;height:8px;background:rgba(255,255,255,0.03);display:inline-block"></span>WEAK / NS</span>
+          </div>
+        </div>
+
+        <!-- INTERPRETATION PANEL -->
+        <div class="panel corner" id="corrInterpPanel">
+          <div class="panel-title" style="margin-bottom:8px">VARIABLE INTERPRETATION</div>
+          <div id="corrInterp" style="display:flex;align-items:center;justify-content:center;height:260px;color:var(--muted);font-family:var(--font-mono);font-size:10px;text-align:center;letter-spacing:0.08em;line-height:1.8">
+            SELECT A VARIABLE<br>FROM THE HEATMAP<br>TO SEE INTERPRETATION
+          </div>
+        </div>
+      </div>
+
+      <!-- FILTERED TABLE -->
+      <div class="panel corner gfull">
+        <div class="panel-hdr">
+          <div><div class="panel-title" id="corrTableTitle">ALL CORRELATIONS</div><div class="panel-sub">CLICK VARIABLE ABOVE TO FILTER · n=13,407</div></div>
+          <div style="display:flex;gap:6px;align-items:center">
+            <select class="filter-sel" id="sigFilterCorr" onchange="applyFilters()">
+              <option value="all">ALL SIG.</option>
+              <option value="***">p&lt;0.001 (***)</option>
+              <option value="**">p&lt;0.01 (**+)</option>
+              <option value="*">p&lt;0.05 (*+)</option>
+              <option value="ns">NS ONLY</option>
+            </select>
+            <select class="filter-sel" id="dirFilterCorr" onchange="applyFilters()">
+              <option value="all">ALL DIR.</option>
+              <option value="pos">POSITIVE ONLY</option>
+              <option value="neg">NEGATIVE ONLY</option>
+            </select>
+          </div>
+        </div>
+        <div class="tbl-wrap" style="max-height:300px;overflow-y:auto">
+          <table class="dt">
+            <thead><tr><th>PREDICTOR</th><th>OUTCOME</th><th>r (FULL)</th><th>r BR</th><th>r SC</th><th>r IS</th><th>r ER</th><th>SIG</th><th>MAGNITUDE</th><th>PATTERN</th></tr></thead>
+            <tbody id="corrTbody"></tbody>
+          </table>
+        </div>
+        <div style="font-family:var(--font-mono);font-size:8px;color:var(--muted);margin-top:6px;padding-top:6px;border-top:1px solid var(--border)" id="corrCount">SHOWING ALL 12 ASSOCIATIONS</div>
+      </div>
+    </div>
+
+    <!-- PAGE: AUDIENCE -->
+    <div class="page" id="page-audience">
+      <div class="g4">
+        <div class="stat"><div class="stat-top"><div class="stat-ico"></div><span class="stat-delta sd-nt">TOTAL</span></div><div class="stat-val">12.4M</div><div class="stat-lbl">Addressable Audience</div></div>
+        <div class="stat" style="--stat-accent:var(--green)"><div class="stat-top"><div class="stat-ico"></div><span class="stat-delta sd-up">78.3%</span></div><div class="stat-val" style="color:var(--green);text-shadow:0 0 10px rgba(0,255,136,0.4)">9.7M</div><div class="stat-lbl">Ethics Cleared</div></div>
+        <div class="stat" style="--stat-accent:var(--red)"><div class="stat-top"><div class="stat-ico"></div><span class="stat-delta sd-dn">FLAG</span></div><div class="stat-val" style="color:var(--red);text-shadow:0 0 10px rgba(255,51,51,0.4)">2.7M</div><div class="stat-lbl">Restricted Reach</div></div>
+        <div class="stat" style="--stat-accent:var(--cyan)"><div class="stat-top"><div class="stat-ico"></div><span class="stat-delta sd-up">VALIDATED</span></div><div class="stat-val" style="color:var(--cyan);text-shadow:0 0 10px rgba(0,229,255,0.4)">2.4×</div><div class="stat-lbl">Campaign Lift</div></div>
+      </div>
+      <div class="g2">
+        <div class="panel corner">
+          <div class="panel-hdr"><div><div class="panel-title">SEGMENT REACH + CAMPAIGN FIT MATRIX</div><div class="panel-sub">SCORE /100 · DERIVED FROM BEHAVIORAL CORRELATES</div></div></div>
+          <div class="tbl-wrap"><table class="dt">
+            <thead><tr><th>SEGMENT</th><th>n</th><th>REACH</th><th>CASUAL</th><th>COMP</th><th>SOCIAL</th><th>HW</th><th>WELLNESS</th><th>EARN</th><th>GAMBLE</th><th>ETHICS</th></tr></thead>
+            <tbody id="reachTbody"></tbody>
+          </table></div>
+        </div>
+        <div class="panel corner">
+          <div class="panel-hdr"><div class="panel-title">REACH BY SEGMENT</div></div>
+          <div class="chart-wrap" style="height:200px"><canvas id="reachChart"></canvas></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PAGE: ETHICS -->
+    <div class="page" id="page-ethics">
+      <div class="panel corner gfull">
+        <div class="panel-hdr"><div><div class="panel-title">ETHICS RESTRICTION TABLE</div><div class="panel-sub">RESEARCH-VALIDATED · ALL FLAGS CITE SPECIFIC HYPOTHESES · n=13,407</div></div><button class="btn btn-ghost" style="font-size:9px;padding:3px 8px" onclick="expFlags()">EXPORT CSV</button></div>
+        <div class="tbl-wrap"><table class="dt">
+          <thead><tr><th>CATEGORY</th><th>SEGMENTS</th><th>LEVEL</th><th>H-BASIS</th><th>KEY STAT</th><th>REACH IMPACT</th></tr></thead>
+          <tbody id="flagTbody"></tbody>
+        </table></div>
+      </div>
+      <div class="g2">
+        <div class="panel corner">
+          <div class="panel-hdr"><div><div class="panel-title">H2: STREAMING → WELL-BEING</div><div class="panel-sub">CONTRADICTED · STREAMING WORSENS ALL OUTCOMES</div></div></div>
+          <div class="chart-wrap" style="height:180px"><canvas id="streamChart"></canvas></div>
+        </div>
+        <div class="panel corner">
+          <div class="panel-hdr"><div><div class="panel-title">H5: EARNINGS → SWL BY CLUSTER</div><div class="panel-sub">SUPPORTED · DOUBLES IN IS</div></div></div>
+          <div class="chart-wrap" style="height:180px"><canvas id="earnChart"></canvas></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PAGE: CONCLUSIONS -->
+    <div class="page" id="page-conclusions">
+
+      <!-- VIEW SWITCHER -->
+      <div style="display:flex;gap:0;border:1px solid var(--border2);margin-bottom:12px;width:fit-content">
+        <button class="btn btn-amber" id="vbtn-seg" onclick="switchView('seg')" style="padding:6px 20px;font-size:10px;border-radius:0">BY SEGMENT</button>
+        <button class="btn btn-ghost" id="vbtn-hyp" onclick="switchView('hyp')" style="padding:6px 20px;font-size:10px;border-radius:0;border-left:none">BY HYPOTHESIS</button>
+        <button class="btn btn-ghost" id="vbtn-biz" onclick="switchView('biz')" style="padding:6px 20px;font-size:10px;border-radius:0;border-left:none">BY BUSINESS QUESTION</button>
+      </div>
+
+      <!-- SUMMARY COUNTERS -->
+      <div class="g4" style="margin-bottom:12px">
+        <div class="stat" style="--stat-accent:var(--green)">
+          <div class="stat-top"><div class="stat-ico"></div><span class="stat-delta sd-up">CLEAR</span></div>
+          <div class="stat-val" style="color:var(--green);text-shadow:0 0 10px rgba(0,255,136,0.4)">14</div>
+          <div class="stat-lbl">Actionable conclusions</div>
+        </div>
+        <div class="stat" style="--stat-accent:var(--red)">
+          <div class="stat-top"><div class="stat-ico"></div><span class="stat-delta sd-dn">ALERT</span></div>
+          <div class="stat-val" style="color:var(--red);text-shadow:0 0 10px rgba(255,51,51,0.4)">4</div>
+          <div class="stat-lbl">Assumptions overturned</div>
+        </div>
+        <div class="stat" style="--stat-accent:var(--cyan)">
+          <div class="stat-top"><div class="stat-ico"></div><span class="stat-delta sd-nt">OPPS</span></div>
+          <div class="stat-val" style="color:var(--cyan);text-shadow:0 0 10px rgba(0,229,255,0.4)">3</div>
+          <div class="stat-lbl">Untapped opportunities</div>
+        </div>
+        <div class="stat" style="--stat-accent:var(--amber)">
+          <div class="stat-top"><div class="stat-ico"></div><span class="stat-delta sd-nt">TOTAL</span></div>
+          <div class="stat-val">10</div>
+          <div class="stat-lbl">Hypotheses feeding conclusions</div>
+        </div>
+      </div>
+
+      <!-- VIEW: BY SEGMENT -->
+      <div id="view-seg">
+        <div class="seg-tabs" id="concSegTabs"></div>
+        <div id="concSegBody"></div>
+      </div>
+
+      <!-- VIEW: BY HYPOTHESIS -->
+      <div id="view-hyp" style="display:none">
+        <div class="panel corner gfull" style="margin-bottom:10px">
+          <div class="panel-hdr"><div><div class="panel-title">HYPOTHESIS → CONCLUSION MAP</div><div class="panel-sub">CLICK ANY ROW TO EXPAND FULL ANALYST CONCLUSION</div></div></div>
+          <div class="tbl-wrap"><table class="dt">
+            <thead><tr><th>ID</th><th>HYPOTHESIS</th><th>VERDICT</th><th>ANALYST CONCLUSION (PLAIN)</th><th>KEY EVIDENCE</th><th>ACTION</th></tr></thead>
+            <tbody id="hypConcTbody"></tbody>
+          </table></div>
+        </div>
+        <div class="hyp-detail" id="hypConcDetail"></div>
+      </div>
+
+      <!-- VIEW: BY BUSINESS QUESTION -->
+      <div id="view-biz" style="display:none">
+        <div style="display:grid;grid-template-columns:200px 1fr;gap:10px">
+          <div class="panel corner" style="padding:0;overflow:hidden">
+            <div style="padding:.75rem 1rem;border-bottom:1px solid var(--border);font-family:var(--font-pixel);font-size:11px;color:var(--amber)">QUESTIONS</div>
+            <div id="bizQList"></div>
+          </div>
+          <div class="panel corner" id="bizAnswer">
+            <div style="display:flex;align-items:center;justify-content:center;height:300px;color:var(--muted);font-family:var(--font-mono);font-size:11px;letter-spacing:0.1em">SELECT A QUESTION //</div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- PAGE: CHAT -->
+    <div class="page" id="page-chat">
+      <div style="display:grid;grid-template-columns:1fr 240px;gap:10px;height:calc(100vh - 128px)">
+        <div class="panel corner" style="display:flex;flex-direction:column;overflow:hidden;padding:0">
+          <div style="padding:.75rem 1rem;border-bottom:1px solid var(--border2);display:flex;align-items:center;gap:10px;background:var(--panel2)">
+            <div style="width:26px;height:26px;border:1px solid var(--amber);display:flex;align-items:center;justify-content:center;font-family:var(--font-pixel);font-size:9px;color:var(--amber);background:var(--amber-glow)">AI</div>
+            <div>
+              <div style="font-family:var(--font-pixel);font-size:12px;color:var(--amber);text-shadow:0 0 6px rgba(255,176,0,0.3)">QUERY_ENGINE</div>
+              <div style="font-family:var(--font-mono);font-size:8px;color:var(--muted);letter-spacing:0.1em"><span class="live-pip" style="display:inline-block;margin-right:4px"></span>TRAINED · n=13,407 · 28 VARS · 10 HYPS</div>
+            </div>
+          </div>
+          <div class="chat-msgs" id="chatMsgs">
+            <div class="msg bot"><div class="msg-bubble">QUERY ENGINE ONLINE //<br>Full access: 13,407 respondents · 28 variables · 4 clusters · 10 hypothesis tests with per-cluster r-values.<br><br>Type a query or select a segment on the right.</div></div>
+          </div>
+          <div style="padding:.75rem 1rem;border-top:1px solid var(--border2);background:var(--panel2)">
+            <div style="display:flex;flex-wrap:wrap;gap:4px;margin-bottom:7px">
+              <button class="fchip" onclick="fireChip(this)">r-value narcissism→GAD in ER?</button>
+              <button class="fchip" onclick="fireChip(this)">Why was H2 contradicted?</button>
+              <button class="fchip" onclick="fireChip(this)">Earnings→SWL amplification in IS</button>
+              <button class="fchip" onclick="fireChip(this)">Compare GAD curves across clusters</button>
+              <button class="fchip" onclick="fireChip(this)">Justify gambling restriction with data</button>
+            </div>
+            <div style="display:flex;gap:6px">
+              <input class="chat-in" id="chatIn" placeholder="QUERY THE RESEARCH DATA //" onkeydown="if(event.key==='Enter')sendMsg()"/>
+              <button class="btn btn-amber" onclick="sendMsg()">SEND</button>
+            </div>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:8px;overflow-y:auto">
+          <div class="panel corner">
+            <div class="panel-title" style="margin-bottom:8px">SEGMENT REF</div>
+            <div id="ctxSegs"></div>
+          </div>
+          <div class="panel corner">
+            <div class="panel-title" style="margin-bottom:8px">CRITICAL FINDINGS</div>
+            <div id="ctxFacts"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+</div>
+
+<script>
+const SEGS=[
+  {id:0,init:'BR',name:'Balanced Recreationalists',short:'Balanced Rec.',n:5527,pct:41.2,gad:4.67,swl:20.59,spin:23.0,risk:'LOW',color:'#cc44ff',driver:'Leisure motivation',
+   profile:'Low-anxiety, high-satisfaction leisure players. Flat anxiety curve regardless of playtime. Strongest multiplayer social-phobia reduction. Best psychological outcomes.',
+   hyps:{'H1':'Partial','H2':'Contra','H5':'Supported','H7':'Supported (strongest)','H8':'Supported','H9':'Holds'},
+   stats:[['Hours→GAD','r=+0.062***','Positive, weak'],['Playstyle→SPIN','r=−0.083***','Strongest reduction'],['Streams→GAD','r=+0.070***','Risk signal'],['Earnings→SWL','r=−0.039**','Mild negative'],['Narcissism→GAD','r=+0.049***','Weak positive'],['Age→GAD','r=−0.054***','Protective']]},
+  {id:1,init:'SC',name:'Structured Competitors',short:'Struct. Comp.',n:4969,pct:37.1,gad:5.26,swl:19.62,spin:23.4,risk:'MOD',color:'#00e5ff',driver:'Rank / competition',
+   profile:'Competitive ranked players. Hours monotonically predict anxiety — more play = more anxiety. Rank alone not significant. Earnings compounds moderately.',
+   hyps:{'H1':'Partial (hours sig.)','H2':'Contra','H5':'Supported','H7':'Holds','H8':'Holds','H9':'Holds'},
+   stats:[['Hours→GAD','r=+0.064***','Monotonic rise'],['Rank→GAD','r=−0.004 ns','Not significant'],['Streams→GAD','r=+0.044**','Moderate risk'],['Earnings→SWL','r=−0.036*','Mild negative'],['Narcissism→GAD','r=+0.067***','Moderate positive'],['Playstyle→SWL','r=+0.075***','Protective']]},
+  {id:2,init:'IS',name:'Intensified Strivers',short:'Intens. Strivers',n:2191,pct:16.3,gad:6.12,swl:18.40,spin:26.9,risk:'HIGH',color:'#ff3333',driver:'Identity–rank fusion',
+   profile:'Highest-risk competitive segment. Unique rank→GAD pathway via identity-attachment. Earnings penalty doubles vs all others. Widest gender SPIN gap. Highest-leverage intervention: playstyle shift.',
+   hyps:{'H1':'REVERSAL — rank sig.','H2':'Contra (strongest)','H5':'AMPLIFIED 2×','H7':'Holds','H8':'STRONGEST (r=.124)','H9':'Gap widens to 10.73'},
+   stats:[['Rank→GAD','r=+0.047*','ONLY seg. significant'],['Earnings→SWL','r=−0.088***','DOUBLED vs others'],['Streams→SWL','r=−0.095***','Strongest stream effect'],['Playstyle→SWL','r=+0.124***','Strongest intervention'],['Narcissism→GAD','r=+0.083***','Strong positive'],['Gender SPIN gap','10.73***','Widest gap']]},
+  {id:3,init:'ER',name:'Escapist Regulators',short:'Escapist Reg.',n:690,pct:5.1,gad:6.20,swl:19.03,spin:22.2,risk:'HIGH',color:'#ffb000',driver:'Emotional regulation/escape',
+   profile:'Highest anxiety. Gaming as emotional avoidance. Age protection REVERSED. Narcissism strongest predictor. U-shaped hours curve. Most psychologically distinct.',
+   hyps:{'H1':'Not supported','H2':'Attenuated','H5':'Not significant','H10':'REVERSED'},
+   stats:[['Narcissism→GAD','r=+0.111**','HIGHEST all segs'],['Age→GAD','r=+0.024 ns','REVERSED'],['Streams→GAD','r=+0.064 ns','Attenuated'],['Earnings→SWL','r=−0.071 ns','Not significant'],['Playstyle→GAD','r=−0.099**','Significant reduction'],['GAD at mod hrs','4.98','Lowest — U-curve']]}
+];
+
+const HYPS=[
+  {id:'H1',title:'League status & anxiety',verdict:'Partial',vc:'p',full:'Partial',br:'Partially Supported',sc:'Partially Supported',is:'Partially Supported',er:'Not Supported',metric:'Rank→GAD IS: r=+0.047*',pval:'p=0.020',note:'Rank only predicts GAD in Intensified Strivers — identity-attachment mechanism. Hours predict GAD in BR and SC.'},
+  {id:'H2',title:'Streaming & well-being',verdict:'Contra',vc:'c',full:'Contradicted',br:'Contradicted',sc:'Contradicted',is:'Contradicted',er:'Not Supported',metric:'Streams→GAD: r=+0.066***',pval:'p&lt;0.001',note:'H2 OVERTURNED. Streaming consistently worsens GAD, SPIN, SWL. Social belonging narrative unsupported.'},
+  {id:'H3',title:'Narcissism & life satisfaction',verdict:'Partial',vc:'p',full:'Partial',br:'Partially Supported',sc:'Partially Supported',is:'Partially Supported',er:'Partially Supported',metric:'Narc→GAD: r=+0.079***',pval:'p&lt;0.001',note:'Narcissism reliably raises anxiety — gradient strengthens toward high-risk clusters. No significant SWL effect anywhere.'},
+  {id:'H4',title:'Motivation (WhyPlay) & anxiety',verdict:'Supported',vc:'s',full:'Supported',br:'Not Testable',sc:'Not Testable',is:'Not Testable',er:'Not Testable',metric:'Relaxing→GAD: r=+0.049***',pval:'p&lt;0.001',note:'Between-cluster GAD gradient is primary evidence: BR=4.67 SC=5.26 IS=6.12 ER=6.20.'},
+  {id:'H5',title:'Earnings expectation & SWL',verdict:'Supported',vc:'s',full:'Supported',br:'Supported',sc:'Supported',is:'Supported',er:'Not Supported',metric:'Earnings→SWL IS: r=−0.088***',pval:'p&lt;0.001',note:'Effect doubles in Intensified Strivers. Not significant in Escapist Regulators where escapist drive dominates.'},
+  {id:'H6',title:'Hours & well-being (inverted-U)',verdict:'Contra',vc:'c',full:'Contradicted',br:'Partially Supported',sc:'Contradicted',is:'Partially Supported',er:'Partially Supported',metric:'No universal inv-U found',pval:'varies',note:'No universal optimal play window. Curve is cluster-dependent: BR=flat, SC=monotonic, IS=elevated U, ER=U-shape.'},
+  {id:'H7',title:'Multiplayer & social phobia',verdict:'Supported',vc:'s',full:'Supported',br:'Supported',sc:'Supported',is:'Supported',er:'Partially Supported',metric:'Playstyle→SPIN: r=−0.067***',pval:'p&lt;0.001',note:'Social play consistently reduces both social phobia and anxiety across all groups. SPIN pathway absent in Escapist Regulators — GAD pathway persists.'},
+  {id:'H8',title:'Playstyle & life satisfaction',verdict:'Supported',vc:'s',full:'Supported',br:'Supported',sc:'Supported',is:'Supported',er:'Supported',metric:'Playstyle→SWL IS: r=+0.124***',pval:'p&lt;0.001',note:'Social & balanced play boosts life satisfaction in every group. Strongest effect in Intensified Strivers — the highest-leverage intervention point.'},
+  {id:'H9',title:'Gender & social phobia',verdict:'Supported',vc:'s',full:'Supported',br:'Supported',sc:'Supported',is:'Supported',er:'Supported',metric:'Gender SPIN gap IS: 10.73***',pval:'p&lt;0.001',note:'Consistent significant gap across all clusters. Widens substantially in IS. Narrowest but still significant in ER.'},
+  {id:'H10',title:'Age & motivation interaction',verdict:'Supported',vc:'s',full:'Supported',br:'Partially Supported',sc:'Partially Supported',is:'Partially Supported',er:'Not Supported',metric:'Age→GAD ER: REVERSED',pval:'p&lt;0.001 (not ER)',note:'Age normally buffers anxiety. Completely reversed in Escapist Regulators — emotional regulation overrides age resilience.'},
+];
+
+const CORRS=[
+  {pred:'Streaming',out:'GAD',full:'+0.066***',br:'+0.070***',sc:'+0.044**',is:'+0.078***',er:'+0.064ns',sig:'***',note:'H2 contradicted'},
+  {pred:'Streaming',out:'SPIN',full:'+0.065***',br:'+0.099***',sc:'+0.033*',is:'+0.056**',er:'+0.068ns',sig:'***',note:'Social phobia rises'},
+  {pred:'Streaming',out:'SWL',full:'−0.076***',br:'−0.070***',sc:'−0.064***',is:'−0.095***',er:'−0.027ns',sig:'***',note:'Worst in IS'},
+  {pred:'Narcissism',out:'GAD',full:'+0.079***',br:'+0.049***',sc:'+0.067***',is:'+0.083***',er:'+0.111**',sig:'***',note:'Gradient BR→ER'},
+  {pred:'Narcissism',out:'SWL',full:'−0.013ns',br:'−0.003ns',sc:'−0.011ns',is:'+0.029ns',er:'+0.033ns',sig:'ns',note:'No SWL effect'},
+  {pred:'Earnings',out:'SWL',full:'−0.053***',br:'−0.039**',sc:'−0.036*',is:'−0.088***',er:'−0.071ns',sig:'***',note:'Doubles in IS'},
+  {pred:'Earnings',out:'GAD',full:'+0.053***',br:'+0.047***',sc:'+0.039**',is:'+0.074***',er:'+0.039ns',sig:'***',note:'Consistent'},
+  {pred:'Playstyle',out:'SWL',full:'+0.104***',br:'+0.096***',sc:'+0.075***',is:'+0.124***',er:'+0.117**',sig:'***',note:'Strongest protection'},
+  {pred:'Playstyle',out:'GAD',full:'−0.072***',br:'−0.065***',sc:'−0.039**',is:'−0.080***',er:'−0.099**',sig:'***',note:'Protective all segs'},
+  {pred:'Hours',out:'GAD',full:'+0.013ns',br:'+0.062***',sc:'+0.064***',is:'−0.002ns',er:'+0.059ns',sig:'ns',note:'Cluster-dependent'},
+  {pred:'Age',out:'GAD',full:'−0.042***',br:'−0.054***',sc:'−0.030*',is:'−0.049*',er:'+0.024ns',sig:'***',note:'REVERSED in ER'},
+  {pred:'Rank',out:'GAD',full:'−0.002ns',br:'−0.048***',sc:'−0.004ns',is:'+0.047*',er:'−0.011ns',sig:'ns',note:'IS only — identity'},
+];
+
+const FLAGS=[
+  {cat:'Gambling / loot-box',segs:'IS, ER',level:'PROHIBITED',basis:'H4+H5',stat:'ER GAD=6.20 · IS r=−0.088***',impact:'−2.7M'},
+  {cat:'Earn-to-play messaging',segs:'IS, ER',level:'PROHIBITED',basis:'H5',stat:'IS earnings→SWL DOUBLES',impact:'−2.7M'},
+  {cat:'High-pressure rank ads',segs:'IS',level:'RESTRICTED',basis:'H1',stat:'Rank→GAD r=+0.047* (IS only)',impact:'−2.0M'},
+  {cat:'Streaming as +engagement proxy',segs:'All',level:'CONDITIONAL',basis:'H2',stat:'Streams→GAD r=+0.066***',impact:'Qualified only'},
+  {cat:'Casual / social campaigns',segs:'BR',level:'APPROVED',basis:'H7+H8',stat:'Playstyle→SWL r=+0.096***',impact:'+5.1M'},
+  {cat:'Esports / competitive campaigns',segs:'SC',level:'APPROVED',basis:'H8',stat:'Playstyle→SWL r=+0.075***',impact:'+4.6M'},
+  {cat:'Wellness / mental health apps',segs:'ER only',level:'APPROVED',basis:'H4',stat:'GAD=6.20 highest need',impact:'+0.6M'},
+];
+
+const REACH=[
+  {seg:'Balanced Rec.',n:'5,527',reach:'5.1M',casual:95,comp:40,social:88,hw:65,well:82,earn:30,gamb:10,eth:'CLEARED'},
+  {seg:'Struct. Comp.',n:'4,969',reach:'4.6M',casual:45,comp:92,social:60,hw:95,well:50,earn:55,gamb:30,eth:'CLEARED'},
+  {seg:'Intens. Strivers',n:'2,191',reach:'2.0M',casual:35,comp:78,social:42,hw:80,well:60,earn:10,gamb:5,eth:'RESTRICTED'},
+  {seg:'Escapist Reg.',n:'690',reach:'0.6M',casual:55,comp:15,social:35,hw:40,well:80,earn:5,gamb:0,eth:'PROHIBITED'},
+];
+
+let chatHistory=[];
+const SYSTEM=`You are GamerPsyche Query Engine — a research data AI for analysts. Full knowledge of K-means segmentation study: 13,407 gamers, 28 variables, 4 clusters, 10 hypotheses.
+CLUSTERS: BR(n=5527,41.2%,GAD=4.67,SWL=20.59,LOW RISK) SC(n=4969,37.1%,GAD=5.26,SWL=19.62,MOD) IS(n=2191,16.3%,GAD=6.12,SWL=18.40,HIGH) ER(n=690,5.1%,GAD=6.20,SWL=19.03,HIGH)
+KEY r-VALUES: Streaming→GAD:+0.066***(BR:+0.070,SC:+0.044,IS:+0.078,ER:+0.064ns) Streaming→SWL:−0.076***(IS worst:−0.095) Narc→GAD:+0.079***(gradient:0.049,0.067,0.083,0.111) Earnings→SWL:−0.053***(IS:−0.088 DOUBLED) Playstyle→SWL:+0.104***(IS strongest:+0.124) Rank→GAD:−0.002ns full;+0.047* IS ONLY Age→GAD:−0.042*** full;+0.024ns ER REVERSED
+VERDICTS: H1 partial H2 CONTRADICTED H3 partial H4 supported H5 supported(IS amplified) H6 CONTRADICTED H7 supported H8 supported H9 supported H10 supported(ER reversed)
+Be precise. Use r-values and p-values. Reference hypothesis IDs. Analyst tone — no fluff.`;
+
+function segColor(s){return{LOW:'var(--purple)',MOD:'var(--cyan)',HIGH:'var(--red)'}[s]||'var(--amber)'}
+function riskChip(r){const m={LOW:'c-purple',MOD:'c-cyan',HIGH:'c-red'};return`<span class="chip ${m[r]||'c-dim'}">${r}</span>`}
+function vcChip(v){const m={s:'c-green',p:'c-amber',c:'c-red',n:'c-dim'};return`<span class="verdict ${m[v]}">${{s:'SUPPORTED',p:'PARTIAL',c:'CONTRA',n:'N/A'}[v]||v}</span>`}
+function sigChip(s){const m={'***':'c-red','**':'c-amber','*':'c-cyan','ns':'c-dim'};return`<span class="chip ${m[s]||'c-dim'}">${s}</span>`}
+
+function renderSummary(){
+  document.getElementById('summTbody').innerHTML=SEGS.map(s=>`
+    <tr style="cursor:pointer" onclick="switchPage('clusters',null);selectClTab(${s.id})">
+      <td><span style="display:inline-flex;align-items:center;gap:5px"><span style="width:6px;height:6px;background:${s.color};box-shadow:0 0 6px ${s.color}"></span><strong style="color:var(--text)">${s.name}</strong></span></td>
+      <td>${s.n.toLocaleString()}</td><td>${s.pct}%</td>
+      <td style="color:${s.gad>=6?'var(--red)':s.gad>=5?'var(--amber)':'var(--green)'};font-weight:500">${s.gad}</td>
+      <td style="color:${s.swl<19?'var(--red)':s.swl<20?'var(--amber)':'var(--green)'}">${s.swl}</td>
+      <td>${s.spin}</td>
+      <td>${riskChip(s.risk)}</td>
+      <td style="color:var(--muted);font-size:9px">${s.driver}</td>
+    </tr>`).join('');
+}
+
+function renderEffects(){
+  const effects=[
+    ['Playstyle→SWL (IS)','+0.124','Protective','***','IS'],
+    ['Playstyle→SWL (ER)','+0.117','Protective','**','ER'],
+    ['Narc→GAD (ER)','+0.111','Risk','**','ER'],
+    ['Stream→SWL (IS)','−0.095','Risk','***','IS'],
+    ['Earnings→SWL (IS)','−0.088','Risk','***','IS'],
+    ['Narc→GAD (IS)','+0.083','Risk','***','IS'],
+    ['Stream→GAD (BR)','+0.070','Risk','***','BR'],
+    ['Playstyle→SWL (BR)','+0.096','Protective','***','BR'],
+  ];
+  document.getElementById('effectTbody').innerHTML=effects.map(([l,r,d,s,seg])=>`
+    <tr><td style="font-size:9px">${l}</td>
+    <td style="color:${d==='Protective'?'var(--green)':'var(--red)'};font-weight:500">${r}</td>
+    <td><span class="chip ${d==='Protective'?'c-green':'c-red'}" style="font-size:7px">${d}</span></td>
+    <td>${sigChip(s)}</td>
+    <td style="color:var(--muted);font-size:8px">${seg}</td></tr>`).join('');
+}
+
+function renderClusterTabs(){
+  document.getElementById('clTabs').innerHTML=SEGS.map((s,i)=>`
+    <div class="seg-tab ${i===0?'active':''}" id="ct${i}" onclick="selectClTab(${i})" style="${i===0?`color:${SEGS[0].color};box-shadow:inset 0 -2px 0 ${SEGS[0].color}`:''}">
+      ${s.init} — ${s.short}
+    </div>`).join('');
+  renderClDetail(0);
+}
+
+function selectClTab(i){
+  document.querySelectorAll('.seg-tab').forEach((t,j)=>{
+    t.classList.toggle('active',j===i);
+    t.style.color=j===i?SEGS[i].color:'';
+    t.style.boxShadow=j===i?`inset 0 -2px 0 ${SEGS[i].color}`:'';
+  });
+  renderClDetail(i);
+}
+
+function renderClDetail(i){
+  const s=SEGS[i];
+  document.getElementById('clDetail').innerHTML=`
+    <div class="g4">
+      <div class="stat" style="--stat-accent:${s.color}"><div class="stat-top"><div class="stat-ico"></div><span class="stat-delta sd-nt">${s.pct}% POP</span></div><div class="stat-val" style="color:${s.color};text-shadow:0 0 10px ${s.color}66">${s.n.toLocaleString()}</div><div class="stat-lbl">Players</div></div>
+      <div class="stat" style="--stat-accent:${s.gad>=6?'var(--red)':s.gad>=5?'var(--amber)':'var(--green)'}"><div class="stat-top"><div class="stat-ico"></div><span class="stat-delta ${s.gad>=6?'sd-dn':s.gad>=5?'sd-nt':'sd-up'}">POP: 5.21</span></div><div class="stat-val" style="color:${s.gad>=6?'var(--red)':s.gad>=5?'var(--amber)':'var(--green)'};text-shadow:0 0 10px ${s.gad>=6?'rgba(255,51,51,0.4)':s.gad>=5?'rgba(255,176,0,0.4)':'rgba(0,255,136,0.4)'}">${s.gad}</div><div class="stat-lbl">GAD (anxiety)</div></div>
+      <div class="stat" style="--stat-accent:${s.swl<19?'var(--red)':s.swl<20?'var(--amber)':'var(--green)'}"><div class="stat-top"><div class="stat-ico"></div><span class="stat-delta sd-nt">POP: 19.79</span></div><div class="stat-val" style="color:${s.swl<19?'var(--red)':s.swl<20?'var(--amber)':'var(--green)'}">${s.swl}</div><div class="stat-lbl">SWL (life sat.)</div></div>
+      <div class="stat"><div class="stat-top"><div class="stat-ico"></div><span class="stat-delta sd-nt">POP: 24.6</span></div><div class="stat-val">${s.spin}</div><div class="stat-lbl">SPIN (soc. phobia)</div></div>
+    </div>
+    <div class="g2">
+      <div class="panel corner">
+        <div class="panel-hdr"><div><div class="panel-title" style="color:${s.color}">${s.name}</div><div class="panel-sub">CLUSTER ${s.id} · ${s.risk} RISK · ${s.driver.toUpperCase()}</div></div>${riskChip(s.risk)}</div>
+        <p style="font-size:11px;color:var(--text2);line-height:1.75;margin-bottom:10px">${s.profile}</p>
+        <div style="font-size:8px;color:var(--muted);letter-spacing:0.12em;margin-bottom:7px">// HYPOTHESIS VERDICTS</div>
+        <div style="display:flex;flex-wrap:wrap;gap:4px">
+          ${Object.entries(s.hyps).map(([h,v])=>{
+            const isC=v.toLowerCase().includes('contra')||v.toLowerCase().includes('reversed');
+            const isP=v.toLowerCase().includes('partial')||v.toLowerCase().includes('attenuated')||v.toLowerCase().includes('not sig');
+            return `<span class="chip ${isC?'c-red':isP?'c-amber':'c-green'}" style="font-size:8px"><span style="color:var(--amber)">${h}</span>: ${v}</span>`;
+          }).join('')}
+        </div>
+      </div>
+      <div class="panel corner">
+        <div class="panel-title" style="margin-bottom:10px">KEY CORRELATIONS</div>
+        <div class="tbl-wrap"><table class="dt">
+          <thead><tr><th>ASSOCIATION</th><th>r VALUE</th><th>NOTE</th></tr></thead>
+          <tbody>${s.stats.map(([a,r,n])=>`
+            <tr><td style="font-size:9px">${a}</td>
+            <td style="color:${r.includes('+')?'var(--red)':'var(--green)'};font-weight:500">${r}</td>
+            <td style="font-size:9px;color:var(--muted)">${n}</td></tr>`).join('')}
+          </tbody>
+        </table></div>
+      </div>
+    </div>`;
+}
+
+function renderHyp(){
+  document.getElementById('hypTbody').innerHTML=HYPS.map(h=>`
+    <tr style="cursor:pointer" onclick="showHypDetail('${h.id}')">
+      <td style="color:var(--amber);font-weight:500">${h.id}</td>
+      <td style="font-size:11px;max-width:160px">${h.title}</td>
+      <td>${vcChip(h.vc)}</td>
+      <td style="font-size:11px;color:var(--text2)">${h.full}</td>
+      <td style="font-size:11px;color:var(--muted)">${h.br}</td>
+      <td style="font-size:11px;color:var(--muted)">${h.sc}</td>
+      <td style="font-size:11px;color:${h.is.includes('REVERSAL')||h.is.includes('AMPLIF')||h.is.includes('STRONG')?'var(--red)':'var(--muted)'}">${h.is}</td>
+      <td style="font-size:11px;color:${h.er.includes('REVERSED')?'var(--red)':'var(--muted)'}">${h.er}</td>
+      <td style="font-size:10px;color:var(--cyan)">${h.metric}</td>
+      <td style="font-size:10px;color:var(--muted)">${h.pval}</td>
+    </tr>`).join('');
+}
+
+// Per-hypothesis chart data: [label, BR_val, SC_val, IS_val, ER_val, yLabel, isGAD]
+const HYP_CHART={
+  H1:{
+    custom:'dual_grouped',
+    left:{
+      title:'Does League Rank Drive Anxiety?',
+      legendA:'Lower League Rank', legendB:'Higher League Rank',
+      labels:['Full\nDataset','Balanced\nRec.','Structured\nComp.','Intensified\nStrivers','Escapist\nReg.'],
+      valsA:[5.2,4.8,5.3,5.9,6.3],
+      valsB:[5.2,4.2,5.3,6.5,5.8],
+      yLabel:'Average Anxiety Score', yMin:4.0, yMax:7.0, note:'Lower is better'
+    },
+    right:{
+      title:'Do More Hours Drive Anxiety?',
+      legendA:'Fewer Hours Played', legendB:'More Hours Played',
+      labels:['Full\nDataset','Balanced\nRec.','Structured\nComp.','Intensified\nStrivers','Escapist\nReg.'],
+      valsA:[5.0,4.5,5.1,5.5,5.9],
+      valsB:[5.6,4.8,5.5,6.9,6.5],
+      yLabel:'Average Anxiety Score', yMin:4.0, yMax:7.0, note:'Lower is better'
+    }
+  },
+  H2:{
+    custom:'triple_grouped',
+    left:{
+      title:'Streaming & Anxiety',
+      legendA:'Less Streaming', legendB:'More Streaming',
+      labels:['Full\nDataset','Balanced\nRec.','Structured\nComp.','Intensified\nStrivers','Escapist\nReg.'],
+      valsA:[5.0,4.5,5.1,5.8,5.9],
+      valsB:[5.5,4.9,5.7,6.7,6.5],
+      yLabel:'Average Anxiety Score', yMin:4.0, yMax:7.0, note:'Lower is better'
+    },
+    mid:{
+      title:'Streaming & Social Phobia',
+      legendA:'Less Streaming', legendB:'More Streaming',
+      labels:['Full\nDataset','Balanced\nRec.','Structured\nComp.','Intensified\nStrivers','Escapist\nReg.'],
+      valsA:[19.3,18.7,19.2,21.5,19.7],
+      valsB:[20.5,20.1,20.1,22.6,20.7],
+      yLabel:'Average Social Phobia Score', yMin:18, yMax:24, note:'Lower is better'
+    },
+    right:{
+      title:'Streaming & Life Satisfaction',
+      legendA:'Less Streaming', legendB:'More Streaming',
+      labels:['Full\nDataset','Balanced\nRec.','Structured\nComp.','Intensified\nStrivers','Escapist\nReg.'],
+      valsA:[20.2,20.9,19.9,18.8,20.0],
+      valsB:[19.4,20.3,19.1,17.6,18.4],
+      yLabel:'Average Life Satisfaction Score', yMin:17, yMax:22, note:'Higher is better'
+    }
+  },
+  H3:{
+    custom:'dual_grouped',
+    left:{
+      title:'Narcissism & Anxiety',
+      legendA:'Lower Narcissism', legendB:'Higher Narcissism',
+      labels:['Full\nDataset','Balanced\nRec.','Structured\nComp.','Intensified\nStrivers','Escapist\nReg.'],
+      valsA:[5.0,4.6,5.1,5.8,6.0],
+      valsB:[5.7,5.1,5.7,6.6,6.7],
+      yLabel:'Average Anxiety Score', yMin:4.0, yMax:7.0, note:'Lower is better'
+    },
+    right:{
+      title:'Narcissism & Life Satisfaction',
+      legendA:'Lower Narcissism', legendB:'Higher Narcissism',
+      labels:['Full\nDataset','Balanced\nRec.','Structured\nComp.','Intensified\nStrivers','Escapist\nReg.'],
+      valsA:[19.9,20.7,19.7,18.3,18.8],
+      valsB:[19.6,20.3,19.5,18.6,19.8],
+      yLabel:'Average Life Satisfaction Score', yMin:17, yMax:22, note:'Higher is better', note:'Higher is better'
+    }
+  },
+  H4:{
+    custom:'single_colored',
+    title:'Mean GAD Score by Cluster',
+    note:'Note: escapism motive cannot be tested within clusters —\nbetween-cluster differences are the evidence for this hypothesis.',
+    labels:['Full\nDataset','Balanced\nRec.','Structured\nComp.','Intensified\nStrivers','Escapist\nReg.'],
+    vals:[5.2,4.7,5.3,6.1,6.2],
+    colors:['rgba(0,116,178,0.7)','rgba(0,168,150,0.7)','rgba(196,158,60,0.7)','rgba(196,80,72,0.7)','rgba(110,120,140,0.7)'],
+    borders:['#0074b2','#00a896','#c49e3c','#c45048','#6e788c'],
+    yLabel:'Average Anxiety Score (Lower is better)', yMin:0, yMax:7.0
+  },
+  H5:{
+    custom:'dual_grouped',
+    left:{
+      title:'Earnings Motivation & Life Satisfaction',
+      legendA:'Low Earnings Motivation', legendB:'High Earnings Motivation',
+      labels:['Full\nDataset','Balanced\nRec.','Structured\nComp.','Intensified\nStrivers','Escapist\nReg.'],
+      valsA:[19.9,20.6,19.7,18.5,19.1],
+      valsB:[17.0,16.7,18.4,15.0,13.6],
+      yLabel:'Average Life Satisfaction Score', yMin:13, yMax:22, note:'Higher is better'
+    },
+    right:{
+      title:'Earnings Motivation & Anxiety',
+      legendA:'Low Earnings Motivation', legendB:'High Earnings Motivation',
+      labels:['Full\nDataset','Balanced\nRec.','Structured\nComp.','Intensified\nStrivers','Escapist\nReg.'],
+      valsA:[5.2,4.7,5.2,6.0,6.2],
+      valsB:[7.1,6.8,6.4,8.4,7.5],
+      yLabel:'Average Anxiety Score', yMin:4, yMax:9, note:'Lower is better'
+    }
+  },
+  H6:{
+    custom:'dual_line',
+    left:{
+      title:'Hours Played & Anxiety',
+      labels:['Low\n(up to 3hrs/day)','Moderate\n(3–5hrs/day)','High\n(over 5hrs/day)'],
+      series:[
+        {label:'Full Dataset',   vals:[5.70,4.90,5.21], color:'#1a3a6b', dash:true},
+        {label:'Balanced Rec.',  vals:[5.40,4.50,4.67], color:'#00a896'},
+        {label:'Struct. Comp.',  vals:[5.63,5.33,5.26], color:'#c49e3c'},
+        {label:'Intens. Strivers',vals:[6.28,5.45,6.14],color:'#c45048'},
+        {label:'Escapist Reg.',  vals:[6.07,4.98,6.29], color:'#8899aa'}
+      ],
+      yLabel:'Average Anxiety Score', yMin:4.5, yMax:6.5, note:'Lower is better'
+    },
+    right:{
+      title:'Hours Played & Life Satisfaction',
+      labels:['Low\n(up to 3hrs/day)','Moderate\n(3–5hrs/day)','High\n(over 5hrs/day)'],
+      series:[
+        {label:'Full Dataset',    vals:[20.03,20.53,19.76], color:'#1a3a6b', dash:true},
+        {label:'Balanced Rec.',   vals:[20.10,20.81,20.59], color:'#00a896'},
+        {label:'Struct. Comp.',   vals:[21.26,20.71,19.57], color:'#c49e3c'},
+        {label:'Intens. Strivers',vals:[17.41,19.42,18.38], color:'#c45048'},
+        {label:'Escapist Reg.',   vals:[20.32,20.14,18.89], color:'#8899aa'}
+      ],
+      yLabel:'Average Life Satisfaction Score', yMin:17, yMax:22, note:'Higher is better'
+    }
+  },
+  H7:{
+    custom:'dual_grouped',
+    left:{
+      title:'Playstyle & Social Phobia',
+      legendA:'Solo / Competitive Play', legendB:'Social / Multiplayer Play',
+      labels:['Full\nDataset','Balanced\nRec.','Structured\nComp.','Intensified\nStrivers','Escapist\nReg.'],
+      valsA:[20.6,19.4,20.0,22.5,20.6],
+      valsB:[18.8,18.2,18.7,20.8,19.3],
+      yLabel:'Average Social Phobia Score', yMin:17, yMax:24, note:'Lower is better'
+    },
+    right:{
+      title:'Playstyle & Anxiety',
+      legendA:'Solo / Competitive Play', legendB:'Social / Multiplayer Play',
+      labels:['Full\nDataset','Balanced\nRec.','Structured\nComp.','Intensified\nStrivers','Escapist\nReg.'],
+      valsA:[5.5,4.7,5.4,6.5,6.5],
+      valsB:[4.8,4.7,5.0,5.5,5.6],
+      yLabel:'Average Anxiety Score', yMin:4.0, yMax:7.0, note:'Lower is better'
+    }
+  },
+  H8:{
+    custom:'dual_grouped',
+    left:{
+      title:'Playstyle & Life Satisfaction',
+      legendA:'Solo / Competitive Play', legendB:'Social / Balanced Play',
+      labels:['Full\nDataset','Balanced\nRec.','Structured\nComp.','Intensified\nStrivers','Escapist\nReg.'],
+      valsA:[19.0,20.6,19.1,17.7,18.4],
+      valsB:[20.9,19.7,20.5,19.6,20.3],
+      deltas:['+1.9','+-0.9','+1.5','+1.9','+2.0'],
+      yLabel:'Average Life Satisfaction Score (Higher is better)', yMin:17, yMax:22, note:'Higher is better'
+    }
+  },
+  H9:{
+    custom:'dual_grouped',
+    left:{
+      title:'Gender & Social Phobia (SPIN Score)',
+      legendA:'Gender Group 1', legendB:'Gender Group 2',
+      labels:['Full\nDataset','Balanced\nRec.','Structured\nComp.','Intensified\nStrivers','Escapist\nReg.'],
+      valsA:[28.00,27.87,27.71,32.27,24.53],
+      valsB:[19.36,18.66,19.09,21.54,19.81],
+      yLabel:'Average Social Phobia Score (Higher = more social anxiety)', yMin:0, yMax:38, note:'Higher = more social anxiety'
+    }
+  },
+  H10:{
+    custom:'dual_grouped',
+    left:{
+      title:'',
+      legendA:'Younger Players', legendB:'Older Players',
+      labels:['Full\nDataset','Balanced\nRec.','Structured\nComp.','Intensified\nStrivers','Escapist\nReg.'],
+      valsA:[5.3,4.7,5.3,6.3,6.0],
+      valsB:[5.2,4.6,5.2,6.0,6.4],
+      yLabel:'Average Anxiety Score (Lower is better)', yMin:4.0, yMax:7.0, note:'Lower is better'
+    }
+  }
+};
+
+let hypChartInstances=[];
+function showHypDetail(id){
+  const h=HYPS.find(x=>x.id===id);
+  const d=document.getElementById('hypDetail');
+  if(d.classList.contains('open')&&d.dataset.id===id){d.classList.remove('open');return;}
+  // destroy old charts
+  hypChartInstances.forEach(c=>{try{c.destroy();}catch(e){}});
+  hypChartInstances=[];
+  d.dataset.id=id;d.classList.add('open');
+
+  const cd=HYP_CHART[id];
+  const segColors=['#cc44ff','#00e5ff','#ff3333','#ffb000'];
+  const segLabels=['BR','SC','IS','ER'];
+  const tick='rgba(255,176,0,0.5)';
+  const grid='rgba(255,176,0,0.06)';
+
+  // Build chart HTML — custom dual-grouped (H1), single/grouped, or multi-series
+  let chartHTML='';
+  if(cd){
+    if(cd.custom==='dual_grouped'){
+      if(cd.left && !cd.right){
+        chartHTML=`
+          <div style="max-width:620px;margin:0 auto;margin-bottom:6px">
+            <div style="font-family:var(--font-hud);font-size:11px;font-weight:700;color:var(--text);text-align:center;margin-bottom:6px;letter-spacing:0.04em">${cd.left.title}</div>
+            <div style="position:relative;height:220px"><canvas id="hc_${id}_left"></canvas></div>
+            <div style="font-family:var(--font-mono);font-size:9px;color:var(--muted);text-align:center;margin-top:4px;letter-spacing:0.06em">${cd.left.note||''}</div>
+          </div>`;
+      } else {
+        chartHTML=`
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:6px">
+          <div>
+            <div style="font-family:var(--font-hud);font-size:11px;font-weight:700;color:var(--text);text-align:center;margin-bottom:6px;letter-spacing:0.04em">${cd.left.title}</div>
+            <div style="position:relative;height:200px"><canvas id="hc_${id}_left"></canvas></div>
+            <div style="font-family:var(--font-mono);font-size:9px;color:var(--muted);text-align:center;margin-top:4px;letter-spacing:0.06em">${cd.left.note||'Lower is better'}</div>
+          </div>
+          <div>
+            <div style="font-family:var(--font-hud);font-size:11px;font-weight:700;color:var(--text);text-align:center;margin-bottom:6px;letter-spacing:0.04em">${cd.right.title}</div>
+            <div style="position:relative;height:200px"><canvas id="hc_${id}_right"></canvas></div>
+            <div style="font-family:var(--font-mono);font-size:9px;color:var(--muted);text-align:center;margin-top:4px;letter-spacing:0.06em">${cd.right.note||'Lower is better'}</div>
+          </div>
+        </div>`;
+      }
+    } else if(cd.custom==='triple_grouped'){
+      chartHTML=`
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:6px">
+          ${['left','mid','right'].map(k=>`
+          <div>
+            <div style="font-family:var(--font-hud);font-size:11px;font-weight:700;color:var(--text);text-align:center;margin-bottom:6px;letter-spacing:0.04em">${cd[k].title}</div>
+            <div style="position:relative;height:200px"><canvas id="hc_${id}_${k}"></canvas></div>
+            <div style="font-family:var(--font-mono);font-size:9px;color:var(--muted);text-align:center;margin-top:4px;letter-spacing:0.06em">${cd[k].note}</div>
+          </div>`).join('')}
+        </div>`;
+    } else if(cd.custom==='dual_line'){
+      chartHTML=`
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:6px">
+          <div>
+            <div style="font-family:var(--font-hud);font-size:11px;font-weight:700;color:var(--text);text-align:center;margin-bottom:6px;letter-spacing:0.04em">${cd.left.title}</div>
+            <div style="position:relative;height:210px"><canvas id="hc_${id}_left"></canvas></div>
+            <div style="font-family:var(--font-mono);font-size:9px;color:var(--muted);text-align:center;margin-top:4px;letter-spacing:0.06em">${cd.left.note}</div>
+          </div>
+          <div>
+            <div style="font-family:var(--font-hud);font-size:11px;font-weight:700;color:var(--text);text-align:center;margin-bottom:6px;letter-spacing:0.04em">${cd.right.title}</div>
+            <div style="position:relative;height:210px"><canvas id="hc_${id}_right"></canvas></div>
+            <div style="font-family:var(--font-mono);font-size:9px;color:var(--muted);text-align:center;margin-top:4px;letter-spacing:0.06em">${cd.right.note}</div>
+          </div>
+        </div>`;
+    } else if(cd.custom==='single_colored'){
+      chartHTML=`<div style="margin-bottom:6px">
+        ${cd.title?`<div style="font-family:var(--font-hud);font-size:11px;font-weight:700;color:var(--text);text-align:center;margin-bottom:6px;letter-spacing:0.04em">${cd.title}</div>`:''}
+        <div style="position:relative;height:200px"><canvas id="hc_${id}_sc"></canvas></div>
+        <div style="font-family:var(--font-mono);font-size:9px;color:var(--muted);text-align:center;margin-top:6px;letter-spacing:0.04em;line-height:1.6">${cd.note||''}</div>
+      </div>`;
+    } else if(cd.series.length===1 || cd.grouped){
+      // Single canvas covering all series as grouped bars
+      const cid=`hc_${id}_0`;
+      chartHTML=`<div style="margin-bottom:6px">
+        <div style="font-family:var(--font-mono);font-size:8px;color:var(--muted);letter-spacing:0.1em;margin-bottom:6px">// ${cd.series.map(s=>s.label).join(' · ').toUpperCase()}</div>
+        <div style="position:relative;height:160px"><canvas id="${cid}"></canvas></div>
+        <div style="font-family:var(--font-mono);font-size:8px;color:var(--muted);margin-top:4px">${cd.series.map(s=>s.note).join(' · ')}</div>
+      </div>`;
+    } else {
+      // Side by side small charts
+      chartHTML=`<div style="display:grid;grid-template-columns:${cd.series.map(()=>'1fr').join(' ')};gap:10px;margin-bottom:6px">
+        ${cd.series.map((s,i)=>`<div>
+          <div style="font-family:var(--font-mono);font-size:8px;color:var(--muted);letter-spacing:0.1em;margin-bottom:4px">// ${s.label.toUpperCase()}</div>
+          <div style="position:relative;height:130px"><canvas id="hc_${id}_${i}"></canvas></div>
+          <div style="font-family:var(--font-mono);font-size:8px;color:var(--muted);margin-top:3px">${s.note}</div>
+        </div>`).join('')}
+      </div>`;
+    }
+  }
+
+  d.innerHTML=`
+    <div style="font-family:var(--font-pixel);font-size:12px;color:var(--amber);margin-bottom:8px">${h.id}: ${h.title} // ${vcChip(h.vc)}</div>
+    <p style="font-size:10px;color:var(--text2);line-height:1.7;margin-bottom:10px">${h.note}</p>
+    <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-bottom:12px">
+      ${[['FULL DS',h.full],['BR',h.br],['SC',h.sc],['IS',h.is],['ER',h.er]].map(([l,v])=>`
+      <div style="border:1px solid var(--border);background:var(--panel2);padding:8px;text-align:center">
+        <div style="font-family:var(--font-mono);font-size:7px;color:var(--muted);letter-spacing:0.1em;margin-bottom:4px">${l}</div>
+        <div style="font-family:var(--font-mono);font-size:9px;color:${v.includes('REVERSAL')||v.includes('AMPLIF')||v.includes('STRONG')||v.includes('Contra')?'var(--red)':v.includes('Partial')||v.includes('N/A')?'var(--amber)':'var(--green)'}">${v}</div>
+      </div>`).join('')}
+    </div>
+    ${chartHTML}
+    <button class="btn btn-ghost" style="margin-top:8px;font-size:9px;padding:3px 8px" onclick="document.getElementById('hypDetail').classList.remove('open')">CLOSE</button>`;
+
+  d.scrollIntoView({behavior:'smooth',block:'nearest'});
+
+  // Now build charts after DOM insertion
+  if(!cd) return;
+  requestAnimationFrame(()=>{
+    const yMin=cd.yMin!==undefined?cd.yMin:undefined;
+    const yMax=cd.yMax!==undefined?cd.yMax:undefined;
+    const yLabel=cd.yLabel||'r-value';
+
+    const TEAL='rgba(0,229,255,0.6)';
+    const TEAL_B='#00e5ff';
+    const SALMON='rgba(255,51,51,0.6)';
+    const SALMON_B='#ff3333';
+
+    const COLOR_A = 'rgba(0,200,220,0.7)';
+    const COLOR_A_B = 'rgba(0,200,220,0.7)';
+    const COLOR_B = 'rgba(200,140,0,0.7)';
+    const COLOR_B_B = 'rgba(200,140,0,0.7)';
+
+    function makeNeonChart(canvasId, panel, colorA, colorB, deltas, gaps, gapColors){
+      const canvas=document.getElementById(canvasId);
+      if(!canvas)return;
+      const CA = colorA || 'rgba(0,229,255,0.25)';
+      const CA_B = CA.replace(/[\d.]+\)$/, '0.9)');
+      const CB = colorB || 'rgba(255,176,0,0.25)';
+      const CB_B = CB.replace(/[\d.]+\)$/, '0.9)');
+
+      const inst=new Chart(canvas,{type:'bar',
+        data:{
+          labels:panel.labels,
+          datasets:[
+            {
+              label:panel.legendA,
+              data:panel.valsA,
+              backgroundColor: CA,
+              borderColor: CA_B,
+              borderWidth: 2,
+              borderRadius: 2,
+              borderSkipped: false
+            },
+            {
+              label:panel.legendB,
+              data:panel.valsB,
+              backgroundColor: CB,
+              borderColor: CB_B,
+              borderWidth: 2,
+              borderRadius: 2,
+              borderSkipped: false
+            }
+          ]
+        },
+        options:{responsive:true,maintainAspectRatio:false,
+          plugins:{
+            legend:{
+              display:true,position:'top',
+              labels:{font:{size:10,family:'Share Tech Mono'},boxWidth:10,padding:10,color:tick}
+            },
+            tooltip:{callbacks:{label:c=>`${c.dataset.label}: ${c.raw}`}}
+          },
+          scales:{
+            x:{ticks:{font:{size:9,family:'Share Tech Mono'},color:tick,maxRotation:0},grid:{display:false}},
+            y:{min:panel.yMin,max:panel.yMax,
+               ticks:{font:{size:9,family:'Share Tech Mono'},color:tick,stepSize:0.5},
+               grid:{color:'rgba(255,176,0,0.04)'},
+               title:{display:true,text:panel.yLabel,font:{size:9,family:'Share Tech Mono'},color:tick}}
+          }
+        },
+        plugins: gaps ? [{
+          id:'gap_labels',
+          afterDatasetsDraw(chart){
+            const ctx=chart.ctx;
+            const meta0=chart.getDatasetMeta(0);
+            meta0.data.forEach((bar,i)=>{
+              const gap=gaps[i];
+              if(!gap) return;
+              const isRed = gapColors && gapColors[i]==='red';
+              const col = isRed ? 'rgba(255,80,80,0.95)' : 'rgba(0,200,120,0.95)';
+              const shadow = isRed ? 'rgba(255,80,80,0.5)' : 'rgba(0,200,120,0.5)';
+              ctx.save();
+              ctx.font=`bold 10px "Share Tech Mono", monospace`;
+              ctx.fillStyle=col;
+              ctx.shadowColor=shadow;
+              ctx.shadowBlur=4;
+              ctx.textAlign='center';
+              ctx.textBaseline='bottom';
+              ctx.fillText(gap, bar.x, bar.y-5);
+              ctx.restore();
+            });
+          }
+        }] : []
+      });
+      hypChartInstances.push(inst);
+    }
+
+    if(cd.custom==='dual_grouped'){
+      const isH7 = id==='H7';
+      const isH8 = id==='H8';
+      const isH9 = id==='H9';
+      const isH10 = id==='H10';
+      const useRedGreen = isH7||isH8;
+      const cA = isH9 ? 'rgba(0,229,255,0.25)' : isH10 ? 'rgba(255,176,0,0.25)' : useRedGreen ? 'rgba(0,229,255,0.25)' : undefined;
+      const cB = isH9 ? 'rgba(204,68,255,0.25)' : isH10 ? 'rgba(204,68,255,0.25)' : useRedGreen ? 'rgba(255,176,0,0.25)' : undefined;
+      if(cd.left && !cd.right){
+        makeNeonChart(`hc_${id}_left`, cd.left, cA, cB, null, cd.left.gaps, cd.left.gapColors);
+      } else {
+        makeNeonChart(`hc_${id}_left`, cd.left, cA, cB);
+        makeNeonChart(`hc_${id}_right`, cd.right, cA, cB);
+      }
+      return;
+    }
+
+    if(cd.custom==='triple_grouped'){
+      makeNeonChart(`hc_${id}_left`, cd.left);
+      makeNeonChart(`hc_${id}_mid`, cd.mid);
+      makeNeonChart(`hc_${id}_right`, cd.right);
+      return;
+    }
+
+    if(cd.custom==='dual_line'){
+      function makeLineChart(canvasId, panel){
+        const canvas=document.getElementById(canvasId);
+        if(!canvas) return;
+        const datasets=panel.series.map(s=>({
+          label:s.label,
+          data:s.vals,
+          borderColor:s.color,
+          backgroundColor:s.color+'33',
+          borderWidth: s.dash ? 2 : 1.8,
+          borderDash: s.dash ? [6,4] : [],
+          pointBackgroundColor:s.color,
+          pointBorderColor:s.color,
+          pointRadius:4,
+          pointHoverRadius:6,
+          fill:false,
+          tension:0.3
+        }));
+        const inst=new Chart(canvas,{type:'line',
+          data:{labels:panel.labels, datasets},
+          options:{responsive:true,maintainAspectRatio:false,
+            plugins:{
+              legend:{display:true,position:'right',
+                labels:{font:{size:9,family:'Share Tech Mono'},boxWidth:14,padding:8,color:tick,
+                  usePointStyle:true,pointStyleWidth:10}},
+              tooltip:{callbacks:{label:c=>`${c.dataset.label}: ${c.raw}`}}
+            },
+            scales:{
+              x:{ticks:{font:{size:9,family:'Share Tech Mono'},color:tick,maxRotation:0},grid:{color:'rgba(255,176,0,0.04)'}},
+              y:{min:panel.yMin,max:panel.yMax,
+                 ticks:{font:{size:9,family:'Share Tech Mono'},color:tick},
+                 grid:{color:'rgba(255,176,0,0.04)'},
+                 title:{display:true,text:panel.yLabel,font:{size:9,family:'Share Tech Mono'},color:tick}}
+            }
+          }
+        });
+        hypChartInstances.push(inst);
+      }
+      makeLineChart(`hc_${id}_left`, cd.left);
+      makeLineChart(`hc_${id}_right`, cd.right);
+      return;
+    }
+
+    if(cd.custom==='single_colored'){
+      const canvas=document.getElementById(`hc_${id}_sc`);
+      if(!canvas) return;
+      const inst=new Chart(canvas,{type:'bar',
+        data:{
+          labels:cd.labels,
+          datasets:[{
+            label:'Mean GAD Score',
+            data:cd.vals,
+            backgroundColor:cd.colors,
+            borderColor:cd.borders,
+            borderWidth:2,
+            borderRadius:3,
+            borderSkipped:false
+          }]
+        },
+        options:{responsive:true,maintainAspectRatio:false,
+          plugins:{
+            legend:{display:false},
+            tooltip:{callbacks:{label:c=>`GAD: ${c.raw}`}}
+          },
+          scales:{
+            x:{ticks:{font:{size:10,family:'Share Tech Mono'},color:tick,maxRotation:0},grid:{display:false}},
+            y:{min:cd.yMin,max:cd.yMax,
+               ticks:{font:{size:10,family:'Share Tech Mono'},color:tick,stepSize:1},
+               grid:{color:'rgba(255,176,0,0.04)'},
+               title:{display:true,text:cd.yLabel,font:{size:9,family:'Share Tech Mono'},color:tick}}
+          }
+        },
+        plugins:[]
+      });
+      hypChartInstances.push(inst);
+      return;
+    }
+
+    function barColor(v){
+      // raw scores: use segment colors; r-values: red=positive risk, green=negative (protective)
+      return v>0?'rgba(255,51,51,0.65)':'rgba(0,255,136,0.65)';
+    }
+    function barBorder(v){return v>0?'#ff3333':'#00ff88';}
+
+    if(cd.series.length===1||cd.grouped){
+      const canvas=document.getElementById(`hc_${id}_0`);
+      if(!canvas)return;
+      const isRaw=cd.series[0].raw;
+      let datasets;
+      if(cd.grouped){
+        // Each series = a group (e.g. Low/Mod/High hours)
+        const groupColors=['rgba(255,176,0,0.6)','rgba(0,229,255,0.5)','rgba(204,68,255,0.5)'];
+        const groupBorders=['#ffb000','#00e5ff','#cc44ff'];
+        datasets=cd.series.map((s,i)=>({
+          label:s.label,
+          data:s.vals,
+          backgroundColor:groupColors[i%groupColors.length],
+          borderColor:groupBorders[i%groupBorders.length],
+          borderWidth:1.5,borderRadius:2,borderSkipped:false
+        }));
+      } else {
+        const s=cd.series[0];
+        datasets=[{
+          label:s.label,
+          data:s.vals,
+          backgroundColor:isRaw?segColors.map(c=>c+'55'):s.vals.map(barColor),
+          borderColor:isRaw?segColors:s.vals.map(barBorder),
+          borderWidth:1.5,borderRadius:2,borderSkipped:false
+        }];
+      }
+      const inst=new Chart(canvas,{type:'bar',
+        data:{labels:segLabels,datasets},
+        options:{responsive:true,maintainAspectRatio:false,
+          plugins:{legend:{display:cd.grouped,position:'bottom',labels:{font:{size:9,family:'Share Tech Mono'},boxWidth:8,padding:8,color:tick}}},
+          scales:{
+            x:{ticks:{font:{size:10,family:'Share Tech Mono'},color:tick},grid:{display:false}},
+            y:{min:yMin,max:yMax,ticks:{font:{size:10,family:'Share Tech Mono'},color:tick},grid:{color:grid},
+               title:{display:true,text:yLabel,font:{size:9,family:'Share Tech Mono'},color:tick}}
+          }
+        }
+      });
+      hypChartInstances.push(inst);
+    } else {
+      cd.series.forEach((s,i)=>{
+        const canvas=document.getElementById(`hc_${id}_${i}`);
+        if(!canvas)return;
+        const isRaw=s.raw;
+        const inst=new Chart(canvas,{type:'bar',
+          data:{labels:segLabels,datasets:[{
+            label:s.label,data:s.vals,
+            backgroundColor:isRaw?segColors.map(c=>c+'55'):s.vals.map(barColor),
+            borderColor:isRaw?segColors:s.vals.map(barBorder),
+            borderWidth:1.5,borderRadius:2,borderSkipped:false
+          }]},
+          options:{responsive:true,maintainAspectRatio:false,
+            plugins:{legend:{display:false}},
+            scales:{
+              x:{ticks:{font:{size:10,family:'Share Tech Mono'},color:tick},grid:{display:false}},
+              y:{min:yMin,max:yMax,ticks:{font:{size:10,family:'Share Tech Mono'},color:tick},grid:{color:grid},
+                 title:{display:true,text:yLabel,font:{size:9,family:'Share Tech Mono'},color:tick}}
+            }
+          }
+        });
+        hypChartInstances.push(inst);
+      });
+    }
+  });
+}
+
+// ── CORRELATION EXPLORER STATE ─────────────────────────────────────
+let selectedVar = null;
+const CORR_VARS = ['GAD','SWL','SPIN','Hours','Rank','Stream','Earn','Narc','Playstyle','Age'];
+const CORR_MX = [
+  [1,-.45,.55,.13,-.002,.066,.053,.079,-.072,-.042],
+  [-.45,1,-.3,-.02,.01,-.076,-.053,-.013,.104,-.01],
+  [.55,-.3,1,-.05,-.03,.065,.03,.04,-.067,-.02],
+  [.13,-.02,-.05,1,.2,.15,.08,.04,-.03,-.12],
+  [-.002,.01,-.03,.2,1,.18,.12,.06,-.01,-.05],
+  [.066,-.076,.065,.15,.18,1,.22,.08,-.04,.01],
+  [.053,-.053,.03,.08,.12,.22,1,.09,-.06,-.02],
+  [.079,-.013,.04,.04,.06,.08,.09,1,-.04,-.03],
+  [-.072,.104,-.067,-.03,-.01,-.04,-.06,-.04,1,.05],
+  [-.042,-.01,-.02,-.12,-.05,.01,-.02,-.03,.05,1]
+];
+
+const VAR_INTERP = {
+  GAD: { full:'Generalized Anxiety Disorder score', role:'Outcome', color:'var(--red)', summary:'The primary anxiety outcome variable. Higher = more anxiety. Mean across dataset: 5.21. Ranges from 4.67 (Balanced Rec.) to 6.20 (Escapist Reg.). Most predictors in this study were evaluated against GAD.', top:['Streaming raises it (+0.066***)', 'Narcissism raises it (+0.079***)', 'Playstyle reduces it (−0.072***)', 'Age reduces it (−0.042***)', 'Rank only raises it in IS (+0.047*)'] },
+  SWL: { full:'Satisfaction with Life scale', role:'Outcome', color:'var(--green)', summary:'Life satisfaction measure (higher = better). Pop mean: 19.79. Highest in Balanced Rec. (20.59), lowest in Intensified Strivers (18.40). The key well-being outcome for monetisation and playstyle research.', top:['Playstyle most strongly predicts it (+0.104***)', 'Streaming reduces it (−0.076***)', 'Earnings motivation reduces it (−0.053***)', 'Effect doubles in IS (r=−0.088***)', 'No narcissism effect (−0.013 ns)'] },
+  SPIN: { full:'Social Phobia Inventory', role:'Outcome', color:'var(--purple)', summary:'Social anxiety/phobia measure. Higher = more social phobia. Streaming raises it across all clusters (+0.065***). Multiplayer with known contacts reduces it. Widest gender gap is in Intensified Strivers (10.73***).', top:['Streaming raises social phobia (+0.065***)', 'Playstyle reduces it (−0.067***)', 'Gender gap significant across all clusters', 'SPIN pathway absent in ER (GAD pathway persists)', 'BR shows strongest multiplayer reduction (−0.083***)'] },
+  Hours: { full:'Hours of gaming per day/week', role:'Predictor', color:'var(--amber)', summary:'Play time. Not universally harmful — effect is cluster-dependent. Monotonic anxiety increase in SC, flat in BR, U-shaped in IS and ER. The inverted-U hypothesis (H6) was contradicted. No single optimal play window exists across segments.', top:['Weakly positive in BR (+0.062***)', 'Monotonic rise in SC (+0.064***)', 'Near zero in IS (−0.002 ns)', 'U-shaped in ER — moderate hrs lowest anxiety', 'NOT a reliable risk signal at full-dataset level (+0.013 ns)'] },
+  Rank: { full:'Competitive league rank', role:'Predictor', color:'var(--cyan)', summary:'Gaming rank/league status. Not a universal anxiety predictor — only significant in Intensified Strivers (+0.047*) via identity-attachment. In all other clusters it is non-significant. Using rank as a risk proxy outside IS is not supported.', top:['Non-significant at dataset level (−0.002 ns)', 'ONLY significant in IS (+0.047*) — identity mechanism', 'Protective in BR (−0.048***) — higher rank = lower anxiety', 'Hypothesis H1 only partially supported', 'Do not conflate reaching ranked players with rank-pressure messaging'] },
+  Stream: { full:'Streaming content consumed (hrs)', role:'Predictor', color:'var(--red)', summary:'Hours of gaming content watched (Twitch, YouTube etc.). H2 was CONTRADICTED — streaming worsens all well-being outcomes across all clusters. Not a positive engagement signal. Strongest negative SWL effect in IS (r=−0.095***).', top:['Raises GAD in all clusters (+0.066***)', 'Raises SPIN (social phobia) (+0.065***)', 'Reduces SWL (life satisfaction) (−0.076***)', 'Strongest harm in IS: SWL r=−0.095***', 'RETIRE as positive targeting signal'] },
+  Earn: { full:'Earnings expectation motivation', role:'Predictor', color:'var(--amber)', summary:'Whether player is motivated by making money from gaming. Consistently harmful to well-being across clusters. Effect doubles in Intensified Strivers (r=−0.088*** SWL). The primary basis for earn-to-play campaign restrictions.', top:['Raises GAD (+0.053***)', 'Reduces SWL (−0.053***)', 'DOUBLES in IS: SWL r=−0.088***', 'Basis for earn-to-play prohibition (H5)', 'Non-significant in ER — escapist drive dominates'] },
+  Narc: { full:'Narcissism trait score', role:'Predictor', color:'var(--amber)', summary:'Narcissism consistently predicts higher anxiety across all four clusters — a gradient that strengthens as risk tier increases: BR(0.049) < SC(0.067) < IS(0.083) < ER(0.111). No significant effect on life satisfaction in any cluster.', top:['Consistent positive GAD predictor (+0.079***)', 'Strongest in ER (r=+0.111**)', 'Gradient strengthens with risk tier', 'NO significant SWL effect (−0.013 ns)', 'Anxiety amplifier — not a happiness reducer'] },
+  Playstyle: { full:'Balanced vs ranked-only playstyle', role:'Predictor', color:'var(--green)', summary:'Whether player diversifies beyond ranked modes. The strongest positive predictor of life satisfaction in the dataset (+0.104***). Effect is largest in IS (+0.124***) — the group that needs it most benefits most. Also reduces anxiety and social phobia across all clusters.', top:['Strongest SWL predictor in dataset (+0.104***)', 'Largest effect in IS (+0.124***)', 'Reduces anxiety (−0.072***)', 'Reduces social phobia (−0.067***)', 'Highest-ROI well-being intervention available'] },
+  Age: { full:'Player age', role:'Predictor', color:'var(--cyan)', summary:'Age normally buffers anxiety — older players report lower GAD in three clusters. Critical exception: Escapist Regulators REVERSE this pattern (r=+0.024 ns). Age cannot be used as a resilience proxy for ER players. Do not deprioritize older escapist gamers in risk screening.', top:['Normally protective: full dataset r=−0.042***', 'Strongest in BR (−0.054***)', 'REVERSED in ER (+0.024 ns) — no protection', 'H10 supported overall but reversed in ER', 'Age-based risk stratification invalid for ER'] }
+};
+
+function renderHeatmap() {
+  const vars = CORR_VARS;
+  const mx = CORR_MX;
+  const N = vars.length;
+  const CELL = 42;
+  const LABEL_W = 62;
+  const LABEL_H = 28;
+  const PAD = 3;
+  const W = LABEL_W + N * (CELL + PAD);
+  const H = LABEL_H + N * (CELL + PAD);
+
+  const wrap = document.getElementById('heatmap');
+  wrap.innerHTML = '';
+
+  // Build container
+  const container = document.createElement('div');
+  container.style.cssText = 'position:relative;display:inline-block;user-select:none';
+
+  // Canvas for cells
+  const canvas = document.createElement('canvas');
+  canvas.width = W;
+  canvas.height = H;
+  canvas.style.cssText = `display:block;cursor:crosshair`;
+  const ctx = canvas.getContext('2d');
+
+  // Draw all cells
+  function drawAll(selIdx) {
+    ctx.clearRect(0, 0, W, H);
+    ctx.font = `9px 'Share Tech Mono'`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+
+    // Column labels
+    vars.forEach((v, j) => {
+      const x = LABEL_W + j * (CELL + PAD) + CELL / 2;
+      const isSelected = selIdx === j;
+      ctx.font = `${isSelected ? '700' : '400'} 8px 'Share Tech Mono'`;
+      ctx.fillStyle = isSelected ? '#ffd060' : 'rgba(255,176,0,0.55)';
+      ctx.textAlign = 'center';
+      ctx.fillText(v, x, 14);
+    });
+
+    // Row labels + cells
+    mx.forEach((row, i) => {
+      const y = LABEL_H + i * (CELL + PAD) + CELL / 2;
+      const isRowSelected = selIdx === i;
+
+      // Row label
+      ctx.font = `${isRowSelected ? '700' : '400'} 8px 'Share Tech Mono'`;
+      ctx.fillStyle = isRowSelected ? '#ffd060' : 'rgba(255,176,0,0.55)';
+      ctx.textAlign = 'right';
+      ctx.fillText(vars[i], LABEL_W - 6, y);
+
+      row.forEach((v, j) => {
+        const x = LABEL_W + j * (CELL + PAD);
+        const a = Math.abs(v);
+        const isDiag = i === j;
+        const isInvolved = selIdx !== null && (i === selIdx || j === selIdx);
+        const dimmed = selIdx !== null && !isInvolved;
+
+        let r, g, b, alpha;
+        if (isDiag) { r=255; g=176; b=0; alpha=0.06; }
+        else if (v > 0) { r=255; g=51; b=51; alpha=Math.min(a*3.2,0.88); }
+        else { r=0; g=220; b=120; alpha=Math.min(a*3.2,0.88); }
+
+        const finalAlpha = dimmed ? alpha * 0.22 : alpha;
+        ctx.fillStyle = `rgba(${r},${g},${b},${finalAlpha})`;
+        ctx.fillRect(x, LABEL_H + i * (CELL + PAD), CELL, CELL);
+
+        // Cell border for selected row/col
+        if (isInvolved && !isDiag) {
+          ctx.strokeStyle = 'rgba(255,176,0,0.5)';
+          ctx.lineWidth = 1;
+          ctx.strokeRect(x + 0.5, LABEL_H + i * (CELL + PAD) + 0.5, CELL - 1, CELL - 1);
+        }
+
+        // Diagonal marker
+        if (isDiag) {
+          ctx.fillStyle = dimmed ? 'rgba(255,176,0,0.15)' : 'rgba(255,176,0,0.45)';
+          ctx.font = '10px Share Tech Mono';
+          ctx.textAlign = 'center';
+          ctx.fillText('—', x + CELL/2, y);
+          return;
+        }
+
+        // Value text
+        if (a >= 0.02) {
+          const tc = dimmed ? 'rgba(255,255,255,0.12)' :
+                     a > 0.06 ? '#e8d4a0' : a > 0.02 ? '#6a5c3a' : '#3a3020';
+          ctx.fillStyle = tc;
+          ctx.font = `${a > 0.07 ? '500' : '400'} 9px 'Share Tech Mono'`;
+          ctx.textAlign = 'center';
+          ctx.fillText(v.toFixed(2), x + CELL/2, y);
+        } else {
+          ctx.fillStyle = dimmed ? 'rgba(255,255,255,0.05)' : '#3a3020';
+          ctx.font = '9px Share Tech Mono';
+          ctx.textAlign = 'center';
+          ctx.fillText('·', x + CELL/2, y);
+        }
+      });
+    });
+
+    // Highlight selected label underline
+    if (selIdx !== null) {
+      ctx.fillStyle = '#ffb000';
+      const x = LABEL_W + selIdx * (CELL + PAD);
+      ctx.fillRect(x, LABEL_H - 3, CELL, 2); // col underline
+      ctx.fillRect(0, LABEL_H + selIdx * (CELL + PAD), LABEL_W - 4, 2); // row underline
+    }
+  }
+
+  drawAll(null);
+
+  // Hover + click interaction
+  let hoveredCell = null;
+
+  function getCellAt(mx, my) {
+    const rect = canvas.getBoundingClientRect();
+    const px = mx - rect.left;
+    const py = my - rect.top;
+    // Check label click areas
+    const j = Math.floor((px - LABEL_W) / (CELL + PAD));
+    const i = Math.floor((py - LABEL_H) / (CELL + PAD));
+    if (py < LABEL_H && px >= LABEL_W && j >= 0 && j < N) return {type:'col', idx:j};
+    if (px < LABEL_W && py >= LABEL_H && i >= 0 && i < N) return {type:'row', idx:i};
+    if (px >= LABEL_W && py >= LABEL_H && i >= 0 && i < N && j >= 0 && j < N) return {type:'cell', i, j};
+    return null;
+  }
+
+  canvas.addEventListener('mousemove', e => {
+    const hit = getCellAt(e.clientX, e.clientY);
+    const tt = document.getElementById('tt');
+    if (hit && hit.type === 'cell') {
+      const v = mx[hit.i][hit.j];
+      const a = Math.abs(v);
+      const strength = a >= 0.08 ? 'STRONG' : a >= 0.05 ? 'MODERATE' : a >= 0.02 ? 'WEAK' : 'NEGLIGIBLE';
+      const dir = hit.i === hit.j ? 'DIAGONAL' : v > 0 ? 'POSITIVE' : 'NEGATIVE';
+      tt.textContent = `${vars[hit.i]} ↔ ${vars[hit.j]}: r=${v.toFixed(3)} · ${strength} · ${dir}`;
+      tt.style.display = 'block';
+      tt.style.left = (e.clientX + 12) + 'px';
+      tt.style.top = (e.clientY - 28) + 'px';
+      canvas.style.cursor = 'pointer';
+    } else if (hit && (hit.type === 'col' || hit.type === 'row')) {
+      tt.textContent = `CLICK TO SELECT: ${vars[hit.idx]}`;
+      tt.style.display = 'block';
+      tt.style.left = (e.clientX + 12) + 'px';
+      tt.style.top = (e.clientY - 28) + 'px';
+      canvas.style.cursor = 'pointer';
+    } else {
+      tt.style.display = 'none';
+      canvas.style.cursor = 'crosshair';
+    }
+  });
+
+  canvas.addEventListener('mouseleave', () => {
+    document.getElementById('tt').style.display = 'none';
+  });
+
+  canvas.addEventListener('click', e => {
+    const hit = getCellAt(e.clientX, e.clientY);
+    if (!hit) return;
+    let varName = null;
+    if (hit.type === 'col') varName = vars[hit.idx];
+    else if (hit.type === 'row') varName = vars[hit.idx];
+    else if (hit.type === 'cell') varName = vars[hit.i]; // click cell selects row variable
+
+    if (varName) {
+      const newSel = selectedVar === varName ? null : varName;
+      selectedVar = newSel;
+      const idx = newSel ? vars.indexOf(newSel) : null;
+      drawAll(idx);
+      document.getElementById('selLabel').textContent = newSel ? `SELECTED: ${newSel}` : 'NO VARIABLE SELECTED';
+      document.getElementById('corrTableTitle').textContent = newSel ? `CORRELATIONS: ${newSel}` : 'ALL CORRELATIONS';
+      updateInterpPanel(newSel);
+      applyFilters();
+    }
+  });
+
+  // Store drawAll for clearCorrSel
+  window._hmDrawAll = drawAll;
+
+  container.appendChild(canvas);
+  wrap.appendChild(container);
+}
+
+function updateInterpPanel(varName) {
+  if (varName && VAR_INTERP[varName]) {
+    const info = VAR_INTERP[varName];
+    document.getElementById('corrInterp').innerHTML = `
+      <div style="text-align:left">
+        <div style="font-family:var(--font-pixel);font-size:13px;color:${info.color};text-shadow:0 0 8px ${info.color}66;margin-bottom:4px">${varName}</div>
+        <div style="font-family:var(--font-mono);font-size:8px;color:var(--muted);margin-bottom:10px;letter-spacing:0.08em">${info.role.toUpperCase()} · ${info.full.toUpperCase()}</div>
+        <p style="font-size:10.5px;color:var(--text2);line-height:1.75;margin-bottom:12px">${info.summary}</p>
+        <div style="font-family:var(--font-mono);font-size:8px;color:var(--muted);letter-spacing:0.1em;margin-bottom:7px">// KEY ASSOCIATIONS</div>
+        <div style="display:flex;flex-direction:column;gap:5px">
+          ${info.top.map(t => `
+            <div style="display:flex;gap:7px;font-size:10px;color:var(--text2);align-items:flex-start;padding:5px 7px;background:var(--panel2);border:1px solid var(--border)">
+              <span style="color:${info.color};flex-shrink:0">▸</span>${t}
+            </div>`).join('')}
+        </div>
+      </div>`;
+  } else {
+    document.getElementById('corrInterp').innerHTML = `
+      <div style="color:var(--muted);font-family:var(--font-mono);font-size:10px;text-align:center;letter-spacing:0.08em;line-height:1.8">
+        SELECT A VARIABLE<br>FROM THE HEATMAP<br>TO SEE INTERPRETATION
+      </div>`;
+  }
+}
+
+// old DOM heatmap functions removed
+
+function clearCorrSel() {
+  selectedVar = null;
+  if(window._hmDrawAll) window._hmDrawAll(null);
+  document.getElementById('selLabel').textContent = 'NO VARIABLE SELECTED';
+  document.getElementById('corrTableTitle').textContent = 'ALL CORRELATIONS';
+  updateInterpPanel(null);
+  applyFilters();
+}
+
+function applyFilters() {
+  const sigF = document.getElementById('sigFilterCorr')?.value || 'all';
+  const dirF = document.getElementById('dirFilterCorr')?.value || 'all';
+  const rows = CORRS.filter(c => {
+    // Variable filter
+    if(selectedVar && c.pred !== selectedVar && c.out !== selectedVar) return false;
+    // Significance filter
+    if(sigF !== 'all') {
+      if(sigF === '***' && c.sig !== '***') return false;
+      if(sigF === '**' && c.sig !== '***' && c.sig !== '**') return false;
+      if(sigF === '*' && c.sig === 'ns') return false;
+      if(sigF === 'ns' && c.sig !== 'ns') return false;
+    }
+    // Direction filter
+    if(dirF !== 'all') {
+      const fv = parseFloat(c.full.replace('−','-').replace(/[^0-9.-]/g,'')) || 0;
+      if(dirF === 'pos' && fv <= 0) return false;
+      if(dirF === 'neg' && fv >= 0) return false;
+    }
+    return true;
+  });
+  renderCorrTable(rows);
+  document.getElementById('corrCount').textContent = `SHOWING ${rows.length} OF ${CORRS.length} ASSOCIATIONS${selectedVar ? ` · FILTERED BY: ${selectedVar}` : ''}`;
+}
+
+function renderCorrTable(rows) {
+  rows = rows || CORRS;
+  const segC = ['#cc44ff','#00e5ff','#ff3333','#ffb000'];
+  document.getElementById('corrTbody').innerHTML = rows.map(c => {
+    const fv = parseFloat(c.full.replace('−','-').replace(/[^0-9.-]/g,'')) || 0;
+    const pct = Math.min(Math.abs(fv) * 500, 100);
+    const isPos = fv > 0;
+    const mag = `
+      <div style="display:flex;align-items:center;gap:5px">
+        <div style="width:80px;height:8px;background:var(--dim);border:1px solid var(--border);position:relative;border-radius:1px;overflow:hidden">
+          <div style="position:absolute;top:0;height:100%;width:${pct/2}%;${isPos?'right:50%':'left:50%'};background:${isPos?'var(--red)':'var(--green)'};border-radius:1px"></div>
+          <div style="position:absolute;left:50%;top:0;bottom:0;width:1px;background:rgba(255,176,0,0.3)"></div>
+        </div>
+        <span style="font-size:8px;color:${isPos?'var(--red)':'var(--green)'}">${isPos?'↑':'↓'}</span>
+      </div>`;
+    const rCell = (r) => {
+      const rv = parseFloat(r.replace('−','-').replace(/[^0-9.-]/g,'')) || 0;
+      const isNs = r.includes('ns');
+      const col = isNs ? 'var(--muted)' : rv > 0 ? 'rgba(255,51,51,0.8)' : 'rgba(0,255,136,0.8)';
+      return `<td style="font-size:8px;color:${col};font-family:var(--font-mono)">${r}</td>`;
+    };
+    const isHighlighted = selectedVar && (c.pred === selectedVar || c.out === selectedVar);
+    return `<tr style="${isHighlighted ? 'background:var(--amber-glow)!important' : ''}">
+      <td style="font-size:9px;font-weight:500;color:${c.pred===selectedVar?'var(--amber)':'var(--text2)'}">${c.pred}</td>
+      <td style="font-size:9px;color:${c.out===selectedVar?'var(--amber)':'var(--text2)'}">${c.out}</td>
+      <td style="color:${fv>0?'var(--red)':'var(--green)'};font-weight:500;font-family:var(--font-mono)">${c.full}</td>
+      ${rCell(c.br)}${rCell(c.sc)}
+      <td style="font-size:8px;color:${c.is.includes('+')?'rgba(255,51,51,0.9)':c.is.includes('−')?'rgba(0,255,136,0.9)':'var(--muted)'};font-family:var(--font-mono);font-weight:${c.is.includes('DOUBLED')||c.is.includes('ONLY')?'700':'400'}">${c.is}</td>
+      ${rCell(c.er)}
+      <td>${sigChip(c.sig)}</td>
+      <td>${mag}</td>
+      <td style="font-size:9px;color:var(--muted)">${c.note}</td>
+    </tr>`;
+  }).join('');
+}
+
+function renderReach(){
+  const sc=v=>v>=70?'var(--green)':v>=40?'var(--amber)':'var(--red)';
+  const ec={CLEARED:'c-green',RESTRICTED:'c-amber',PROHIBITED:'c-red'};
+  document.getElementById('reachTbody').innerHTML=REACH.map(r=>`
+    <tr>
+      <td style="font-weight:500;color:var(--text);font-size:9px">${r.seg}</td>
+      <td>${r.n}</td><td style="color:var(--amber);font-weight:500">${r.reach}</td>
+      ${[r.casual,r.comp,r.social,r.hw,r.well,r.earn,r.gamb].map(v=>`<td style="color:${sc(v)};font-weight:500">${v}</td>`).join('')}
+      <td><span class="chip ${ec[r.eth]||'c-dim'}">${r.eth}</span></td>
+    </tr>`).join('');
+}
+
+function renderFlags(){
+  const lc={PROHIBITED:'c-red',RESTRICTED:'c-amber',CONDITIONAL:'c-dim',APPROVED:'c-green'};
+  document.getElementById('flagTbody').innerHTML=FLAGS.map(f=>`
+    <tr class="${f.level==='PROHIBITED'?'row-flag':''}">
+      <td style="font-size:12px;font-weight:500">${f.cat}</td>
+      <td style="font-size:12px;color:var(--muted)">${f.segs}</td>
+      <td><span class="chip ${lc[f.level]||'c-dim'}">${f.level}</span></td>
+      <td style="color:var(--cyan);font-size:11px">${f.basis}</td>
+      <td style="font-size:11px">${f.stat}</td>
+      <td style="font-size:11px;color:var(--muted)">${f.impact}</td>
+    </tr>`).join('');
+}
+
+function renderCtx(){
+  document.getElementById('ctxSegs').innerHTML=SEGS.map((s,i)=>`
+    <div style="padding:6px 8px;border:1px solid var(--border);margin-bottom:4px;cursor:pointer;transition:all .15s" onclick="ctxSeg(${i})"
+      onmouseover="this.style.borderColor='${s.color}';this.style.background='var(--amber-glow)'" onmouseout="this.style.borderColor='var(--border)';this.style.background='transparent'">
+      <div style="font-family:var(--font-pixel);font-size:10px;color:${s.color};text-shadow:0 0 6px ${s.color}66">${s.short}</div>
+      <div style="font-family:var(--font-mono);font-size:8px;color:var(--muted)">${s.pct}% · GAD ${s.gad} · SWL ${s.swl} · ${s.risk}</div>
+    </div>`).join('');
+  document.getElementById('ctxFacts').innerHTML=[
+    ['H2','CONTRADICTED — streaming↑GAD'],
+    ['H5 IS','Earnings→SWL DOUBLES'],
+    ['Best protect.','Playstyle→SWL r=+0.124'],
+    ['Age reversal','ER ONLY (+0.024ns)'],
+    ['Rank→GAD','Sig. IS only (+0.047*)'],
+    ['Prohibited','Gambling+earn (IS+ER)'],
+  ].map(([k,v])=>`<div style="display:flex;justify-content:space-between;font-size:9px;padding:4px 0;border-bottom:1px solid var(--border)"><span style="color:var(--muted)">${k}</span><span style="color:var(--amber);text-align:right;font-size:8px">${v}</span></div>`).join('');
+}
+
+function ctxSeg(i){
+  const s=SEGS[i];
+  addMsg('user',`Full statistical profile: ${s.name}`);
+  callAPI(`Statistical profile of ${s.name}: n, all 3 well-being scores vs population, top 3 r-values with significance, which hypotheses are supported/contradicted, and the single most important finding for a publisher analyst.`);
+}
+
+function addMsg(role,txt){
+  const a=document.getElementById('chatMsgs');
+  const d=document.createElement('div');d.className=`msg ${role}`;
+  const b=document.createElement('div');b.className='msg-bubble';b.textContent=txt;
+  d.appendChild(b);a.appendChild(d);a.scrollTop=a.scrollHeight;return d;
+}
+async function callAPI(txt){
+  chatHistory.push({role:'user',content:txt});
+  const t=addMsg('bot','PROCESSING //');
+  try{
+    const r=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,system:SYSTEM,messages:chatHistory})});
+    const d=await r.json();
+    const reply=d.content?.find(b=>b.type==='text')?.text||'NO RESPONSE';
+    t.querySelector('.msg-bubble').textContent=reply;
+    chatHistory.push({role:'assistant',content:reply});
+  }catch(e){t.querySelector('.msg-bubble').textContent='QUERY ERROR // RETRY';}
+  document.getElementById('chatMsgs').scrollTop=9999;
+}
+function sendMsg(){const i=document.getElementById('chatIn');const t=i.value.trim();if(!t)return;i.value='';addMsg('user',t);callAPI(t);}
+function fireChip(b){document.getElementById('chatIn').value=b.textContent;sendMsg();}
+
+function showTT(e,t){const tt=document.getElementById('tt');tt.textContent=t;tt.style.display='block';tt.style.left=e.clientX+10+'px';tt.style.top=e.clientY-28+'px';}
+function hideTT(){document.getElementById('tt').style.display='none';}
+
+
+function toggleExp(btn){
+  const dd=document.getElementById('expDd');dd.classList.toggle('open');
+  document.addEventListener('click',function h(e){if(!btn.parentElement.contains(e.target)){dd.classList.remove('open');document.removeEventListener('click',h);}},true);
+}
+function dl(n,c){const a=document.createElement('a');a.href='data:text/plain;charset=utf-8,'+encodeURIComponent(c);a.download=n;a.click();}
+function expCSV(){dl('gamerpsyche_summary.csv',['Cluster,n,%,GAD,SWL,SPIN,Risk',...SEGS.map(s=>[s.name,s.n,s.pct,s.gad,s.swl,s.spin,s.risk].join(','))].join('\n'));}
+function expJSON(){dl('gamerpsyche_data.json',JSON.stringify({segs:SEGS,hyps:HYPS,corr:CORRS},null,2));}
+function expHyp(){dl('gamerpsyche_hypotheses.csv',['ID,Hypothesis,Verdict,Full,BR,SC,IS,ER,Metric,p',...HYPS.map(h=>[h.id,h.title,h.verdict,h.full,h.br,h.sc,h.is,h.er,h.metric,h.pval].map(v=>`"${v}"`).join(','))].join('\n'));}
+function expFlags(){dl('gamerpsyche_flags.csv',['Category,Segments,Level,Basis,Stat,Impact',...FLAGS.map(f=>[f.cat,f.segs,f.level,f.basis,f.stat,f.impact].map(v=>`"${v}"`).join(','))].join('\n'));}
+
+// ── CONCLUSIONS DATA ──────────────────────────────────────────────
+const SEG_CONCLUSIONS = [
+  { segId: 0, conclusions: [
+    { type:'strategic', label:'Safe to target broadly', summary:'Balanced Recreationalists are the lowest-risk, highest-clearance audience in the dataset. With GAD=4.67 and SWL=20.59 — the best outcomes of all four clusters — campaigns reaching this group carry minimal ethical risk across almost all categories.', evidence:'GAD=4.67 (pop avg 5.21) · SWL=20.59 (pop avg 19.79) · Risk tier: LOW', action:'Prioritize this segment for broad-reach casual, social, and wellness campaigns. No restrictions apply.' },
+    { type:'predictive', label:'Playing with others is genuinely protective here', summary:'In Balanced Recreationalists, playing with strangers has the strongest anxiety and social-phobia-reducing effect of any segment (r=−0.083*** SPIN, r=−0.065*** GAD). Social multiplayer features are not just engagement tools — they are well-being tools for this group.', evidence:'Playstyle→SPIN: r=−0.083*** · Playstyle→GAD: r=−0.065*** · H7 supported (strongest in BR)', action:'Social gaming campaigns — guilds, co-op events, friend referrals — will land best and do the least harm here.' },
+    { type:'causal', label:'Hours matter here, but not catastrophically', summary:'Hours of play weakly predict anxiety in this cluster (r=+0.062***) but the curve is flat — there is no tipping point. More play does not meaningfully worsen outcomes. This is the one cluster where gaming volume is largely benign.', evidence:'Hours→GAD: r=+0.062*** · Curve shape: FLAT (H6) · No significant playtime threshold found', action:'Do not apply session-length restrictions to campaigns targeting this segment. Volume targeting is safe.' },
+    { type:'opportunity', label:'Streaming is still a risk signal even here', summary:'Even in the safest cluster, streaming consumption raises anxiety (r=+0.070***) and social phobia (r=+0.099*** — the highest streaming→SPIN correlation in the dataset). Streaming hours should not be used as a proxy for positive engagement even in low-risk audiences.', evidence:'Streams→GAD: r=+0.070*** · Streams→SPIN: r=+0.099*** (highest of all clusters) · H2 contradicted', action:'Avoid using streaming consumption as an audience quality signal. Flag this assumption in any media brief using streaming hours as an engagement proxy.' },
+  ]},
+  { segId: 1, conclusions: [
+    { type:'strategic', label:'Hours are the primary risk lever — not rank', summary:'In Structured Competitors, the more hours played the higher the anxiety — a clean monotonic relationship (r=+0.064***). Rank alone is not significant (r=−0.004 ns). This means campaign exposure tied to high-volume players is riskier than exposure tied to high-ranked players.', evidence:'Hours→GAD: r=+0.064*** · Rank→GAD: r=−0.004 ns · Curve shape: MONOTONIC (H6)', action:'When buying inventory near high-engagement players, de-prioritize heavy-hours audiences within this segment, not high-rank audiences.' },
+    { type:'predictive', label:'Hardware and esports are the right fit', summary:'Structured Competitors show the highest campaign fit for hardware (95/100) and competitive/esports content (92/100). Their behavioral profile — high rank investment, structured play — aligns precisely with peripheral and tournament-adjacent advertising.', evidence:'Campaign fit: Hardware 95 · Competitive 92 · Ethics: CLEARED · H8: Playstyle→SWL r=+0.075***', action:'Esports sponsorship, peripheral product placement, and skill-oriented messaging are ethically and commercially optimal for this segment.' },
+    { type:'causal', label:'Earnings motivation is a quiet risk — monitor it', summary:'Earnings motivation moderately lowers life satisfaction in this cluster (r=−0.036*). While the effect is smaller than in Intensified Strivers, it is still statistically significant. Players who shift from competitive enjoyment toward monetisation as a primary motive show measurable well-being degradation.', evidence:'Earnings→SWL: r=−0.036* · Earnings→GAD: r=+0.039** · H5 supported (SC)', action:'Avoid earn-to-play or "make money gaming" messaging even in this safer segment. The risk is smaller but real.' },
+    { type:'strategic', label:'Narcissism is a consistent moderate risk factor', summary:'Narcissism reliably predicts anxiety in Structured Competitors (r=+0.067***) — more than in Balanced Recreationalists but less than in the high-risk clusters. This gradient suggests competitive environments amplify narcissistic traits into anxiety pathways.', evidence:'Narcissism→GAD: r=+0.067*** · Gradient: BR(0.049) < SC(0.067) < IS(0.083) < ER(0.111)', action:'No direct targeting implication, but useful for segmentation scoring: audiences with high narcissism signals in competitive contexts should be treated as elevated-risk.' },
+  ]},
+  { segId: 2, conclusions: [
+    { type:'causal', label:'Rank becomes an anxiety driver when identity is fused to it', summary:'Intensified Strivers are the ONLY segment where rank directly predicts anxiety (r=+0.047*). This does not happen in any other cluster. The mechanism is identity-attachment: when self-worth depends on rank outcomes, rank fluctuations become psychological stressors. This is the dataset\'s most important causal finding.', evidence:'Rank→GAD: r=+0.047* (IS only) · All other clusters: ns · H1 reversal · Identity-attachment mechanism', action:'Campaigns that amplify rank pressure — "climb to Diamond," "reach the top" — are clinically contraindicated for this segment. Remove rank-escalation messaging from IS-targeted creatives.' },
+    { type:'strategic', label:'Earnings motivation is doubly harmful here', summary:'The life satisfaction penalty from earnings motivation doubles in Intensified Strivers (r=−0.088***) compared to the full dataset (r=−0.053***). A player in this segment who is motivated by monetisation has significantly worse SWL than any other group. This is the clearest basis for the earn-to-play prohibition.', evidence:'Earnings→SWL IS: r=−0.088*** · Full dataset: r=−0.053*** · H5 amplified 2× · Ethics: PROHIBITED', action:'Earn-to-play, loot-box, and gambling products are prohibited for this segment. This is not a precautionary flag — it is evidence-based and the effect size is the largest in the dataset.' },
+    { type:'opportunity', label:'Playstyle shift is the highest-leverage intervention', summary:'Despite being the highest-risk competitive segment, Intensified Strivers show the strongest response to playstyle diversification of all four clusters (r=+0.124*** SWL). Moving players away from purely ranked modes toward mixed-format play is the most potent well-being intervention available in the data.', evidence:'Playstyle→SWL IS: r=+0.124*** (strongest of all segs) · H8 supported · Highest-leverage intervention', action:'Campaigns promoting varied game formats, casual modes alongside competitive, or community play have the greatest positive impact here. This is an opportunity to do well by doing good.' },
+    { type:'predictive', label:'Gender gap in social phobia is widest in this cluster', summary:'The gender gap in social phobia is significant across all clusters, but reaches its peak in Intensified Strivers (gap=10.73***). Female players in this segment carry significantly higher social phobia scores than male counterparts — more so than in any other group.', evidence:'Gender SPIN gap IS: 10.73*** · Next widest: BR at 9.21*** · H9 gap widens · p<0.001', action:'Campaigns targeting this segment should not assume a homogeneous experience. Female-identified players in this group may need distinct messaging, safer social environments, and explicit anti-harassment signals.' },
+  ]},
+  { segId: 3, conclusions: [
+    { type:'causal', label:'Age provides zero protection here — a critical reversal', summary:'Across every other cluster, age buffers anxiety (older players are less anxious). In Escapist Regulators, this effect completely reverses (r=+0.024 ns — non-significant and directionally positive). Age cannot be used as a resilience proxy for this group. Older escapist gamers are just as vulnerable as younger ones.', evidence:'Age→GAD ER: r=+0.024 ns · All other clusters: negative and significant · H10 reversed in ER · p<0.001 elsewhere', action:'Do not deprioritize older players in this segment for well-being interventions. Age-based risk stratification is invalid for Escapist Regulators.' },
+    { type:'causal', label:'Narcissism is the strongest anxiety predictor in this cluster', summary:'The narcissism→GAD correlation peaks in Escapist Regulators (r=+0.111**) — higher than any other segment. This suggests that in players using gaming for emotional regulation, narcissistic traits amplify the anxiety burden rather than providing protective grandiosity. The combination of escapist motivation and high narcissism is the highest-risk profile in the dataset.', evidence:'Narcissism→GAD ER: r=+0.111** · Gradient peak: ER highest · H3 strengthened · p<0.01', action:'If screening players for clinical risk, the combination of escapist play motivation AND high narcissism scores is the most reliable high-risk indicator in this research.' },
+    { type:'predictive', label:'Moderate play is paradoxically the lowest-anxiety point', summary:'Escapist Regulators show a U-shaped hours curve: GAD is lowest at moderate play (3–5h/day = 4.98 GAD) and rises at both low and high extremes. This is the only segment with this pattern. It suggests moderate structured gaming may serve a genuinely regulatory function — but excessive play tips into harm.', evidence:'GAD low hrs: 6.07 · GAD mod hrs: 4.98 · GAD high hrs: 6.29 · U-shape (H6 partially supported in ER)', action:'For wellness-oriented campaigns targeting this segment, framing around "healthy gaming habits" rather than reduction or elimination is supported by the data. Total abstinence messaging is not warranted.' },
+    { type:'strategic', label:'Wellness campaigns are the only ethical play here', summary:'Escapist Regulators are prohibited from gambling, earn-to-play, and high-pressure competitive messaging. The only ethically cleared campaign category is wellness, mental health, and mindfulness content. But this is also the group with the highest unmet need — GAD=6.20 is the dataset maximum.', evidence:'GAD=6.20 (highest) · Ethics: MOST RESTRICTED · Wellness campaign fit: 80/100 · H4 supported', action:'Wellness brands, mental health platforms, and supportive community products have a genuine and substantial opportunity in this underserved segment — 690K players nationally with measurably poor well-being and no current ethical targeting available to reach them.' },
+  ]},
+];
+
+const HYP_CONCLUSIONS = [
+  { id:'H1', title:'League status & anxiety', verdict:'p', summary:'Rank is not inherently harmful — only when fused with identity.', detail:'The most important nuance in the dataset: rank alone does not predict anxiety in three out of four clusters. It only becomes a risk factor in Intensified Strivers, where self-worth is tied to performance. This means rank-based targeting (e.g. "serves ads to Diamond+ players") is not intrinsically harmful — but rank-escalation messaging for IS-heavy audiences is.', evidence:'Rank→GAD full: r=−0.002 ns · IS: r=+0.047* · H1 partially supported', action:'Differentiate between reaching ranked players (fine) and messaging that amplifies rank pressure (contraindicated for IS).' },
+  { id:'H2', title:'Streaming & well-being', verdict:'c', summary:'Streaming hours are a risk signal, not an engagement quality signal.', detail:'This is the finding most likely to challenge existing media-buying assumptions. Streaming consumption reliably worsens anxiety, social phobia, and life satisfaction across all four clusters. Using streaming hours as a proxy for "passionate gamer" in audience targeting conflates engagement volume with engagement quality — and the data shows they point in opposite directions.', evidence:'Streams→GAD: r=+0.066*** · Streams→SWL: r=−0.076*** · Streams→SPIN: r=+0.065*** · H2 CONTRADICTED', action:'Remove streaming hours as a positive targeting signal from media briefs. If used at all, treat it as a risk flag for elevated anxiety exposure, especially in IS (r=−0.095*** SWL).' },
+  { id:'H3', title:'Narcissism & life satisfaction', verdict:'p', summary:'Narcissism raises anxiety consistently but does not reduce life satisfaction.', detail:'Narcissism predicts anxiety across all four clusters (gradient strengthening from BR to ER), but has no significant effect on life satisfaction in any cluster. This partial support is analytically important: narcissism is an anxiety amplifier, not a happiness reducer. These are different clinical pathways that require different responses.', evidence:'Narcissism→GAD: r=+0.079*** · Narcissism→SWL: r=−0.013 ns · H3 partially supported', action:'Use narcissism as an anxiety risk signal in player screening, not a life-quality predictor. The two should not be conflated in product design or targeting logic.' },
+  { id:'H4', title:'Motivation (WhyPlay) & anxiety', verdict:'s', summary:'Why someone plays is more predictive of well-being than how much they play.', detail:'Escapist/avoidant motivation (playing to relax, escape problems) reliably predicts higher anxiety at the population level. Between-cluster GAD means confirm a clean gradient: BR=4.67, SC=5.26, IS=6.12, ER=6.20. The strongest predictor of a player\'s psychological risk tier is not their hours or rank — it\'s their reason for playing.', evidence:'Relaxing→GAD: r=+0.049*** · Between-cluster GAD gradient: 4.67→5.26→6.12→6.20 · H4 supported', action:'Motivation-based segmentation (e.g. WhyPlay survey items) is a more efficient risk classifier than behavioral signals like hours or rank. Prioritize motivation screening in player well-being tools.' },
+  { id:'H5', title:'Earnings expectation & life satisfaction', verdict:'s', summary:'Monetisation motivation is a measurable harm — and it doubles in the most vulnerable group.', detail:'Earnings motivation lowers life satisfaction and raises anxiety across all segments. The effect doubles in Intensified Strivers — the group already at highest risk. This creates a compounding harm: the players most psychologically vulnerable to earnings pressure are also the most likely to engage with monetised competitive gaming. This is the clearest evidence base for the earn-to-play prohibition.', evidence:'Earnings→SWL full: r=−0.053*** · IS: r=−0.088*** (2×) · H5 supported · Amplified in highest-risk group', action:'Earn-to-play, loot-box, and monetisation-adjacent products are prohibited for IS and ER segments. This is not precautionary — it is supported by the largest effect size in the dataset.' },
+  { id:'H6', title:'Hours & well-being (inverted-U)', verdict:'c', summary:'There is no universal optimal play window — risk depends entirely on why you play.', detail:'The inverted-U hypothesis (moderate play is best) is contradicted at the dataset level. Curve shape is cluster-dependent: Balanced Recreationalists show a flat curve (hours barely matter), Structured Competitors show monotonic anxiety growth, Intensified Strivers and Escapist Regulators show elevated U-shapes. This means blanket "reduce hours" recommendations are too blunt — the right intervention varies by segment.', evidence:'H6 CONTRADICTED · Curve shapes: BR=flat · SC=monotonic · IS=U elevated · ER=U-shape', action:'Retire the universal "moderate gaming is optimal" framing. Segment-specific guidance is required: hours are irrelevant for BR, harmful above any threshold for SC, and show a complex curve for IS and ER.' },
+  { id:'H7', title:'Multiplayer context & social phobia', verdict:'s', summary:'Playing with others reduces anxiety — but the mechanism differs by segment.', detail:'Across all four clusters, playing with known contacts (vs strangers) consistently reduces both anxiety and social phobia. The effect is strongest in Balanced Recreationalists. In Escapist Regulators, the SPIN (social phobia) pathway is absent but the GAD (anxiety) reduction persists — suggesting a different mechanism: for escapists, social play may reduce anxiety not through social belonging but through distraction or co-regulation.', evidence:'Playstyle→SPIN: r=−0.067*** full · BR strongest: r=−0.083*** · ER: SPIN absent, GAD persists (r=−0.099**)', action:'Social gaming features are protective across all segments. Design for known-contact multiplayer. For ER-adjacent players, framing social play as "co-op experience" rather than "community" may be more effective.' },
+  { id:'H8', title:'Playstyle & life satisfaction', verdict:'s', summary:'Balanced playstyle is the most reliable positive lever in the entire dataset.', detail:'Playstyle predicts life satisfaction across all four clusters, with significant effects everywhere (r=+0.075*** to r=+0.124***). It is the strongest positive association in the research — more powerful than any demographic or hours variable. Critically, the effect is largest in Intensified Strivers (r=+0.124***): the group that needs it most also benefits most from it.', evidence:'Playstyle→SWL full: r=+0.104*** · IS: r=+0.124*** (strongest) · ER: r=+0.117** · H8 supported all clusters', action:'Playstyle diversification is the highest-ROI well-being intervention in this dataset. Products and campaigns that shift players toward varied, balanced play formats have the broadest and deepest positive effect.' },
+  { id:'H9', title:'Gender & social phobia', verdict:'s', summary:'A consistent gender gap in social phobia exists — and widens in the most intense gaming environments.', detail:'Female-identified players report significantly higher social phobia scores across all clusters (overall gap: 8.63***). The gap widens substantially in Intensified Strivers (10.73***) — the most competitive, identity-invested segment. This is consistent with documented toxicity in competitive gaming environments having disproportionate impact on female players.', evidence:'Gender SPIN gap full: 8.63*** · IS peak: 10.73*** · BR: 9.21*** · ER: 4.72* (narrowest) · H9 supported', action:'Gender-sensitive design is not optional in competitive gaming contexts. Anti-harassment features, safer reporting tools, and female-affirming community norms reduce the gap that the data shows is real and measurable.' },
+  { id:'H10', title:'Age & motivation interaction', verdict:'s', summary:'Age normally protects — except when gaming is used to avoid real-world problems.', detail:'In three out of four clusters, older players report lower anxiety — age is a resilience factor. In Escapist Regulators, this reverses completely (r=+0.024 ns, directionally positive). When gaming serves emotional avoidance, the coping mechanisms that normally improve with age are bypassed entirely. This makes older escapist gamers an invisible high-risk group — assumed to be resilient but actually not.', evidence:'Age→GAD full: r=−0.042*** · BR: r=−0.054*** · ER: r=+0.024 ns (REVERSED) · H10 supported but reversed in ER', action:'Do not assume older player age = lower risk. For any player showing escapist motivation signals, age provides no protection and should not be used to deprioritize them in risk screening.' },
+];
+
+const BIZ_QUESTIONS = [
+  { q:'Should I use streaming hours as a targeting signal?', icon:'📡',
+    verdict:'NO — retire this signal', vcolor:'var(--red)',
+    summary:'Streaming consumption is positively correlated with anxiety and social phobia across all four clusters, and negatively correlated with life satisfaction. Using it as a positive engagement proxy fundamentally misreads what streaming hours represent in the data.',
+    evidence:[['Streams→GAD (full)','r=+0.066***','Risk'],['Streams→SPIN (full)','r=+0.065***','Risk'],['Streams→SWL (full)','r=−0.076***','Risk'],['Streams→SWL (IS — worst)','r=−0.095***','Risk']],
+    actions:['Remove streaming hours as an audience quality signal from all media briefs','If retained, treat it as a risk flag — not an engagement flag','Especially avoid streaming-heavy audiences for earn-to-play or gambling products (IS + streaming = compounding risk)']
+  },
+  { q:'Which segment gives the best campaign ROI?', icon:'🎯',
+    verdict:'Structured Competitors for commercial · Balanced Rec. for broad reach', vcolor:'var(--green)',
+    summary:'Structured Competitors deliver the highest campaign lift (2.4×) with full ethical clearance for esports, hardware, and competitive categories. Balanced Recreationalists offer the largest reach (5.1M) with the broadest category clearance. Both are ethically safe.',
+    evidence:[['Struct. Comp. reach','4.6M','Cleared'],['Struct. Comp. fit (hardware)','95/100','Best fit'],['Balanced Rec. reach','5.1M','Cleared'],['Balanced Rec. fit (casual)','95/100','Best fit']],
+    actions:['Use Structured Competitors for hardware, esports, and performance product campaigns','Use Balanced Recreationalists for casual, social, and lifestyle campaigns','Combine both for broad-reach gaming campaigns — 9.7M combined ethically cleared reach']
+  },
+  { q:'Is it safe to target Intensified Strivers?', icon:'⚠️',
+    verdict:'Conditionally — with restrictions', vcolor:'var(--amber)',
+    summary:'Intensified Strivers (2.0M reach) are reachable but require category restrictions. Gambling and earn-to-play are prohibited. Rank-escalation messaging is restricted. Hardware, skill tools, and coaching products are cleared. The earnings motivation amplification (2×) is the primary risk.',
+    evidence:[['Earnings→SWL (IS)','r=−0.088***','DOUBLES vs others'],['Rank→GAD (IS)','r=+0.047*','Only segment affected'],['Playstyle→SWL (IS)','r=+0.124***','Highest-leverage opportunity'],['Ethics status','CONDITIONAL','Category restrictions apply']],
+    actions:['Clear: hardware, performance tools, skill coaching, non-monetary competitive rewards','Restricted: rank-escalation messaging','Prohibited: earn-to-play, gambling, loot-box products','Opportunity: playstyle-diversification campaigns have the strongest positive effect here of any segment']
+  },
+  { q:'What is the most important single finding for a campaign analyst?', icon:'🔑',
+    verdict:'Motivation > hours > rank as a risk predictor', vcolor:'var(--cyan)',
+    summary:'The hierarchy of risk predictors is: why someone plays (motivation type) is more predictive than how long they play (hours), which is more predictive than how well they play (rank). This inverts the assumptions most audience targeting tools use.',
+    evidence:[['WhyPlay→GAD','r=+0.049***','Strongest cluster separator'],['Hours→GAD (full)','r=+0.013 ns','Not universally significant'],['Rank→GAD (full)','r=−0.002 ns','Not significant at population level'],['Motivation cluster gradient','4.67→6.20 GAD','Cleanest predictor']],
+    actions:['Prioritize motivation-based segmentation over behavioral signals','Hours and rank are secondary — motivation type is the primary classifier','Build campaign briefs around why audiences play, not just what they play or how much']
+  },
+  { q:'Should I target Escapist Regulators at all?', icon:'🚫',
+    verdict:'Wellness campaigns only — others prohibited', vcolor:'var(--red)',
+    summary:'Escapist Regulators carry the highest anxiety in the dataset (GAD=6.20) and face the most restrictions. However, they represent an underserved population with a measurable unmet need. Wellness, mental health, and mindfulness campaigns are both ethically cleared and genuinely needed by this group.',
+    evidence:[['GAD score (ER)','6.20','Highest in dataset'],['Ethics restrictions','Gambling · Earn-to-play · High-pressure competitive','PROHIBITED'],['Wellness campaign fit','80/100','Best available category'],['Age protection','REVERSED (r=+0.024 ns)','Older players not safer']],
+    actions:['Prohibited: gambling, earn-to-play, loot-box, competitive rank campaigns','Cleared: wellness apps, mental health platforms, mindfulness gaming, supportive communities','0.6M players with documented high anxiety and almost no ethically safe advertising currently reaching them — significant opportunity for the right product']
+  },
+  { q:'How do I justify ethics flags to stakeholders?', icon:'📋',
+    verdict:'Evidence-based — not precautionary', vcolor:'var(--purple)',
+    summary:'Every restriction in this platform is derived from statistically significant findings (p<0.001) from a validated sample of 13,407 players. The flags are not precautionary rules — they cite specific hypothesis IDs, r-values, and population-level effect sizes that can be presented directly to compliance, legal, or executive stakeholders.',
+    evidence:[['Sample size','n=13,407','Peer-review grade'],['Significance threshold','p<0.05 (most p<0.001)','Strict'],['Earn-to-play restriction basis','H5: Earnings→SWL r=−0.088*** IS','Specific, cited'],['Gambling restriction basis','H4+H5: GAD=6.20 ER · Doubled IS effect','Specific, cited']],
+    actions:['Present the hypothesis IDs and r-values directly — they are publishable-quality evidence','Ethics flags are defensible in compliance and legal review because they cite validated research','Frame to executives as risk reduction: "We are not targeting groups where our campaigns are statistically shown to worsen well-being"']
+  },
+];
+
+// ── CONCLUSIONS RENDERING ──────────────────────────────────────────
+let activeView = 'seg';
+let activeSegConc = 0;
+let activeBizQ = null;
+
+function switchView(v) {
+  activeView = v;
+  ['seg','hyp','biz'].forEach(id => {
+    document.getElementById('view-'+id).style.display = id===v?'block':'none';
+    const btn = document.getElementById('vbtn-'+id);
+    btn.className = id===v ? 'btn btn-amber' : 'btn btn-ghost';
+    btn.style.cssText = `padding:6px 20px;font-size:10px;border-radius:0${id!=='seg'?';border-left:none':''}`;
+  });
+}
+
+function renderConcSegTabs() {
+  document.getElementById('concSegTabs').innerHTML = SEGS.map((s,i) => `
+    <div class="seg-tab ${i===0?'active':''}" id="cst${i}" onclick="selectConcSeg(${i})"
+      style="${i===0?`color:${s.color};box-shadow:inset 0 -2px 0 ${s.color}`:''}">
+      ${s.init} — ${s.short}
+    </div>`).join('');
+  renderConcSegBody(0);
+}
+
+function selectConcSeg(i) {
+  activeSegConc = i;
+  document.querySelectorAll('#concSegTabs .seg-tab').forEach((t,j) => {
+    t.classList.toggle('active', j===i);
+    t.style.color = j===i ? SEGS[i].color : '';
+    t.style.boxShadow = j===i ? `inset 0 -2px 0 ${SEGS[i].color}` : '';
+  });
+  renderConcSegBody(i);
+}
+
+function renderConcSegBody(i) {
+  const s = SEGS[i];
+  const sc = SEG_CONCLUSIONS[i];
+  const typeLabel = {strategic:'STRATEGIC',predictive:'PREDICTIVE',causal:'CAUSAL',opportunity:'OPPORTUNITY'};
+  const typeColor = {strategic:'var(--cyan)',predictive:'var(--purple)',causal:'var(--amber)',opportunity:'var(--green)'};
+  const typeGlow = {strategic:'var(--cyan-glow)',predictive:'var(--purple-glow)',causal:'var(--amber-glow)',opportunity:'var(--green-glow)'};
+
+  document.getElementById('concSegBody').innerHTML = `
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      ${sc.conclusions.map((c,ci) => `
+        <div class="panel corner" style="border-color:${typeColor[c.type]}44;position:relative;overflow:hidden">
+          <div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,${typeColor[c.type]},transparent);opacity:0.7"></div>
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:10px">
+            <div style="font-family:var(--font-pixel);font-size:12px;color:${typeColor[c.type]};text-shadow:0 0 8px ${typeColor[c.type]}66;line-height:1.3;flex:1">${c.label}</div>
+            <span class="chip" style="border-color:${typeColor[c.type]}88;color:${typeColor[c.type]};background:${typeGlow[c.type]};flex-shrink:0;font-size:7px">${typeLabel[c.type]}</span>
+          </div>
+          <p style="font-size:11px;color:var(--text2);line-height:1.75;margin-bottom:10px">${c.summary}</p>
+          <div style="background:var(--panel2);border:1px solid var(--border);padding:8px 10px;margin-bottom:10px">
+            <div style="font-family:var(--font-mono);font-size:8px;color:var(--muted);letter-spacing:0.1em;margin-bottom:4px">// EVIDENCE</div>
+            <div style="font-family:var(--font-mono);font-size:9px;color:${typeColor[c.type]}">${c.evidence}</div>
+          </div>
+          <div style="border-top:1px solid var(--border);padding-top:8px">
+            <div style="font-family:var(--font-mono);font-size:8px;color:var(--muted);letter-spacing:0.1em;margin-bottom:5px">// ANALYST ACTION</div>
+            <div style="font-size:11px;color:var(--text);line-height:1.6;display:flex;gap:7px;align-items:flex-start">
+              <span style="color:${typeColor[c.type]};flex-shrink:0;font-weight:700">▸</span>${c.action}
+            </div>
+          </div>
+        </div>`).join('')}
+    </div>`;
+}
+
+function renderHypConc() {
+  const vcChipC = {s:'var(--green)',p:'var(--amber)',c:'var(--red)',n:'var(--muted)'};
+  const vcLabel = {s:'SUPPORTED',p:'PARTIAL',c:'CONTRA',n:'N/A'};
+  document.getElementById('hypConcTbody').innerHTML = HYP_CONCLUSIONS.map((h,i) => `
+    <tr style="cursor:pointer" onclick="showHypConc(${i})">
+      <td style="color:var(--amber);font-weight:500">${h.id}</td>
+      <td style="font-size:9px;max-width:140px">${h.title}</td>
+      <td><span class="chip" style="border-color:${vcChipC[h.verdict]}88;color:${vcChipC[h.verdict]};font-size:7px">${vcLabel[h.verdict]}</span></td>
+      <td style="font-size:10px;color:var(--text2);max-width:220px;line-height:1.4">${h.summary}</td>
+      <td style="font-size:8px;color:var(--cyan);max-width:160px">${h.evidence}</td>
+      <td style="font-size:9px;color:var(--muted);max-width:160px">${h.action}</td>
+    </tr>`).join('');
+}
+
+function showHypConc(i) {
+  const h = HYP_CONCLUSIONS[i];
+  const vcC = {s:'var(--green)',p:'var(--amber)',c:'var(--red)',n:'var(--muted)'};
+  const vcL = {s:'SUPPORTED',p:'PARTIAL',c:'CONTRA',n:'N/A'};
+  const d = document.getElementById('hypConcDetail');
+  if(d.classList.contains('open') && d.dataset.idx===String(i)) { d.classList.remove('open'); return; }
+  d.dataset.idx = String(i);
+  d.classList.add('open');
+  d.innerHTML = `
+    <div style="display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px">
+      <div>
+        <div style="font-family:var(--font-pixel);font-size:14px;color:var(--amber);margin-bottom:4px">${h.id}: ${h.title}</div>
+        <span class="chip" style="border-color:${vcC[h.verdict]}88;color:${vcC[h.verdict]};font-size:8px">${vcL[h.verdict]}</span>
+      </div>
+      <button class="btn btn-ghost" style="font-size:9px;padding:3px 8px" onclick="document.getElementById('hypConcDetail').classList.remove('open')">CLOSE</button>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      <div>
+        <div style="font-family:var(--font-mono);font-size:8px;color:var(--muted);letter-spacing:0.1em;margin-bottom:6px">// ANALYST CONCLUSION</div>
+        <p style="font-size:11px;color:var(--text2);line-height:1.75;margin-bottom:10px">${h.detail}</p>
+        <div style="background:var(--panel2);border:1px solid var(--border);padding:8px 10px">
+          <div style="font-family:var(--font-mono);font-size:8px;color:var(--muted);letter-spacing:0.1em;margin-bottom:4px">// KEY EVIDENCE</div>
+          <div style="font-family:var(--font-mono);font-size:9px;color:var(--cyan)">${h.evidence}</div>
+        </div>
+      </div>
+      <div>
+        <div style="font-family:var(--font-mono);font-size:8px;color:var(--muted);letter-spacing:0.1em;margin-bottom:6px">// ANALYST ACTION</div>
+        <div style="background:var(--panel2);border:1px solid var(--green-dim);padding:10px 12px">
+          <div style="font-size:11px;color:var(--text);line-height:1.7;display:flex;gap:7px;align-items:flex-start">
+            <span style="color:var(--green);flex-shrink:0;font-weight:700;margin-top:1px">▸</span>${h.action}
+          </div>
+        </div>
+      </div>
+    </div>`;
+  d.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+function renderBizQuestions() {
+  document.getElementById('bizQList').innerHTML = BIZ_QUESTIONS.map((q,i) => `
+    <div onclick="selectBizQ(${i})" id="bq${i}"
+      style="padding:10px 1rem;border-bottom:1px solid var(--border);cursor:pointer;transition:all .15s;font-size:10px;color:var(--muted);display:flex;align-items:flex-start;gap:8px;line-height:1.4"
+      onmouseover="this.style.background='var(--amber-glow)';this.style.color='var(--text)'"
+      onmouseout="if(${i}!==activeBizQ){this.style.background='transparent';this.style.color='var(--muted)'}">
+      <span style="font-size:12px;flex-shrink:0">${q.icon}</span>
+      <span>${q.q}</span>
+    </div>`).join('');
+}
+
+function selectBizQ(i) {
+  activeBizQ = i;
+  const q = BIZ_QUESTIONS[i];
+  document.querySelectorAll('#bizQList > div').forEach((el,j) => {
+    const active = j===i;
+    el.style.background = active ? 'var(--amber-glow2)' : 'transparent';
+    el.style.color = active ? 'var(--amber)' : 'var(--muted)';
+    el.style.borderLeft = active ? `2px solid var(--amber)` : '2px solid transparent';
+  });
+  document.getElementById('bizAnswer').innerHTML = `
+    <div style="position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,${q.vcolor},transparent);opacity:0.7"></div>
+    <div style="font-family:var(--font-hud);font-size:13px;font-weight:700;color:var(--muted);letter-spacing:0.1em;margin-bottom:8px;text-transform:uppercase">${q.icon} ${q.q}</div>
+    <div style="display:inline-flex;align-items:center;gap:8px;padding:5px 12px;border:1px solid ${q.vcolor}88;background:${q.vcolor}11;margin-bottom:14px">
+      <span style="font-family:var(--font-pixel);font-size:11px;color:${q.vcolor};text-shadow:0 0 8px ${q.vcolor}66">${q.verdict}</span>
+    </div>
+    <p style="font-size:11.5px;color:var(--text2);line-height:1.8;margin-bottom:14px">${q.summary}</p>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px">
+      <div>
+        <div style="font-family:var(--font-mono);font-size:8px;color:var(--muted);letter-spacing:0.1em;margin-bottom:6px">// SUPPORTING EVIDENCE</div>
+        <div class="tbl-wrap"><table class="dt">
+          <thead><tr><th>METRIC</th><th>VALUE</th><th>DIR</th></tr></thead>
+          <tbody>${q.evidence.map(([m,v,d]) => `
+            <tr>
+              <td style="font-size:9px">${m}</td>
+              <td style="color:${d==='Risk'?'var(--red)':d==='Cleared'?'var(--green)':'var(--cyan)'};font-weight:500">${v}</td>
+              <td><span class="chip" style="font-size:7px;border-color:${d==='Risk'?'var(--red-dim)':d==='Cleared'?'var(--green-dim)':'var(--cyan-dim)'};color:${d==='Risk'?'var(--red)':d==='Cleared'?'var(--green)':'var(--cyan)'}">${d}</span></td>
+            </tr>`).join('')}
+          </tbody>
+        </table></div>
+      </div>
+      <div>
+        <div style="font-family:var(--font-mono);font-size:8px;color:var(--muted);letter-spacing:0.1em;margin-bottom:6px">// ANALYST ACTIONS</div>
+        <div style="display:flex;flex-direction:column;gap:6px">
+          ${q.actions.map((a,idx) => `
+            <div style="display:flex;gap:8px;padding:8px 10px;background:var(--panel2);border:1px solid var(--border);font-size:10px;color:var(--text);line-height:1.5;align-items:flex-start">
+              <span style="font-family:var(--font-pixel);color:${q.vcolor};flex-shrink:0;font-size:10px">${idx+1}</span>${a}
+            </div>`).join('')}
+        </div>
+      </div>
+    </div>`;
+  const ans = document.getElementById('bizAnswer');
+  ans.style.position = 'relative';
+};
+
+const PM={overview:{path:'GAMERPSYCHE // ANALYST // OVERVIEW',title:'SUMMARY_STATS'},clusters:{path:'GAMERPSYCHE // ANALYST // CLUSTERS',title:'CLUSTER_PROFILES'},hyp:{path:'GAMERPSYCHE // ANALYST // HYPOTHESIS',title:'RESULTS_MATRIX'},corr:{path:'GAMERPSYCHE // ANALYST // CORRELATIONS',title:'CORR_EXPLORER'},audience:{path:'GAMERPSYCHE // ANALYST // TARGETING',title:'AUDIENCE_REACH'},ethics:{path:'GAMERPSYCHE // ANALYST // ETHICS',title:'ETHICS_FLAGS'},conclusions:{path:'GAMERPSYCHE // ANALYST // CONCLUSIONS',title:'ANALYST_CONCLUSIONS'},chat:{path:'GAMERPSYCHE // ANALYST // AI',title:'QUERY_ENGINE'}};
+function switchPage(id,btn){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  if(btn)btn.classList.add('active');
+  document.getElementById('tbPath').textContent=PM[id].path;
+  document.getElementById('tbTitle').textContent=PM[id].title;
+}
+
+function buildCharts(){
+  const segC=['#cc44ff','#00e5ff','#ff3333','#ffb000'];
+  const segCa=['#cc44ff22','#00e5ff22','#ff333322','#ffb00022'];
+  const labels=['Balanced Rec.','Struct. Comp.','Strivers','Escapist Reg.'];
+  const grid='rgba(255,176,0,0.05)';const tick='rgba(255,176,0,0.4)';
+
+  new Chart(document.getElementById('distChart'),{type:'doughnut',
+    data:{labels,datasets:[{data:[41.2,37.1,16.3,5.1],backgroundColor:segCa,borderColor:segC,borderWidth:1.5,hoverOffset:6}]},
+    options:{responsive:true,maintainAspectRatio:false,cutout:'60%',plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>` ${c.raw}% (n=${SEGS[c.dataIndex].n.toLocaleString()})`}}}}
+  });
+  document.getElementById('distLeg').innerHTML=SEGS.map((s,i)=>`<div style="display:flex;align-items:center;gap:4px;font-family:var(--font-mono);font-size:8px;color:var(--text2)"><div style="width:8px;height:8px;background:${segC[i]};box-shadow:0 0 4px ${segC[i]}"></div>${s.short} ${s.pct}%</div>`).join('');
+
+  new Chart(document.getElementById('wellChart'),{type:'bar',
+    data:{labels,datasets:[
+      {label:'GAD',data:[4.67,5.26,6.12,6.20],backgroundColor:segCa,borderColor:segC,borderWidth:1.5,borderRadius:2,borderSkipped:false},
+      {label:'SWL/5',data:[4.12,3.92,3.68,3.81],backgroundColor:'transparent',borderColor:segC,borderWidth:1,type:'line',pointRadius:3,pointBackgroundColor:segC,borderDash:[4,4]}
+    ]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:true,position:'bottom',labels:{font:{size:10,family:'Share Tech Mono'},boxWidth:8,padding:10,color:tick}}},
+      scales:{x:{ticks:{font:{size:10,family:'Share Tech Mono'},color:tick},grid:{display:false}},y:{min:3,max:7,ticks:{font:{size:10,family:'Share Tech Mono'},color:tick},grid:{color:grid}}}}
+  });
+
+  // corrBar removed — replaced by interactive heatmap
+
+  new Chart(document.getElementById('reachChart'),{type:'bar',indexAxis:'y',
+    data:{labels,datasets:[{data:[5.1,4.6,2.0,0.6],backgroundColor:segCa,borderColor:segC,borderWidth:1.5,borderRadius:2,borderSkipped:false}]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>` ${c.raw}M players`}}},
+      scales:{x:{ticks:{callback:v=>v+'M',font:{size:10,family:'Share Tech Mono'},color:tick},grid:{color:grid}},y:{ticks:{font:{size:10,family:'Share Tech Mono'},color:tick},grid:{display:false}}}}
+  });
+
+  new Chart(document.getElementById('streamChart'),{type:'bar',
+    data:{labels:['BR→GAD','BR→SWL','SC→GAD','SC→SWL','IS→GAD','IS→SWL'],
+      datasets:[{data:[.070,-.070,.044,-.064,.078,-.095],
+        backgroundColor:d=>d.raw>0?'rgba(255,51,51,0.3)':'rgba(0,255,136,0.3)',
+        borderColor:d=>d.raw>0?'#ff3333':'#00ff88',borderWidth:1.5,borderRadius:2,borderSkipped:false}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
+      scales:{x:{ticks:{font:{size:10,family:'Share Tech Mono'},color:tick},grid:{display:false}},y:{ticks:{font:{size:10,family:'Share Tech Mono'},color:tick},grid:{color:grid}}}}
+  });
+
+  new Chart(document.getElementById('earnChart'),{type:'bar',
+    data:{labels,datasets:[{data:[-.039,-.036,-.088,-.071],backgroundColor:segCa,borderColor:segC,borderWidth:1.5,borderRadius:2,borderSkipped:false}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>` r = ${c.raw}`}}},
+      scales:{x:{ticks:{font:{size:10,family:'Share Tech Mono'},color:tick},grid:{display:false}},y:{ticks:{font:{size:10,family:'Share Tech Mono'},color:tick},grid:{color:grid}}}}
+  });
+}
+
+renderSummary();renderEffects();renderClusterTabs();renderHyp();renderHeatmap();applyFilters();renderReach();renderFlags();renderCtx();buildCharts();
+renderConcSegTabs();renderHypConc();renderBizQuestions();
+</script>
+</body>
+</html>

@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+<!-- saved from url=(0057)file:///C:/Users/Riya/Downloads/hypothesis_dashboard.html -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Research Hypotheses — Gaming &amp; Mental Health</title>
+<script src="./Research Hypotheses — Gaming &amp; Mental Health_files/chart.umd.min.js.download"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap');
+:root {
+  --bg:#0a0e1a; --surface:#111827; --surface2:#1a2235; --border:#1f2d45;
+  --cyan:#00e5ff; --red:#ff6b6b; --green:#7cfc9a; --yellow:#ffbe3d; --purple:#b39ddb; --orange:#ff9f40;
+  --text:#e2e8f0; --muted:#64748b;
+  --supported:#7cfc9a; --partial:#ffbe3d; --unsupported:#ff6b6b;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(0,229,255,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(0,229,255,0.025) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0;}
+.page{position:relative;z-index:1;max-width:1200px;margin:0 auto;padding:32px 24px;}
+
+/* HEADER */
+.site-header{margin-bottom:40px;}
+.eyebrow{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:0.2em;color:var(--cyan);text-transform:uppercase;margin-bottom:10px;}
+h1{font-family:'Space Mono',monospace;font-size:clamp(20px,3vw,34px);font-weight:700;color:#fff;line-height:1.2;margin-bottom:12px;}
+h1 span{color:var(--cyan);}
+.site-desc{font-size:14px;color:var(--muted);line-height:1.7;max-width:780px;}
+
+/* NAV TABS */
+.nav-tabs{display:flex;gap:8px;margin-bottom:36px;flex-wrap:wrap;}
+.nav-tab{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:0.08em;text-transform:uppercase;padding:9px 18px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;transition:all 0.2s;}
+.nav-tab:hover{border-color:var(--cyan);color:var(--cyan);}
+.nav-tab.active{background:var(--cyan);color:var(--bg);border-color:var(--cyan);font-weight:700;}
+.view{display:none;} .view.active{display:block;}
+
+/* SCORECARD */
+.scorecard-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;margin-bottom:32px;}
+.sc-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:20px;cursor:pointer;transition:all 0.2s;position:relative;overflow:hidden;}
+.sc-card:hover{transform:translateY(-2px);box-shadow:0 0 20px rgba(0,229,255,0.1);}
+.sc-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;}
+.sc-card.supported::before{background:var(--supported);}
+.sc-card.partial::before{background:var(--partial);}
+.sc-card.unsupported::before{background:var(--unsupported);}
+.sc-hnum{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:0.15em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;}
+.sc-htitle{font-size:14px;font-weight:600;color:#fff;margin-bottom:10px;line-height:1.4;}
+.sc-badge{display:inline-flex;align-items:center;gap:6px;font-family:'Space Mono',monospace;font-size:11px;font-weight:700;padding:4px 10px;border-radius:12px;}
+.sc-badge.supported{background:rgba(124,252,154,0.15);color:var(--supported);}
+.sc-badge.partial{background:rgba(255,190,61,0.15);color:var(--partial);}
+.sc-badge.unsupported{background:rgba(255,107,107,0.15);color:var(--unsupported);}
+.sc-brief{font-size:12px;color:var(--muted);margin-top:10px;line-height:1.5;}
+
+/* STORY VIEW */
+.hyp-block{background:var(--surface);border:1px solid var(--border);border-radius:16px;margin-bottom:32px;overflow:hidden;}
+.hyp-header{padding:28px 32px 0;}
+.hyp-meta{display:flex;align-items:center;gap:14px;margin-bottom:14px;}
+.hyp-num{font-family:'Space Mono',monospace;font-size:13px;color:var(--muted);}
+.hyp-title{font-size:20px;font-weight:700;color:#fff;}
+.hyp-body{display:grid;grid-template-columns:1fr 1fr;gap:0;}
+.hyp-left{padding:0 32px 28px;}
+.hyp-right{border-left:1px solid var(--border);padding:24px 28px;}
+.section-micro{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:0.15em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;}
+.hyp-stated{font-size:13px;color:#94a3b8;line-height:1.7;margin-bottom:20px;font-style:italic;padding:12px 14px;background:var(--surface2);border-radius:8px;border-left:2px solid var(--border);}
+.hyp-finding{font-size:14px;color:var(--text);line-height:1.75;margin-bottom:16px;}
+.hyp-finding strong{color:#fff;}
+.plain-explain{background:rgba(0,229,255,0.06);border:1px solid rgba(0,229,255,0.18);border-radius:8px;padding:14px 16px;font-size:13px;color:#a0c8d8;line-height:1.65;}
+.plain-explain strong{color:var(--cyan);display:block;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:0.12em;text-transform:uppercase;margin-bottom:5px;}
+.chart-wrap{height:220px;position:relative;}
+.chart-wrap.tall{height:280px;}
+.chart-title{font-size:13px;font-weight:600;color:#fff;margin-bottom:4px;}
+.chart-desc{font-size:11px;color:var(--muted);margin-bottom:14px;line-height:1.5;}
+
+/* COMPARISON TABLE */
+.comp-table{width:100%;border-collapse:collapse;font-size:13px;}
+.comp-table th{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--border);padding:10px 14px;text-align:left;}
+.comp-table td{padding:14px 14px;border-bottom:1px solid rgba(31,45,69,0.6);vertical-align:top;line-height:1.6;}
+.comp-table tr:last-child td{border-bottom:none;}
+.comp-table tr:hover td{background:var(--surface2);}
+.td-h{font-family:'Space Mono',monospace;font-weight:700;color:#fff;font-size:12px;white-space:nowrap;}
+.td-stated{color:#94a3b8;font-style:italic;font-size:12px;}
+.td-found{color:var(--text);font-size:12px;}
+.verdict{display:inline-flex;align-items:center;gap:5px;font-family:'Space Mono',monospace;font-size:10px;font-weight:700;padding:3px 9px;border-radius:10px;white-space:nowrap;}
+.verdict.supported{background:rgba(124,252,154,0.15);color:var(--supported);}
+.verdict.partial{background:rgba(255,190,61,0.15);color:var(--partial);}
+.verdict.unsupported{background:rgba(255,107,107,0.15);color:var(--unsupported);}
+
+/* LEGEND */
+.legend-row{display:flex;gap:20px;flex-wrap:wrap;margin-bottom:24px;}
+.legend-item{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted);}
+.legend-dot{width:12px;height:12px;border-radius:50%;}
+
+footer{margin-top:48px;padding-top:20px;border-top:1px solid var(--border);font-family:'Space Mono',monospace;font-size:11px;color:var(--muted);}
+@media(max-width:760px){.hyp-body{grid-template-columns:1fr}.hyp-right{border-left:none;border-top:1px solid var(--border)}}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="site-header">
+    <div class="eyebrow">Research Hypotheses · Gaming &amp; Mental Health Study · N = 13,377</div>
+    <h1>Did Our Predictions <span>Hold Up?</span></h1>
+    <div class="site-desc">
+      Before running the analysis, we made 12 specific predictions about how gaming behaviour, personality, and demographics would relate to anxiety, social phobia, and life satisfaction. Here's what we predicted, what we actually found, and what it means in plain language.
+    </div>
+  </div>
+
+  <!-- NAV -->
+  <div class="nav-tabs">
+    <button class="nav-tab" onclick="showView(&#39;scorecard&#39;,this)">📋 Scorecard</button>
+    <button class="nav-tab active" onclick="showView(&#39;story&#39;,this)">📖 Full Story</button>
+    <button class="nav-tab" onclick="showView(&#39;table&#39;,this)">🔍 Comparison Table</button>
+  </div>
+
+  <!-- ═══ SCORECARD VIEW ═══ -->
+  <div class="view" id="v-scorecard">
+    <div class="legend-row">
+      <div class="legend-item"><div class="legend-dot" style="background:var(--supported)"></div>Supported by data</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--partial)"></div>Partially supported</div>
+      <div class="legend-item"><div class="legend-dot" style="background:var(--unsupported)"></div>Not supported</div>
+    </div>
+    <div class="scorecard-grid" id="scorecard-grid">
+    <div class="sc-card partial" onclick="goStory(&#39;H1&#39;)">
+      <div class="sc-hnum">H1</div>
+      <div class="sc-htitle">League Rank &amp; Anxiety</div>
+      <span class="sc-badge partial">~ Partially Supported</span>
+      <div class="sc-brief">Competing at a high level is not harmful on its own — and actually seems to protect against social anxiety. The concern …</div>
+    </div>
+    <div class="sc-card unsupported" onclick="goStory(&#39;H2&#39;)">
+      <div class="sc-hnum">H2</div>
+      <div class="sc-htitle">Streaming &amp; Well-being</div>
+      <span class="sc-badge unsupported">✗ Not Supported</span>
+      <div class="sc-brief">Streaming more often actually links to worse mental health outcomes, not better ones. Rather than building community and…</div>
+    </div>
+    <div class="sc-card partial" onclick="goStory(&#39;H3&#39;)">
+      <div class="sc-hnum">H3</div>
+      <div class="sc-htitle">Narcissism &amp; Life Satisfaction</div>
+      <span class="sc-badge partial">~ Partially Supported</span>
+      <div class="sc-brief">Narcissism does matter for anxiety — people higher in narcissism feel more anxious — but it does not predict social disc…</div>
+    </div>
+    <div class="sc-card supported" onclick="goStory(&#39;H4&#39;)">
+      <div class="sc-hnum">H4</div>
+      <div class="sc-htitle">Motivation (WhyPlay) &amp; Anxiety</div>
+      <span class="sc-badge supported">✓ Supported</span>
+      <div class="sc-brief">The "why" of gaming matters more than the "how much." Players who game to escape or unwind show notably higher anxiety —…</div>
+    </div>
+    <div class="sc-card supported" onclick="goStory(&#39;H5&#39;)">
+      <div class="sc-hnum">H5</div>
+      <div class="sc-htitle">Earnings Expectation &amp; Life Satisfaction</div>
+      <span class="sc-badge supported">✓ Supported</span>
+      <div class="sc-brief">Gaming for money is linked to worse mental health across the board — more anxiety, more social phobia, and less satisfac…</div>
+    </div>
+    <div class="sc-card partial" onclick="goStory(&#39;H6&#39;)">
+      <div class="sc-hnum">H6</div>
+      <div class="sc-htitle">Hours &amp; Well-being (Inverted-U)</div>
+      <span class="sc-badge partial">~ Partially Supported</span>
+      <div class="sc-brief">More gaming hours consistently predicts more anxiety, more social phobia, and less life satisfaction — even at lower lev…</div>
+    </div>
+    <div class="sc-card partial" onclick="goStory(&#39;H7&#39;)">
+      <div class="sc-hnum">H7</div>
+      <div class="sc-htitle">Multiplayer Context &amp; Social Phobia</div>
+      <span class="sc-badge partial">~ Partially Supported</span>
+      <div class="sc-brief">Playing with strangers online does appear to be more socially stressful than playing alone or with friends — but the evi…</div>
+    </div>
+    <div class="sc-card partial" onclick="goStory(&#39;H8&#39;)">
+      <div class="sc-hnum">H8</div>
+      <div class="sc-htitle">Hours &amp; Well-being (Inverted-U — Severity)</div>
+      <span class="sc-badge partial">~ Partially Supported</span>
+      <div class="sc-brief">Playing in a casual, balanced way is linked to better mental health than an obsessive or imbalanced approach. The risk c…</div>
+    </div>
+    <div class="sc-card supported" onclick="goStory(&#39;H9&#39;)">
+      <div class="sc-hnum">H9</div>
+      <div class="sc-htitle">Gender &amp; Social Phobia</div>
+      <span class="sc-badge supported">✓ Supported</span>
+      <div class="sc-brief">Gender is a major factor — in fact the single strongest predictor in the study. Female gamers report notably higher anxi…</div>
+    </div>
+    <div class="sc-card partial" onclick="goStory(&#39;H10&#39;)">
+      <div class="sc-hnum">H10</div>
+      <div class="sc-htitle">Age &amp; Motivation Interaction</div>
+      <span class="sc-badge partial">~ Partially Supported</span>
+      <div class="sc-brief">Older gamers are generally less anxious and have lower social phobia — age brings resilience. But escapist gaming raises…</div>
+    </div></div>
+  </div>
+
+  <!-- ═══ STORY VIEW ═══ -->
+  <div class="view active" id="v-story">
+    <div id="story-container">
+    <div class="hyp-block" id="story-H1" style="border-top:3px solid var(--partial)">
+      <div class="hyp-header">
+        <div class="hyp-meta">
+          <span class="hyp-num">H1</span>
+          <span class="sc-badge partial">~ Partially Supported</span>
+        </div>
+        <div class="hyp-title">League Rank &amp; Anxiety</div>
+      </div>
+      <div class="hyp-body">
+        <div class="hyp-left">
+          <div class="section-micro">What we predicted</div>
+          <div class="hyp-stated">"Being in a higher competitive rank does not increase anxiety or reduce life satisfaction once ranks are fairly compared across games. Problems only appear when high rank is paired with long play hours."</div>
+          <div class="section-micro">What we found</div>
+          <div class="hyp-finding">Rank alone was not significant for anxiety (β=−0.075, p=0.084) or life satisfaction (β=−0.029, p=0.677). However, rank did significantly reduce social phobia (β=−0.678, p&lt;0.001) — a benefit not predicted. The interaction with hours was directionally consistent but not formally tested.</div>
+          <div class="plain-explain">
+            <strong>💡 Plain English</strong>
+            Competing at a high level is not harmful on its own — and actually seems to protect against social anxiety. The concern only emerges when people invest excessive time alongside their competitive drive.
+          </div>
+        </div>
+        <div class="hyp-right">
+          <div class="chart-title">Evidence</div>
+          <div class="chart-desc">Predicted scores by rank level (high = top quartile). Social phobia drops meaningfully; anxiety and SWL are stable.</div>
+          <div class="chart-wrap ">
+            <canvas id="chart-H1" height="440" style="display: block; box-sizing: border-box; height: 220px; width: 518px;" width="1036"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="hyp-block" id="story-H2" style="border-top:3px solid var(--unsupported)">
+      <div class="hyp-header">
+        <div class="hyp-meta">
+          <span class="hyp-num">H2</span>
+          <span class="sc-badge unsupported">✗ Not Supported</span>
+        </div>
+        <div class="hyp-title">Streaming &amp; Well-being</div>
+      </div>
+      <div class="hyp-body">
+        <div class="hyp-left">
+          <div class="section-micro">What we predicted</div>
+          <div class="hyp-stated">"Streaming and viewing engagement are associated with lower anxiety and social phobia, consistent with a social belonging mechanism. Winning-oriented motivation predicts higher anxiety."</div>
+          <div class="section-micro">What we found</div>
+          <div class="hyp-finding">Streaming was associated with significantly higher anxiety (β=+0.021, p&lt;0.001) and higher social phobia (β=+0.061, p&lt;0.001) — the opposite of the predicted direction. It also reduced life satisfaction (β=−0.032, p&lt;0.001). The social belonging mechanism was not supported.</div>
+          <div class="plain-explain">
+            <strong>💡 Plain English</strong>
+            Streaming more often actually links to worse mental health outcomes, not better ones. Rather than building community and belonging, heavy streaming may reflect performance pressure, online scrutiny, or compulsive engagement.
+          </div>
+        </div>
+        <div class="hyp-right">
+          <div class="chart-title">Evidence</div>
+          <div class="chart-desc">Predicted scores as streams/week increases 0→20. All three outcomes move in the wrong direction.</div>
+          <div class="chart-wrap ">
+            <canvas id="chart-H2" height="440" style="display: block; box-sizing: border-box; height: 220px; width: 518px;" width="1036"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="hyp-block" id="story-H3" style="border-top:3px solid var(--partial)">
+      <div class="hyp-header">
+        <div class="hyp-meta">
+          <span class="hyp-num">H3</span>
+          <span class="sc-badge partial">~ Partially Supported</span>
+        </div>
+        <div class="hyp-title">Narcissism &amp; Life Satisfaction</div>
+      </div>
+      <div class="hyp-body">
+        <div class="hyp-left">
+          <div class="section-micro">What we predicted</div>
+          <div class="hyp-stated">"Narcissism shows weak, inconsistent links to anxiety and life satisfaction; contextual factors play a much larger role."</div>
+          <div class="section-micro">What we found</div>
+          <div class="hyp-finding">Narcissism significantly predicted anxiety (β=+0.327, p&lt;0.001) but was not significant for social phobia (β=−0.090, p=0.406) or life satisfaction (β=−0.050, p=0.388). The effect on anxiety was larger than expected; contextual factors did explain more variance overall.</div>
+          <div class="plain-explain">
+            <strong>💡 Plain English</strong>
+            Narcissism does matter for anxiety — people higher in narcissism feel more anxious — but it does not predict social discomfort or life satisfaction. The hypothesis was right that context matters more overall, but wrong to call the anxiety link "weak."
+          </div>
+        </div>
+        <div class="hyp-right">
+          <div class="chart-title">Evidence</div>
+          <div class="chart-desc">Predicted scores at three narcissism levels. Anxiety climbs steadily; SPIN and SWL are flat — confirming selective, not universal, impact.</div>
+          <div class="chart-wrap ">
+            <canvas id="chart-H3" height="440" style="display: block; box-sizing: border-box; height: 220px; width: 518px;" width="1036"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="hyp-block" id="story-H4" style="border-top:3px solid var(--supported)">
+      <div class="hyp-header">
+        <div class="hyp-meta">
+          <span class="hyp-num">H4</span>
+          <span class="sc-badge supported">✓ Supported</span>
+        </div>
+        <div class="hyp-title">Motivation (WhyPlay) &amp; Anxiety</div>
+      </div>
+      <div class="hyp-body">
+        <div class="hyp-left">
+          <div class="section-micro">What we predicted</div>
+          <div class="hyp-stated">"Escapist/avoidant motives strongly predict higher anxiety and lower life satisfaction. Escapism appears to be symptom-driven coping rather than recovery, with effects largely psychological rather than mediated by hours played."</div>
+          <div class="section-micro">What we found</div>
+          <div class="hyp-finding">Playing to relax/escape was the single strongest positive predictor of anxiety (β=+1.211, p&lt;0.001) and significantly reduced life satisfaction (β=−1.060, p&lt;0.001). Hours did not mediate the effect — the motivation itself was the key driver.</div>
+          <div class="plain-explain">
+            <strong>💡 Plain English</strong>
+            The "why" of gaming matters more than the "how much." Players who game to escape or unwind show notably higher anxiety — not because they play more hours, but because they are likely using gaming to cope with stress rather than genuinely recovering from it.
+          </div>
+        </div>
+        <div class="hyp-right">
+          <div class="chart-title">Evidence</div>
+          <div class="chart-desc">Escapism motive adds 1.21 GAD pts and removes 1.06 SWL pts. Social phobia effect was not significant — the impact is on anxiety and wellbeing specifically.</div>
+          <div class="chart-wrap ">
+            <canvas id="chart-H4" height="440" style="display: block; box-sizing: border-box; height: 220px; width: 518px;" width="1036"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="hyp-block" id="story-H5" style="border-top:3px solid var(--supported)">
+      <div class="hyp-header">
+        <div class="hyp-meta">
+          <span class="hyp-num">H5</span>
+          <span class="sc-badge supported">✓ Supported</span>
+        </div>
+        <div class="hyp-title">Earnings Expectation &amp; Life Satisfaction</div>
+      </div>
+      <div class="hyp-body">
+        <div class="hyp-left">
+          <div class="section-micro">What we predicted</div>
+          <div class="hyp-stated">"Players motivated by monetization and earnings report significantly lower life satisfaction, independent of hours, skill, or platform."</div>
+          <div class="section-micro">What we found</div>
+          <div class="hyp-finding">Earnings subcluster significantly predicted lower life satisfaction (β=−1.071, p&lt;0.001), higher anxiety (β=+0.561, p=0.002), and higher social phobia (β=+1.355, p=0.010). Effects persisted after controlling for hours and rank.</div>
+          <div class="plain-explain">
+            <strong>💡 Plain English</strong>
+            Gaming for money is linked to worse mental health across the board — more anxiety, more social phobia, and less satisfaction with life. Even when controlling for how much someone plays or how skilled they are, the monetization pressure carries its own psychological cost.
+          </div>
+        </div>
+        <div class="hyp-right">
+          <div class="chart-title">Evidence</div>
+          <div class="chart-desc">Scores worsen consistently as earnings tier increases — all three outcomes deteriorate independently of gaming hours or skill level.</div>
+          <div class="chart-wrap ">
+            <canvas id="chart-H5" height="440" style="display: block; box-sizing: border-box; height: 220px; width: 518px;" width="1036"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="hyp-block" id="story-H6" style="border-top:3px solid var(--partial)">
+      <div class="hyp-header">
+        <div class="hyp-meta">
+          <span class="hyp-num">H6</span>
+          <span class="sc-badge partial">~ Partially Supported</span>
+        </div>
+        <div class="hyp-title">Hours &amp; Well-being (Inverted-U)</div>
+      </div>
+      <div class="hyp-body">
+        <div class="hyp-left">
+          <div class="section-micro">What we predicted</div>
+          <div class="hyp-stated">"Moderate play (~1–3 hrs/day) is associated with higher life satisfaction, while excessive play (&gt;5 hrs/day) sharply increases anxiety and social phobia — showing diminishing returns and rising psychological costs."</div>
+          <div class="section-micro">What we found</div>
+          <div class="hyp-finding">Hours significantly predicted worse outcomes across all three measures (GAD β=+0.022, SPIN β=+0.069, SWL β=−0.050, all p&lt;0.001). A clear inverted-U pattern for wellbeing was not confirmed — the relationship appeared roughly linear rather than quadratic. Low hours were not clearly beneficial.</div>
+          <div class="plain-explain">
+            <strong>💡 Plain English</strong>
+            More gaming hours consistently predicts more anxiety, more social phobia, and less life satisfaction — even at lower levels. The idea that moderate gaming is actively beneficial was not supported, though the harm is gradual rather than sudden.
+          </div>
+        </div>
+        <div class="hyp-right">
+          <div class="chart-title">Evidence</div>
+          <div class="chart-desc">The relationship is roughly linear — no clear "sweet spot" of moderate play. Each additional hour nudges outcomes in the wrong direction.</div>
+          <div class="chart-wrap tall">
+            <canvas id="chart-H6" height="560" style="display: block; box-sizing: border-box; height: 280px; width: 518px;" width="1036"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="hyp-block" id="story-H7" style="border-top:3px solid var(--partial)">
+      <div class="hyp-header">
+        <div class="hyp-meta">
+          <span class="hyp-num">H7</span>
+          <span class="sc-badge partial">~ Partially Supported</span>
+        </div>
+        <div class="hyp-title">Multiplayer Context &amp; Social Phobia</div>
+      </div>
+      <div class="hyp-body">
+        <div class="hyp-left">
+          <div class="section-micro">What we predicted</div>
+          <div class="hyp-stated">"Playing multiplayer with strangers significantly increases social phobia compared to friends or solo play, with stronger effects among high-hours players."</div>
+          <div class="section-micro">What we found</div>
+          <div class="hyp-finding">Playstyle encoded as multiplayer/social was associated with higher social phobia in the direction predicted, but the effect was not always significant at conventional thresholds across all model specifications. The interaction with hours was directionally consistent.</div>
+          <div class="plain-explain">
+            <strong>💡 Plain English</strong>
+            Playing with strangers online does appear to be more socially stressful than playing alone or with friends — but the evidence is not as clear-cut as predicted. The effect is real but smaller than expected, and the amplification by high hours needs more investigation.
+          </div>
+        </div>
+        <div class="hyp-right">
+          <div class="chart-title">Evidence</div>
+          <div class="chart-desc">Directional pattern is clear — multiplayer with strangers predicts the highest social phobia. Statistical significance varied across model specifications.</div>
+          <div class="chart-wrap tall">
+            <canvas id="chart-H7" height="560" style="display: block; box-sizing: border-box; height: 280px; width: 518px;" width="1036"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="hyp-block" id="story-H8" style="border-top:3px solid var(--partial)">
+      <div class="hyp-header">
+        <div class="hyp-meta">
+          <span class="hyp-num">H8</span>
+          <span class="sc-badge partial">~ Partially Supported</span>
+        </div>
+        <div class="hyp-title">Hours &amp; Well-being (Inverted-U — Severity)</div>
+      </div>
+      <div class="hyp-body">
+        <div class="hyp-left">
+          <div class="section-micro">What we predicted</div>
+          <div class="hyp-stated">"Balanced/casual playstyles consistently predict higher life satisfaction and lower anxiety, while hardcore imbalance is associated with stress — effects strongest among high-hours players, indicating compounding risk."</div>
+          <div class="section-micro">What we found</div>
+          <div class="hyp-finding">Balanced/casual playstyle was associated with better outcomes directionally. The compounding effect with hours was present — high hours combined with imbalanced playstyle showed the worst profiles. Effects were not all individually significant at p&lt;0.05.</div>
+          <div class="plain-explain">
+            <strong>💡 Plain English</strong>
+            Playing in a casual, balanced way is linked to better mental health than an obsessive or imbalanced approach. The risk compounds when someone both plays excessively AND in an unbalanced way — these two factors together are worse than either alone.
+          </div>
+        </div>
+        <div class="hyp-right">
+          <div class="chart-title">Evidence</div>
+          <div class="chart-desc">Directional differences are consistent. Hardcore playstyle predicts higher anxiety, more social phobia, and lower life satisfaction.</div>
+          <div class="chart-wrap tall">
+            <canvas id="chart-H8" height="560" style="display: block; box-sizing: border-box; height: 280px; width: 518px;" width="1036"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="hyp-block" id="story-H9" style="border-top:3px solid var(--supported)">
+      <div class="hyp-header">
+        <div class="hyp-meta">
+          <span class="hyp-num">H9</span>
+          <span class="sc-badge supported">✓ Supported</span>
+        </div>
+        <div class="hyp-title">Gender &amp; Social Phobia</div>
+      </div>
+      <div class="hyp-body">
+        <div class="hyp-left">
+          <div class="section-micro">What we predicted</div>
+          <div class="hyp-stated">"Female gamers report higher baseline social phobia and generalized anxiety, but multiplayer exposure raises anxiety similarly across genders."</div>
+          <div class="section-micro">What we found</div>
+          <div class="hyp-finding">Gender was the strongest single predictor in the OLS model (β=−2.508, p&lt;0.001), with one gender group scoring substantially lower on anxiety. Baseline differences in social phobia and anxiety across genders were confirmed. Interaction effects with multiplayer were directionally consistent.</div>
+          <div class="plain-explain">
+            <strong>💡 Plain English</strong>
+            Gender is a major factor — in fact the single strongest predictor in the study. Female gamers report notably higher anxiety and social phobia at baseline. This is important context: the gaming environment may feel more stressful for female players regardless of how much they play.
+          </div>
+        </div>
+        <div class="hyp-right">
+          <div class="chart-title">Evidence</div>
+          <div class="chart-desc">Predicted scores by gender (all other factors at average). The anxiety and social phobia gaps are substantial and statistically robust.</div>
+          <div class="chart-wrap tall">
+            <canvas id="chart-H9" height="560" style="display: block; box-sizing: border-box; height: 280px; width: 518px;" width="1036"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="hyp-block" id="story-H10" style="border-top:3px solid var(--partial)">
+      <div class="hyp-header">
+        <div class="hyp-meta">
+          <span class="hyp-num">H10</span>
+          <span class="sc-badge partial">~ Partially Supported</span>
+        </div>
+        <div class="hyp-title">Age &amp; Motivation Interaction</div>
+      </div>
+      <div class="hyp-body">
+        <div class="hyp-left">
+          <div class="section-micro">What we predicted</div>
+          <div class="hyp-stated">"Escapism increases anxiety across all ages, but effects are stronger among older gamers — contradicting assumptions that younger players are uniquely vulnerable."</div>
+          <div class="section-micro">What we found</div>
+          <div class="hyp-finding">Age significantly predicted lower anxiety (β=−0.060, p&lt;0.001) and lower social phobia (β=−0.458, p&lt;0.001). Escapist motivation also significantly predicted higher anxiety. The interaction between age and escapism was directionally present but formal interaction testing was limited by model specification.</div>
+          <div class="plain-explain">
+            <strong>💡 Plain English</strong>
+            Older gamers are generally less anxious and have lower social phobia — age brings resilience. But escapist gaming raises anxiety at all ages. The idea that older gamers might be more harmed by escapism than younger ones is plausible but not conclusively proven here.
+          </div>
+        </div>
+        <div class="hyp-right">
+          <div class="chart-title">Evidence</div>
+          <div class="chart-desc">Both lines decline with age (older = less anxious). Escapism adds ~1.2 points at every age — the gap is consistent rather than widening, suggesting the interaction effect is limited.</div>
+          <div class="chart-wrap tall">
+            <canvas id="chart-H10" height="560" style="display: block; box-sizing: border-box; height: 280px; width: 518px;" width="1036"></canvas>
+          </div>
+        </div>
+      </div>
+    </div></div>
+  </div>
+
+  <!-- ═══ TABLE VIEW ═══ -->
+  <div class="view" id="v-table">
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:24px;overflow-x:auto;">
+      <table class="comp-table">
+        <thead>
+          <tr>
+            <th style="width:80px">Hypothesis</th>
+            <th style="width:200px">What we predicted</th>
+            <th>What we actually found</th>
+            <th style="width:130px">Verdict</th>
+          </tr>
+        </thead>
+        <tbody id="table-body">
+    <tr>
+      <td class="td-h">H1<br><span style="font-size:11px;color:var(--muted);font-weight:400">League Rank &amp; Anxiety</span></td>
+      <td class="td-stated">Being in a higher competitive rank does not increase anxiety or reduce life satisfaction once ranks are fairly compared across games. Problems only appear when high rank is paired with long play hours.</td>
+      <td class="td-found">Rank alone was not significant for anxiety (β=−0.075, p=0.084) or life satisfaction (β=−0.029, p=0.677). However, rank did significantly reduce social phobia (β=−0.678, p&lt;0.001) — a benefit not predicted. The interaction with hours was directionally consistent but not formally tested.</td>
+      <td><span class="verdict partial">~ Partially Supported</span></td>
+    </tr>
+    <tr>
+      <td class="td-h">H2<br><span style="font-size:11px;color:var(--muted);font-weight:400">Streaming &amp; Well-being</span></td>
+      <td class="td-stated">Streaming and viewing engagement are associated with lower anxiety and social phobia, consistent with a social belonging mechanism. Winning-oriented motivation predicts higher anxiety.</td>
+      <td class="td-found">Streaming was associated with significantly higher anxiety (β=+0.021, p&lt;0.001) and higher social phobia (β=+0.061, p&lt;0.001) — the opposite of the predicted direction. It also reduced life satisfaction (β=−0.032, p&lt;0.001). The social belonging mechanism was not supported.</td>
+      <td><span class="verdict unsupported">✗ Not Supported</span></td>
+    </tr>
+    <tr>
+      <td class="td-h">H3<br><span style="font-size:11px;color:var(--muted);font-weight:400">Narcissism &amp; Life Satisfaction</span></td>
+      <td class="td-stated">Narcissism shows weak, inconsistent links to anxiety and life satisfaction; contextual factors play a much larger role.</td>
+      <td class="td-found">Narcissism significantly predicted anxiety (β=+0.327, p&lt;0.001) but was not significant for social phobia (β=−0.090, p=0.406) or life satisfaction (β=−0.050, p=0.388). The effect on anxiety was larger than expected; contextual factors did explain more variance overall.</td>
+      <td><span class="verdict partial">~ Partially Supported</span></td>
+    </tr>
+    <tr>
+      <td class="td-h">H4<br><span style="font-size:11px;color:var(--muted);font-weight:400">Motivation (WhyPlay) &amp; Anxiety</span></td>
+      <td class="td-stated">Escapist/avoidant motives strongly predict higher anxiety and lower life satisfaction. Escapism appears to be symptom-driven coping rather than recovery, with effects largely psychological rather than mediated by hours played.</td>
+      <td class="td-found">Playing to relax/escape was the single strongest positive predictor of anxiety (β=+1.211, p&lt;0.001) and significantly reduced life satisfaction (β=−1.060, p&lt;0.001). Hours did not mediate the effect — the motivation itself was the key driver.</td>
+      <td><span class="verdict supported">✓ Supported</span></td>
+    </tr>
+    <tr>
+      <td class="td-h">H5<br><span style="font-size:11px;color:var(--muted);font-weight:400">Earnings Expectation &amp; Life Satisfaction</span></td>
+      <td class="td-stated">Players motivated by monetization and earnings report significantly lower life satisfaction, independent of hours, skill, or platform.</td>
+      <td class="td-found">Earnings subcluster significantly predicted lower life satisfaction (β=−1.071, p&lt;0.001), higher anxiety (β=+0.561, p=0.002), and higher social phobia (β=+1.355, p=0.010). Effects persisted after controlling for hours and rank.</td>
+      <td><span class="verdict supported">✓ Supported</span></td>
+    </tr>
+    <tr>
+      <td class="td-h">H6<br><span style="font-size:11px;color:var(--muted);font-weight:400">Hours &amp; Well-being (Inverted-U)</span></td>
+      <td class="td-stated">Moderate play (~1–3 hrs/day) is associated with higher life satisfaction, while excessive play (&gt;5 hrs/day) sharply increases anxiety and social phobia — showing diminishing returns and rising psychological costs.</td>
+      <td class="td-found">Hours significantly predicted worse outcomes across all three measures (GAD β=+0.022, SPIN β=+0.069, SWL β=−0.050, all p&lt;0.001). A clear inverted-U pattern for wellbeing was not confirmed — the relationship appeared roughly linear rather than quadratic. Low hours were not clearly beneficial.</td>
+      <td><span class="verdict partial">~ Partially Supported</span></td>
+    </tr>
+    <tr>
+      <td class="td-h">H7<br><span style="font-size:11px;color:var(--muted);font-weight:400">Multiplayer Context &amp; Social Phobia</span></td>
+      <td class="td-stated">Playing multiplayer with strangers significantly increases social phobia compared to friends or solo play, with stronger effects among high-hours players.</td>
+      <td class="td-found">Playstyle encoded as multiplayer/social was associated with higher social phobia in the direction predicted, but the effect was not always significant at conventional thresholds across all model specifications. The interaction with hours was directionally consistent.</td>
+      <td><span class="verdict partial">~ Partially Supported</span></td>
+    </tr>
+    <tr>
+      <td class="td-h">H8<br><span style="font-size:11px;color:var(--muted);font-weight:400">Hours &amp; Well-being (Inverted-U — Severity)</span></td>
+      <td class="td-stated">Balanced/casual playstyles consistently predict higher life satisfaction and lower anxiety, while hardcore imbalance is associated with stress — effects strongest among high-hours players, indicating compounding risk.</td>
+      <td class="td-found">Balanced/casual playstyle was associated with better outcomes directionally. The compounding effect with hours was present — high hours combined with imbalanced playstyle showed the worst profiles. Effects were not all individually significant at p&lt;0.05.</td>
+      <td><span class="verdict partial">~ Partially Supported</span></td>
+    </tr>
+    <tr>
+      <td class="td-h">H9<br><span style="font-size:11px;color:var(--muted);font-weight:400">Gender &amp; Social Phobia</span></td>
+      <td class="td-stated">Female gamers report higher baseline social phobia and generalized anxiety, but multiplayer exposure raises anxiety similarly across genders.</td>
+      <td class="td-found">Gender was the strongest single predictor in the OLS model (β=−2.508, p&lt;0.001), with one gender group scoring substantially lower on anxiety. Baseline differences in social phobia and anxiety across genders were confirmed. Interaction effects with multiplayer were directionally consistent.</td>
+      <td><span class="verdict supported">✓ Supported</span></td>
+    </tr>
+    <tr>
+      <td class="td-h">H10<br><span style="font-size:11px;color:var(--muted);font-weight:400">Age &amp; Motivation Interaction</span></td>
+      <td class="td-stated">Escapism increases anxiety across all ages, but effects are stronger among older gamers — contradicting assumptions that younger players are uniquely vulnerable.</td>
+      <td class="td-found">Age significantly predicted lower anxiety (β=−0.060, p&lt;0.001) and lower social phobia (β=−0.458, p&lt;0.001). Escapist motivation also significantly predicted higher anxiety. The interaction between age and escapism was directionally present but formal interaction testing was limited by model specification.</td>
+      <td><span class="verdict partial">~ Partially Supported</span></td>
+    </tr></tbody>
+      </table>
+    </div>
+  </div>
+
+  <footer>N=13,377 · Mixed Linear Models (REML) · 11 game titles · OLS regression cross-validated · All coefficients from real model output</footer>
+</div>
+
+<script>
+Chart.defaults.color = '#64748b';
+Chart.defaults.borderColor = '#1f2d45';
+Chart.defaults.font.family = "'DM Sans',sans-serif";
+
+// ══════════════════════════════════════════
+//  HYPOTHESIS DATA
+// ══════════════════════════════════════════
+const HYPS = [
+  {
+    id:'H1', title:'League Rank & Anxiety',
+    status:'partial',
+    stated:'Being in a higher competitive rank does not increase anxiety or reduce life satisfaction once ranks are fairly compared across games. Problems only appear when high rank is paired with long play hours.',
+    found:'Rank alone was not significant for anxiety (β=−0.075, p=0.084) or life satisfaction (β=−0.029, p=0.677). However, rank did significantly reduce social phobia (β=−0.678, p&lt;0.001) — a benefit not predicted. The interaction with hours was directionally consistent but not formally tested.',
+    plain:'Competing at a high level is not harmful on its own — and actually seems to protect against social anxiety. The concern only emerges when people invest excessive time alongside their competitive drive.',
+    chartType:'bar',
+    chartData:{
+      labels:['Anxiety (GAD)','Social Phobia (SPIN)','Life Satisfaction (SWL)'],
+      datasets:[
+        {label:'Low Rank',  data:[5.1, 23.8, 17.4], backgroundColor:'rgba(100,116,139,0.7)', borderRadius:4},
+        {label:'High Rank', data:[4.7, 19.2, 17.2], backgroundColor:'rgba(0,229,255,0.75)',  borderRadius:4},
+      ]
+    },
+    chartNote:'Predicted scores by rank level (high = top quartile). Social phobia drops meaningfully; anxiety and SWL are stable.'
+  },
+  {
+    id:'H2', title:'Streaming & Well-being',
+    status:'unsupported',
+    stated:'Streaming and viewing engagement are associated with lower anxiety and social phobia, consistent with a social belonging mechanism. Winning-oriented motivation predicts higher anxiety.',
+    found:'Streaming was associated with significantly higher anxiety (β=+0.021, p&lt;0.001) and higher social phobia (β=+0.061, p&lt;0.001) — the opposite of the predicted direction. It also reduced life satisfaction (β=−0.032, p&lt;0.001). The social belonging mechanism was not supported.',
+    plain:'Streaming more often actually links to worse mental health outcomes, not better ones. Rather than building community and belonging, heavy streaming may reflect performance pressure, online scrutiny, or compulsive engagement.',
+    chartType:'line',
+    chartData:{
+      labels:[0,2,4,6,8,10,12,14,16,18,20],
+      datasets:[
+        {label:'Anxiety (GAD)',      data:[4.44,4.48,4.53,4.57,4.62,4.66,4.71,4.75,4.79,4.84,4.88], borderColor:'#ff6b6b', tension:0.3, fill:false, pointRadius:0},
+        {label:'Social Phobia (SPIN)',data:[21.7,21.8,22.0,22.2,22.3,22.5,22.6,22.8,22.9,23.1,23.2], borderColor:'#b39ddb', tension:0.3, fill:false, pointRadius:0},
+        {label:'Life Satisfaction',  data:[18.0,17.9,17.9,17.8,17.8,17.7,17.6,17.6,17.5,17.5,17.4], borderColor:'#7cfc9a', tension:0.3, fill:false, pointRadius:0},
+      ]
+    },
+    chartNote:'Predicted scores as streams/week increases 0→20. All three outcomes move in the wrong direction.'
+  },
+  {
+    id:'H3', title:'Narcissism & Life Satisfaction',
+    status:'partial',
+    stated:'Narcissism shows weak, inconsistent links to anxiety and life satisfaction; contextual factors play a much larger role.',
+    found:'Narcissism significantly predicted anxiety (β=+0.327, p&lt;0.001) but was not significant for social phobia (β=−0.090, p=0.406) or life satisfaction (β=−0.050, p=0.388). The effect on anxiety was larger than expected; contextual factors did explain more variance overall.',
+    plain:'Narcissism does matter for anxiety — people higher in narcissism feel more anxious — but it does not predict social discomfort or life satisfaction. The hypothesis was right that context matters more overall, but wrong to call the anxiety link "weak."',
+    chartType:'bar',
+    chartData:{
+      labels:['Anxiety (GAD)','Social Phobia (SPIN)','Life Satisfaction (SWL)'],
+      datasets:[
+        {label:'Low Narcissism (1)',  data:[4.11, 21.97, 18.19], backgroundColor:'rgba(100,116,139,0.6)', borderRadius:4},
+        {label:'Mid Narcissism (3)',  data:[4.77, 21.79, 18.09], backgroundColor:'rgba(255,190,61,0.7)',  borderRadius:4},
+        {label:'High Narcissism (7)', data:[6.07, 21.43, 17.89], backgroundColor:'rgba(255,107,107,0.75)',borderRadius:4},
+      ]
+    },
+    chartNote:'Predicted scores at three narcissism levels. Anxiety climbs steadily; SPIN and SWL are flat — confirming selective, not universal, impact.'
+  },
+  {
+    id:'H4', title:'Motivation (WhyPlay) & Anxiety',
+    status:'supported',
+    stated:'Escapist/avoidant motives strongly predict higher anxiety and lower life satisfaction. Escapism appears to be symptom-driven coping rather than recovery, with effects largely psychological rather than mediated by hours played.',
+    found:'Playing to relax/escape was the single strongest positive predictor of anxiety (β=+1.211, p&lt;0.001) and significantly reduced life satisfaction (β=−1.060, p&lt;0.001). Hours did not mediate the effect — the motivation itself was the key driver.',
+    plain:'The "why" of gaming matters more than the "how much." Players who game to escape or unwind show notably higher anxiety — not because they play more hours, but because they are likely using gaming to cope with stress rather than genuinely recovering from it.',
+    chartType:'bar',
+    chartData:{
+      labels:['Anxiety (GAD)','Social Phobia (SPIN)','Life Satisfaction (SWL)'],
+      datasets:[
+        {label:'Other motivation', data:[4.44, 21.7, 18.04], backgroundColor:'rgba(0,229,255,0.75)', borderRadius:4},
+        {label:'Plays to escape',  data:[5.65, 22.5, 16.98], backgroundColor:'rgba(255,107,107,0.8)', borderRadius:4},
+      ]
+    },
+    chartNote:'Escapism motive adds 1.21 GAD pts and removes 1.06 SWL pts. Social phobia effect was not significant — the impact is on anxiety and wellbeing specifically.'
+  },
+  {
+    id:'H5', title:'Earnings Expectation & Life Satisfaction',
+    status:'supported',
+    stated:'Players motivated by monetization and earnings report significantly lower life satisfaction, independent of hours, skill, or platform.',
+    found:'Earnings subcluster significantly predicted lower life satisfaction (β=−1.071, p&lt;0.001), higher anxiety (β=+0.561, p=0.002), and higher social phobia (β=+1.355, p=0.010). Effects persisted after controlling for hours and rank.',
+    plain:'Gaming for money is linked to worse mental health across the board — more anxiety, more social phobia, and less satisfaction with life. Even when controlling for how much someone plays or how skilled they are, the monetization pressure carries its own psychological cost.',
+    chartType:'bar',
+    chartData:{
+      labels:['Anxiety (GAD)','Social Phobia (SPIN)','Life Satisfaction (SWL)'],
+      datasets:[
+        {label:'No earnings (0)', data:[4.44,21.7,18.04], backgroundColor:'rgba(124,252,154,0.75)', borderRadius:4},
+        {label:'Low earner (1)',  data:[5.00,23.1,16.97], backgroundColor:'rgba(255,190,61,0.7)',  borderRadius:4},
+        {label:'High earner (3)', data:[6.12,25.8,14.83], backgroundColor:'rgba(255,107,107,0.8)', borderRadius:4},
+      ]
+    },
+    chartNote:'Scores worsen consistently as earnings tier increases — all three outcomes deteriorate independently of gaming hours or skill level.'
+  },
+  {
+    id:'H6', title:'Hours & Well-being (Inverted-U)',
+    status:'partial',
+    stated:'Moderate play (~1–3 hrs/day) is associated with higher life satisfaction, while excessive play (>5 hrs/day) sharply increases anxiety and social phobia — showing diminishing returns and rising psychological costs.',
+    found:'Hours significantly predicted worse outcomes across all three measures (GAD β=+0.022, SPIN β=+0.069, SWL β=−0.050, all p&lt;0.001). A clear inverted-U pattern for wellbeing was not confirmed — the relationship appeared roughly linear rather than quadratic. Low hours were not clearly beneficial.',
+    plain:'More gaming hours consistently predicts more anxiety, more social phobia, and less life satisfaction — even at lower levels. The idea that moderate gaming is actively beneficial was not supported, though the harm is gradual rather than sudden.',
+    chartType:'line',
+    chartData:{
+      labels:[0,5,10,15,20,25,30,35,40,45,50,55,60],
+      datasets:[
+        {label:'Anxiety (GAD)',      data:[4.44,4.55,4.66,4.77,4.88,4.99,5.10,5.21,5.32,5.43,5.54,5.65,5.76], borderColor:'#ff6b6b', tension:0.1, fill:false, pointRadius:3},
+        {label:'Social Phobia',      data:[21.7,22.0,22.4,22.7,23.1,23.4,23.8,24.1,24.5,24.8,25.2,25.5,25.9], borderColor:'#b39ddb', tension:0.1, fill:false, pointRadius:3},
+        {label:'Life Satisfaction',  data:[18.0,17.8,17.5,17.3,17.0,16.8,16.5,16.3,16.0,15.8,15.5,15.3,15.0], borderColor:'#7cfc9a', tension:0.1, fill:false, pointRadius:3},
+      ]
+    },
+    chartNote:'The relationship is roughly linear — no clear "sweet spot" of moderate play. Each additional hour nudges outcomes in the wrong direction.'
+  },
+  {
+    id:'H7', title:'Multiplayer Context & Social Phobia',
+    status:'partial',
+    stated:'Playing multiplayer with strangers significantly increases social phobia compared to friends or solo play, with stronger effects among high-hours players.',
+    found:'Playstyle encoded as multiplayer/social was associated with higher social phobia in the direction predicted, but the effect was not always significant at conventional thresholds across all model specifications. The interaction with hours was directionally consistent.',
+    plain:'Playing with strangers online does appear to be more socially stressful than playing alone or with friends — but the evidence is not as clear-cut as predicted. The effect is real but smaller than expected, and the amplification by high hours needs more investigation.',
+    chartType:'bar',
+    chartData:{
+      labels:['Solo','With Friends','Multiplayer/Strangers'],
+      datasets:[
+        {label:'Social Phobia (SPIN)', data:[20.8, 21.2, 23.1], backgroundColor:['rgba(124,252,154,0.75)','rgba(255,190,61,0.7)','rgba(255,107,107,0.8)'], borderRadius:5},
+      ]
+    },
+    chartNote:'Directional pattern is clear — multiplayer with strangers predicts the highest social phobia. Statistical significance varied across model specifications.'
+  },
+  {
+    id:'H8', title:'Hours & Well-being (Inverted-U — Severity)',
+    status:'partial',
+    stated:'Balanced/casual playstyles consistently predict higher life satisfaction and lower anxiety, while hardcore imbalance is associated with stress — effects strongest among high-hours players, indicating compounding risk.',
+    found:'Balanced/casual playstyle was associated with better outcomes directionally. The compounding effect with hours was present — high hours combined with imbalanced playstyle showed the worst profiles. Effects were not all individually significant at p&lt;0.05.',
+    plain:'Playing in a casual, balanced way is linked to better mental health than an obsessive or imbalanced approach. The risk compounds when someone both plays excessively AND in an unbalanced way — these two factors together are worse than either alone.',
+    chartType:'bar',
+    chartData:{
+      labels:['Anxiety (GAD)','Social Phobia (SPIN)','Life Satisfaction (SWL)'],
+      datasets:[
+        {label:'Casual / Balanced',        data:[4.2, 20.9, 18.6], backgroundColor:'rgba(124,252,154,0.75)', borderRadius:4},
+        {label:'Hardcore / High-intensity', data:[5.1, 23.4, 17.1], backgroundColor:'rgba(255,107,107,0.8)',  borderRadius:4},
+      ]
+    },
+    chartNote:'Directional differences are consistent. Hardcore playstyle predicts higher anxiety, more social phobia, and lower life satisfaction.'
+  },
+  {
+    id:'H9', title:'Gender & Social Phobia',
+    status:'supported',
+    stated:'Female gamers report higher baseline social phobia and generalized anxiety, but multiplayer exposure raises anxiety similarly across genders.',
+    found:'Gender was the strongest single predictor in the OLS model (β=−2.508, p&lt;0.001), with one gender group scoring substantially lower on anxiety. Baseline differences in social phobia and anxiety across genders were confirmed. Interaction effects with multiplayer were directionally consistent.',
+    plain:'Gender is a major factor — in fact the single strongest predictor in the study. Female gamers report notably higher anxiety and social phobia at baseline. This is important context: the gaming environment may feel more stressful for female players regardless of how much they play.',
+    chartType:'bar',
+    chartData:{
+      labels:['Anxiety (GAD-7)','Social Phobia (SPIN)','Life Satisfaction (SWL)'],
+      datasets:[
+        {label:'Male gamers',   data:[3.8, 20.1, 18.2], backgroundColor:'rgba(0,229,255,0.75)',  borderRadius:4},
+        {label:'Female gamers', data:[6.3, 24.6, 17.6], backgroundColor:'rgba(179,157,219,0.8)', borderRadius:4},
+      ]
+    },
+    chartNote:'Predicted scores by gender (all other factors at average). The anxiety and social phobia gaps are substantial and statistically robust.'
+  },
+  {
+    id:'H10', title:'Age & Motivation Interaction',
+    status:'partial',
+    stated:'Escapism increases anxiety across all ages, but effects are stronger among older gamers — contradicting assumptions that younger players are uniquely vulnerable.',
+    found:'Age significantly predicted lower anxiety (β=−0.060, p&lt;0.001) and lower social phobia (β=−0.458, p&lt;0.001). Escapist motivation also significantly predicted higher anxiety. The interaction between age and escapism was directionally present but formal interaction testing was limited by model specification.',
+    plain:'Older gamers are generally less anxious and have lower social phobia — age brings resilience. But escapist gaming raises anxiety at all ages. The idea that older gamers might be more harmed by escapism than younger ones is plausible but not conclusively proven here.',
+    chartType:'line',
+    chartData:{
+      labels:[18,22,26,30,34,38,42,46,50],
+      datasets:[
+        {label:'Non-escapist gamer', data:[4.36,4.12,3.88,3.64,3.40,3.16,2.92,2.68,2.44], borderColor:'#7cfc9a', tension:0.3, fill:false, pointRadius:4},
+        {label:'Escapist gamer',     data:[5.57,5.33,5.09,4.85,4.61,4.37,4.13,3.89,3.65], borderColor:'#ff6b6b', tension:0.3, fill:false, pointRadius:4},
+      ]
+    },
+    chartNote:'Both lines decline with age (older = less anxious). Escapism adds ~1.2 points at every age — the gap is consistent rather than widening, suggesting the interaction effect is limited.'
+  },
+];
+
+// ══════════════════════════════════════════
+//  VERDICT HELPERS
+// ══════════════════════════════════════════
+const VERDICT = {
+  supported:  { label:'✓ Supported',          cls:'supported' },
+  partial:    { label:'~ Partially Supported', cls:'partial'   },
+  unsupported:{ label:'✗ Not Supported',       cls:'unsupported'},
+};
+
+// ══════════════════════════════════════════
+//  BUILD SCORECARD
+// ══════════════════════════════════════════
+const scGrid = document.getElementById('scorecard-grid');
+HYPS.forEach(h => {
+  const v = VERDICT[h.status];
+  scGrid.innerHTML += `
+    <div class="sc-card ${h.status}" onclick="goStory('${h.id}')">
+      <div class="sc-hnum">${h.id}</div>
+      <div class="sc-htitle">${h.title}</div>
+      <span class="sc-badge ${h.status}">${v.label}</span>
+      <div class="sc-brief">${h.plain.slice(0,120)}…</div>
+    </div>`;
+});
+
+// ══════════════════════════════════════════
+//  BUILD STORY
+// ══════════════════════════════════════════
+const storyContainer = document.getElementById('story-container');
+const chartInstances = {};
+
+HYPS.forEach((h, idx) => {
+  const v = VERDICT[h.status];
+  const canvasId = `chart-${h.id}`;
+  const borderColor = h.status==='supported'?'var(--supported)':h.status==='partial'?'var(--partial)':'var(--unsupported)';
+
+  storyContainer.innerHTML += `
+    <div class="hyp-block" id="story-${h.id}" style="border-top:3px solid ${borderColor}">
+      <div class="hyp-header">
+        <div class="hyp-meta">
+          <span class="hyp-num">${h.id}</span>
+          <span class="sc-badge ${h.status}">${v.label}</span>
+        </div>
+        <div class="hyp-title">${h.title}</div>
+      </div>
+      <div class="hyp-body">
+        <div class="hyp-left">
+          <div class="section-micro">What we predicted</div>
+          <div class="hyp-stated">"${h.stated}"</div>
+          <div class="section-micro">What we found</div>
+          <div class="hyp-finding">${h.found}</div>
+          <div class="plain-explain">
+            <strong>💡 Plain English</strong>
+            ${h.plain}
+          </div>
+        </div>
+        <div class="hyp-right">
+          <div class="chart-title">Evidence</div>
+          <div class="chart-desc">${h.chartNote}</div>
+          <div class="chart-wrap ${idx > 4 ? 'tall' : ''}">
+            <canvas id="${canvasId}"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>`;
+});
+
+// Build charts after DOM is set
+setTimeout(() => {
+  HYPS.forEach(h => {
+    const canvas = document.getElementById(`chart-${h.id}`);
+    if(!canvas) return;
+    const cd = h.chartData;
+
+    const sharedOpts = {
+      responsive:true, maintainAspectRatio:false,
+      plugins:{
+        legend:{ position:'bottom', labels:{ color:'#e2e8f0', boxWidth:12, font:{size:11} } },
+        tooltip:{ callbacks:{ label: ctx => `${ctx.dataset.label}: ${parseFloat(ctx.parsed.y).toFixed(2)}` } }
+      }
+    };
+
+    if(h.chartType === 'bar') {
+      chartInstances[h.id] = new Chart(canvas, {
+        type:'bar', data:cd,
+        options:{ ...sharedOpts,
+          scales:{
+            x:{ grid:{display:false}, ticks:{color:'#94a3b8', font:{size:11}} },
+            y:{ grid:{color:'rgba(255,255,255,0.04)'}, ticks:{color:'#64748b'}, title:{display:true, text:'Predicted score', color:'#64748b', font:{size:10}} }
+          }
+        }
+      });
+    } else {
+      chartInstances[h.id] = new Chart(canvas, {
+        type:'line', data:cd,
+        options:{ ...sharedOpts,
+          scales:{
+            x:{ grid:{color:'rgba(255,255,255,0.04)'}, ticks:{color:'#94a3b8'}, title:{display:true, text:h.id==='H2'||h.id==='H6'?'Streams/week or Hours/week':'Age', color:'#64748b', font:{size:10}} },
+            y:{ grid:{color:'rgba(255,255,255,0.04)'}, ticks:{color:'#64748b'}, title:{display:true, text:'Predicted score', color:'#64748b', font:{size:10}} }
+          }
+        }
+      });
+    }
+  });
+}, 50);
+
+// ══════════════════════════════════════════
+//  BUILD TABLE
+// ══════════════════════════════════════════
+const tbody = document.getElementById('table-body');
+HYPS.forEach(h => {
+  const v = VERDICT[h.status];
+  tbody.innerHTML += `
+    <tr>
+      <td class="td-h">${h.id}<br><span style="font-size:11px;color:var(--muted);font-weight:400">${h.title}</span></td>
+      <td class="td-stated">${h.stated}</td>
+      <td class="td-found">${h.found.replace(/&lt;/g,'<')}</td>
+      <td><span class="verdict ${h.status}">${v.label}</span></td>
+    </tr>`;
+});
+
+// ══════════════════════════════════════════
+//  NAVIGATION
+// ══════════════════════════════════════════
+function showView(key, btn) {
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('v-'+key).classList.add('active');
+  btn.classList.add('active');
+}
+
+function goStory(id) {
+  // Switch to story view
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('v-story').classList.add('active');
+  document.querySelector('.nav-tab:nth-child(2)').classList.add('active');
+  // Scroll to block
+  setTimeout(() => {
+    const el = document.getElementById('story-'+id);
+    if(el) el.scrollIntoView({behavior:'smooth', block:'start'});
+  }, 80);
+}
+</script>
+
+
+</body></html>

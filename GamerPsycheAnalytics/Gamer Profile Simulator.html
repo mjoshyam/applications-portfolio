@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<!-- saved from url=(0052)file:///C:/Users/Riya/Downloads/gamer_simulator.html -->
+<html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gamer Profile Simulator</title>
+<script src="./Gamer Profile Simulator_files/chart.umd.min.js.download"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600&display=swap');
+:root {
+  --bg:#0a0e1a; --surface:#111827; --surface2:#1a2235; --border:#1f2d45;
+  --cyan:#00e5ff; --red:#ff6b6b; --green:#7cfc9a; --yellow:#ffbe3d; --purple:#b39ddb;
+  --text:#e2e8f0; --muted:#64748b;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--bg);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(0,229,255,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(0,229,255,0.025) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0;}
+
+.page{position:relative;z-index:1;max-width:1300px;margin:0 auto;padding:32px 24px;}
+
+/* HEADER */
+.top-bar{margin-bottom:28px;}
+.eyebrow{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:0.2em;color:var(--cyan);text-transform:uppercase;margin-bottom:8px;}
+h1{font-family:'Space Mono',monospace;font-size:clamp(18px,3vw,30px);font-weight:700;color:#fff;line-height:1.2;}
+h1 span{color:var(--cyan);}
+.subtitle{font-size:14px;color:var(--muted);margin-top:8px;line-height:1.6;max-width:780px;}
+
+/* PRESETS */
+.preset-strip{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:28px;}
+.preset-btn{
+  background:var(--surface);border:1px solid var(--border);border-radius:8px;
+  padding:8px 14px;cursor:pointer;transition:all 0.2s;text-align:left;
+}
+.preset-btn:hover,.preset-btn.active{border-color:var(--cyan);background:rgba(0,229,255,0.07);}
+.pb-title{font-size:13px;font-weight:600;color:var(--text);}
+.pb-sub{font-size:11px;color:var(--muted);margin-top:2px;}
+
+/* MAIN GRID */
+.main-grid{display:grid;grid-template-columns:340px 1fr;gap:20px;align-items:start;}
+
+/* CONTROLS */
+.controls-panel{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:24px;position:sticky;top:20px;}
+.ctrl-group{margin-bottom:20px;}
+.ctrl-group-label{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:0.18em;text-transform:uppercase;color:var(--cyan);margin-bottom:14px;padding-bottom:8px;border-bottom:1px solid var(--border);}
+.ctrl-row{margin-bottom:14px;}
+.ctrl-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:5px;}
+.ctrl-name{font-size:13px;font-weight:500;color:var(--text);}
+.ctrl-val{font-family:'Space Mono',monospace;font-size:12px;color:var(--cyan);background:rgba(0,229,255,0.1);border:1px solid rgba(0,229,255,0.25);border-radius:5px;padding:2px 9px;min-width:72px;text-align:center;}
+.ctrl-hint{font-size:11px;color:var(--muted);margin-top:4px;}
+
+input[type=range]{
+  width:100%;-webkit-appearance:none;appearance:none;
+  height:5px;border-radius:3px;outline:none;cursor:pointer;
+  background:var(--border);
+}
+input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none;width:17px;height:17px;border-radius:50%;
+  background:var(--cyan);border:2px solid var(--bg);cursor:pointer;
+  box-shadow:0 0 8px rgba(0,229,255,0.5);
+}
+input[type=range]::-moz-range-thumb{
+  width:17px;height:17px;border-radius:50%;
+  background:var(--cyan);border:2px solid var(--bg);cursor:pointer;
+}
+
+.reset-btn{
+  width:100%;margin-top:4px;padding:10px;border-radius:8px;
+  border:1px solid var(--border);background:transparent;
+  color:var(--muted);font-family:'Space Mono',monospace;font-size:10px;
+  cursor:pointer;transition:all 0.2s;letter-spacing:0.12em;text-transform:uppercase;
+}
+.reset-btn:hover{border-color:var(--cyan);color:var(--cyan);}
+
+/* RESULTS PANEL */
+.results-panel{display:flex;flex-direction:column;gap:18px;}
+
+/* SCORE CARDS */
+.score-row{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;}
+.score-card{
+  background:var(--surface);border:1px solid var(--border);border-radius:12px;
+  padding:20px;transition:border-color 0.3s,box-shadow 0.3s;
+}
+.sc-label{font-size:12px;font-weight:600;color:var(--text);margin-bottom:2px;}
+.sc-scale{font-size:10px;color:var(--muted);}
+.sc-number{font-family:'Space Mono',monospace;font-size:36px;font-weight:700;color:#fff;margin:10px 0 4px;transition:color 0.3s;}
+.sc-bar-bg{height:7px;background:var(--border);border-radius:4px;overflow:hidden;margin-bottom:8px;}
+.sc-bar-fill{height:100%;border-radius:4px;transition:width 0.45s cubic-bezier(0.4,0,0.2,1);}
+.sc-band{font-family:'Space Mono',monospace;font-size:12px;font-weight:700;letter-spacing:0.05em;}
+.sc-band-desc{font-size:11px;color:var(--muted);margin-top:3px;line-height:1.4;}
+
+/* NARRATIVE */
+.narrative-card{
+  background:var(--surface);border:1px solid var(--border);
+  border-left:3px solid var(--cyan);border-radius:0 12px 12px 0;padding:20px 22px;
+}
+.narr-title{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:0.15em;text-transform:uppercase;color:var(--cyan);margin-bottom:10px;}
+.narr-body{font-size:14px;color:#94a3b8;line-height:1.75;}
+.narr-body strong{color:#fff;}
+.narr-body .tag{
+  display:inline-block;font-size:11px;font-family:'Space Mono',monospace;
+  border-radius:4px;padding:1px 7px;margin-right:4px;vertical-align:middle;
+}
+.tag-bad{background:rgba(255,107,107,0.15);color:#fca5a5;}
+.tag-good{background:rgba(124,252,154,0.12);color:#86efac;}
+.tag-neutral{background:rgba(100,116,139,0.15);color:#94a3b8;}
+
+/* BREAKDOWN CHART */
+.breakdown-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:22px;}
+.bc-header{margin-bottom:16px;}
+.bc-title{font-size:15px;font-weight:600;color:#fff;margin-bottom:4px;}
+.bc-desc{font-size:13px;color:var(--muted);line-height:1.5;}
+.bc-legend{display:flex;gap:20px;margin-top:8px;flex-wrap:wrap;}
+.bc-legend-item{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);}
+.bc-dot{width:10px;height:10px;border-radius:2px;flex-shrink:0;}
+.chart-wrap{position:relative;height:280px;}
+
+/* FACTOR TABLE */
+.factor-table{width:100%;border-collapse:collapse;font-size:12px;}
+.factor-table th{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--border);padding:7px 10px;text-align:left;}
+.factor-table td{padding:9px 10px;border-bottom:1px solid rgba(31,45,69,0.5);font-family:'Space Mono',monospace;font-size:11px;}
+.factor-table tr:last-child td{border-bottom:none;}
+.factor-table tr:hover td{background:var(--surface2);}
+.ft-name{color:var(--text);font-weight:700;}
+.pos{color:#93c5fd;} .neg{color:#fca5a5;} .neutral-t{color:var(--muted);}
+.arrow-up{color:#93c5fd;} .arrow-down{color:#86efac;} .arrow-none{color:var(--muted);}
+
+/* NOTE */
+.note{background:rgba(255,190,61,0.07);border:1px solid rgba(255,190,61,0.2);border-radius:8px;padding:12px 16px;font-size:12px;color:#e2cc90;line-height:1.6;}
+.note strong{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:0.15em;text-transform:uppercase;display:inline;color:var(--yellow);}
+
+@media(max-width:860px){.main-grid{grid-template-columns:1fr}.controls-panel{position:static}.score-row{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="top-bar">
+    <div class="eyebrow">Interactive Simulator · Based on Real Model Coefficients</div>
+    <h1>🎮 Build a Gamer Profile<br>See Their <span>Predicted Mental Health Scores</span></h1>
+    <div class="subtitle">
+      Adjust the sliders to describe a hypothetical gamer. The three scores update live using the actual statistical coefficients from our study of 13,377 players.
+      This is the model's real prediction — not an estimate.
+    </div>
+  </div>
+
+  <!-- PRESET BUTTONS -->
+  <div class="preset-strip">
+    <div style="font-family:&#39;Space Mono&#39;,monospace;font-size:10px;letter-spacing:0.15em;text-transform:uppercase;color:var(--muted);align-self:center;margin-right:4px;">Quick load →</div>
+    <button class="preset-btn" onclick="loadPreset(&#39;avg&#39;)">
+      <div class="pb-title">📊 Average Gamer</div>
+      <div class="pb-sub">Study baseline</div>
+    </button>
+    <button class="preset-btn" onclick="loadPreset(&#39;casual&#39;)">
+      <div class="pb-title">😌 Casual Player</div>
+      <div class="pb-sub">10h, employed, no streams</div>
+    </button>
+    <button class="preset-btn" onclick="loadPreset(&#39;hardcore&#39;)">
+      <div class="pb-title">🔥 Hardcore Gamer</div>
+      <div class="pb-sub">40h, unemployed, streams often</div>
+    </button>
+    <button class="preset-btn" onclick="loadPreset(&#39;pro&#39;)">
+      <div class="pb-title">🏆 Competitive Pro</div>
+      <div class="pb-sub">Top rank, high earnings</div>
+    </button>
+    <button class="preset-btn" onclick="loadPreset(&#39;student&#39;)">
+      <div class="pb-title">📚 Uni Student</div>
+      <div class="pb-sub">Young, educated, not working</div>
+    </button>
+    <button class="preset-btn" onclick="loadPreset(&#39;streamer&#39;)">
+      <div class="pb-title">📺 Streamer</div>
+      <div class="pb-sub">20 streams/wk, plays to escape</div>
+    </button>
+  </div>
+
+  <div class="main-grid">
+
+    <!-- ── CONTROLS ── -->
+    <div class="controls-panel">
+
+      <div class="ctrl-group">
+        <div class="ctrl-group-label">🎮 Gaming Behaviour</div>
+
+        <div class="ctrl-row">
+          <div class="ctrl-top">
+            <span class="ctrl-name">Hours played / week</span>
+            <span class="ctrl-val" id="v-hours">25 hrs</span>
+          </div>
+          <input type="range" min="0" max="60" value="13" step="1" id="s-hours" oninput="sim()">
+          <div class="ctrl-hint">Sample avg ~13 hrs · Max recorded ~60</div>
+        </div>
+
+        <div class="ctrl-row">
+          <div class="ctrl-top">
+            <span class="ctrl-name">Streams per week</span>
+            <span class="ctrl-val" id="v-streams">20</span>
+          </div>
+          <input type="range" min="0" max="20" value="1" step="1" id="s-streams" oninput="sim()">
+          <div class="ctrl-hint">Most players stream 0–3×/week</div>
+        </div>
+
+        <div class="ctrl-row">
+          <div class="ctrl-top">
+            <span class="ctrl-name">Competitive rank</span>
+            <span class="ctrl-val" id="v-rank">Mid</span>
+          </div>
+          <input type="range" min="0" max="4" value="2" step="1" id="s-rank" oninput="sim()">
+          <div class="ctrl-hint">0 = Casual/unranked · 4 = Top rank</div>
+        </div>
+
+        <div class="ctrl-row">
+          <div class="ctrl-top">
+            <span class="ctrl-name">Plays to relax/escape?</span>
+            <span class="ctrl-val" id="v-relax">Yes</span>
+          </div>
+          <input type="range" min="0" max="1" value="0" step="1" id="s-relax" oninput="sim()">
+          <div class="ctrl-hint">Is relaxation/escape the main reason they play?</div>
+        </div>
+
+        <div class="ctrl-row">
+          <div class="ctrl-top">
+            <span class="ctrl-name">Gaming earnings tier</span>
+            <span class="ctrl-val" id="v-earn">Medium</span>
+          </div>
+          <input type="range" min="0" max="3" value="0" step="1" id="s-earn" oninput="sim()">
+          <div class="ctrl-hint">0 = No earnings · 3 = High earner</div>
+        </div>
+      </div>
+
+      <div class="ctrl-group">
+        <div class="ctrl-group-label">👤 About the Person</div>
+
+        <div class="ctrl-row">
+          <div class="ctrl-top">
+            <span class="ctrl-name">Education level</span>
+            <span class="ctrl-val" id="v-edu">Some college</span>
+          </div>
+          <input type="range" min="1" max="5" value="3" step="1" id="s-edu" oninput="sim()">
+          <div class="ctrl-hint">1 = No degree · 3 = Bachelor's · 5 = Postgrad</div>
+        </div>
+
+        <div class="ctrl-row">
+          <div class="ctrl-top">
+            <span class="ctrl-name">Employment status</span>
+            <span class="ctrl-val" id="v-work">Not employed</span>
+          </div>
+          <input type="range" min="0" max="1" value="1" step="1" id="s-work" oninput="sim()">
+          <div class="ctrl-hint">0 = Not employed · 1 = Employed</div>
+        </div>
+
+        <div class="ctrl-row">
+          <div class="ctrl-top">
+            <span class="ctrl-name">Narcissism score</span>
+            <span class="ctrl-val" id="v-narc">5 / 7</span>
+          </div>
+          <input type="range" min="1" max="7" value="3" step="1" id="s-narc" oninput="sim()">
+          <div class="ctrl-hint">1 = Very low · 4 = Average · 7 = Very high</div>
+        </div>
+      </div>
+
+      <button class="reset-btn" onclick="loadPreset(&#39;avg&#39;)">↺ Reset to average gamer</button>
+    </div>
+
+    <!-- ── RESULTS ── -->
+    <div class="results-panel">
+
+      <!-- Score cards -->
+      <div class="score-row">
+        <div class="score-card" id="card-gad" style="border-color: rgba(255, 190, 61, 0.333); box-shadow: rgba(255, 190, 61, 0.082) 0px 0px 20px;">
+          <div class="sc-label">😰 Anxiety <span class="sc-scale">(GAD-7)</span></div>
+          <div class="sc-number" id="num-gad" style="color: rgb(255, 190, 61);">8.6</div>
+          <div class="sc-bar-bg"><div class="sc-bar-fill" id="bar-gad" style="width: 41%; background: rgb(255, 190, 61);"></div></div>
+          <div class="sc-band" id="band-gad" style="color: rgb(255, 190, 61);">Mild</div>
+          <div class="sc-band-desc" id="banddesc-gad">Some worry — within normal range</div>
+        </div>
+        <div class="score-card" id="card-spin" style="border-color: rgba(255, 159, 64, 0.333); box-shadow: rgba(255, 159, 64, 0.082) 0px 0px 20px;">
+          <div class="sc-label">😶 Social Phobia <span class="sc-scale">(SPIN)</span></div>
+          <div class="sc-number" id="num-spin" style="color: rgb(255, 159, 64);">23.0</div>
+          <div class="sc-bar-bg"><div class="sc-bar-fill" id="bar-spin" style="width: 33.9%; background: rgb(255, 159, 64);"></div></div>
+          <div class="sc-band" id="band-spin" style="color: rgb(255, 159, 64);">Moderate</div>
+          <div class="sc-band-desc" id="banddesc-spin">Meaningful social anxiety</div>
+        </div>
+        <div class="score-card" id="card-swl" style="border-color: rgba(0, 229, 255, 0.333); box-shadow: rgba(0, 229, 255, 0.082) 0px 0px 20px;">
+          <div class="sc-label">😊 Life Satisfaction <span class="sc-scale">(SWLS)</span></div>
+          <div class="sc-number" id="num-swl" style="color: rgb(0, 229, 255);">14.9</div>
+          <div class="sc-bar-bg"><div class="sc-bar-fill" id="bar-swl" style="width: 33%; background: rgb(0, 229, 255);"></div></div>
+          <div class="sc-band" id="band-swl" style="color: rgb(0, 229, 255);">Very satisfied</div>
+          <div class="sc-band-desc" id="banddesc-swl">Exceptionally satisfied with life</div>
+        </div>
+      </div>
+
+      <!-- Narrative -->
+      <div class="narrative-card">
+        <div class="narr-title">What does this profile tell us?</div>
+        <div class="narr-body" id="narrative">This gamer profile predicts <strong style="color:#ffbe3d">Mild anxiety (8.6)</strong>, <strong style="color:#ff9f40">Moderate social phobia (23.0)</strong>, and <strong style="color:#00e5ff">Very satisfied life satisfaction (14.9)</strong>.<br><br>🛋️ <span class="tag tag-bad">⚠ concern</span> Playing <strong>to relax or escape</strong> is the single largest anxiety driver in this profile — adding over 1 point to GAD and reducing life satisfaction. The model suggests this reflects escapism rather than healthy leisure.<br><br>⏱️ <span class="tag tag-bad">high hours</span> Playing <strong>25 hours/week</strong> is well above the sample average (~13h) and contributes to worse anxiety, social phobia, and lower life satisfaction in this profile.<br><br>💼 <span class="tag tag-bad">concern</span> <strong>Not being employed</strong> is the single biggest drag on predicted life satisfaction for this profile.<br><br>💰 <span class="tag tag-bad">note</span> A <strong>medium gaming earnings tier</strong> is linked to higher anxiety and social phobia, and lower life satisfaction — possibly reflecting the pressures of gaming as income.<br><br>📺 <span class="tag tag-bad">note</span> Streaming <strong>20 times/week</strong> adds meaningfully to both anxiety and social phobia in this profile.</div>
+      </div>
+
+      <!-- Breakdown chart -->
+      <div class="breakdown-card">
+        <div class="bc-header">
+          <div class="bc-title">What's driving each score?</div>
+          <div class="bc-desc">Each bar shows how much a factor <strong>adds to (+)</strong> or <strong>subtracts from (−)</strong> the predicted score for this profile. Taller positive bars push scores up; taller negative bars push them down.</div>
+          <div class="bc-legend">
+            <div class="bc-legend-item"><div class="bc-dot" style="background:rgba(255,107,107,0.8)"></div>Raises anxiety / social phobia / lowers satisfaction</div>
+            <div class="bc-legend-item"><div class="bc-dot" style="background:rgba(124,252,154,0.8)"></div>Reduces anxiety / social phobia / raises satisfaction</div>
+          </div>
+        </div>
+        <div class="chart-wrap"><canvas id="breakdownChart" width="1692" height="560" style="display: block; box-sizing: border-box; height: 280px; width: 846px;"></canvas></div>
+      </div>
+
+      <!-- Factor contribution table -->
+      <div class="breakdown-card">
+        <div class="bc-header">
+          <div class="bc-title">Exact contribution of each factor</div>
+          <div class="bc-desc">The numbers show exactly how many points each factor adds or removes from each predicted score for <em>this specific profile</em>.</div>
+        </div>
+        <table class="factor-table">
+          <thead>
+            <tr>
+              <th>Factor</th>
+              <th>Your value</th>
+              <th>→ Anxiety</th>
+              <th>→ Social Phobia</th>
+              <th>→ Life Satisfaction</th>
+            </tr>
+          </thead>
+          <tbody id="factor-tbody"><tr>
+      <td class="ft-name">Hours/week</td>
+      <td style="color:var(--cyan);font-family:&#39;Space Mono&#39;,monospace">25h/wk</td>
+      <td><span class="pos">+0.547</span></td>
+      <td><span class="pos">+1.725</span></td>
+      <td><span class="neg">-1.250</span></td>
+    </tr><tr>
+      <td class="ft-name">Streams/week</td>
+      <td style="color:var(--cyan);font-family:&#39;Space Mono&#39;,monospace">20</td>
+      <td><span class="pos">+0.428</span></td>
+      <td><span class="pos">+1.220</span></td>
+      <td><span class="neg">-0.640</span></td>
+    </tr><tr>
+      <td class="ft-name">Rank</td>
+      <td style="color:var(--cyan);font-family:&#39;Space Mono&#39;,monospace">Mid</td>
+      <td><span class="neg">-0.037</span></td>
+      <td><span class="neg">-0.339</span></td>
+      <td><span class="neg">-0.015</span></td>
+    </tr><tr>
+      <td class="ft-name">Play to relax</td>
+      <td style="color:var(--cyan);font-family:&#39;Space Mono&#39;,monospace">Yes</td>
+      <td><span class="pos">+1.211</span></td>
+      <td><span class="pos">+0.847</span></td>
+      <td><span class="neg">-1.060</span></td>
+    </tr><tr>
+      <td class="ft-name">Education</td>
+      <td style="color:var(--cyan);font-family:&#39;Space Mono&#39;,monospace">Some college</td>
+      <td><span class="neg">-0.734</span></td>
+      <td><span class="neg">-4.378</span></td>
+      <td><span class="pos">+2.206</span></td>
+    </tr><tr>
+      <td class="ft-name">Employment</td>
+      <td style="color:var(--cyan);font-family:&#39;Space Mono&#39;,monospace">Not employed</td>
+      <td><span class="neutral-t">—</span></td>
+      <td><span class="neutral-t">—</span></td>
+      <td><span class="neutral-t">—</span></td>
+    </tr><tr>
+      <td class="ft-name">Narcissism</td>
+      <td style="color:var(--cyan);font-family:&#39;Space Mono&#39;,monospace">5/7</td>
+      <td><span class="pos">+1.633</span></td>
+      <td><span class="neg">-0.450</span></td>
+      <td><span class="neg">-0.250</span></td>
+    </tr><tr>
+      <td class="ft-name">Earnings tier</td>
+      <td style="color:var(--cyan);font-family:&#39;Space Mono&#39;,monospace">Medium</td>
+      <td><span class="pos">+1.122</span></td>
+      <td><span class="pos">+2.710</span></td>
+      <td><span class="neg">-2.142</span></td>
+    </tr><tr style="background:rgba(0,229,255,0.04)">
+    <td class="ft-name" style="color:var(--cyan)">TOTAL PREDICTED</td>
+    <td></td>
+    <td><span style="color:#fff;font-weight:700">8.6</span> <span style="color:var(--muted);font-size:10px">(base 4.442+<span style="color:#93c5fd">4.17</span>)</span></td>
+    <td><span style="color:#fff;font-weight:700">23.0</span> <span style="color:var(--muted);font-size:10px">(base 21.706+<span style="color:#93c5fd">1.34</span>)</span></td>
+    <td><span style="color:#fff;font-weight:700">14.9</span> <span style="color:var(--muted);font-size:10px">(base 18.038<span style="color:#86efac">-3.15</span>)</span></td>
+  </tr></tbody>
+        </table>
+      </div>
+
+      <div class="note">
+        <strong>How this works:</strong> Predicted scores = model intercept + sum of (your value × coefficient) for each factor.
+        All coefficients come from our mixed-effects models (N=13,065–13,377). Scores are clamped to realistic scale ranges.
+        This shows what the model predicts <em>on average</em> — real individuals vary considerably around any prediction.
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+Chart.defaults.color = '#64748b';
+Chart.defaults.borderColor = '#1f2d45';
+Chart.defaults.font.family = "'DM Sans',sans-serif";
+
+// ── MODEL COEFFICIENTS ──
+const C = {
+  gad:  { base:4.442,  hours:0.0219,  streams:0.0214, rank:-0.075,  relax:1.2108, edu:-0.367,  work:-0.0883, narc:0.3267, earn:0.5608 },
+  spin: { base:21.706, hours:0.069,   streams:0.061,  rank:-0.678,  relax:0.847,  edu:-2.189,  work:-0.212,  narc:-0.090, earn:1.355  },
+  swl:  { base:18.038, hours:-0.050,  streams:-0.032, rank:-0.029,  relax:-1.060, edu:1.103,   work:1.011,   narc:-0.050, earn:-1.071 },
+};
+
+const FACTORS = ['hours','streams','rank','relax','edu','work','narc','earn'];
+const F_LABELS = ['Hours/week','Streams/week','Rank','Play to relax','Education','Employment','Narcissism','Earnings tier'];
+
+const RANK_LABELS = ['Casual','Low','Mid','High','Top'];
+const EDU_LABELS  = ['','No degree','Some college','Bachelor\'s','Master\'s','Postgraduate'];
+const WORK_LABELS = ['Not employed','Employed'];
+const RELAX_LABELS = ['No','Yes'];
+const EARN_LABELS  = ['None','Low','Medium','High'];
+
+const GAD_BANDS  = [[0,4,'Minimal',  '#7cfc9a','No/minimal anxiety symptoms'],[5,9,'Mild','#ffbe3d','Some worry — within normal range'],[10,14,'Moderate','#ff9f40','Noticeable anxiety — may benefit from support'],[15,21,'Severe','#ff6b6b','High anxiety — professional support recommended']];
+const SPIN_BANDS = [[0,7,'None','#7cfc9a','No social phobia symptoms'],[8,19,'Mild','#ffbe3d','Some social discomfort'],[20,29,'Moderate','#ff9f40','Meaningful social anxiety'],[30,68,'Severe','#ff6b6b','High social phobia — significantly affects life']];
+const SWL_BANDS  = [[5,9,'Very dissatisfied','#ff6b6b','Deeply unhappy with life overall'],[10,14,'Dissatisfied','#ff9f40','Below average life satisfaction'],[15,19,'Slightly below avg','#ffbe3d','Slightly below typical satisfaction'],[20,24,'Average','#94a3b8','Typical range for most people'],[25,29,'Satisfied','#7cfc9a','Above average wellbeing'],[30,35,'Very satisfied','#00e5ff','Exceptionally satisfied with life']];
+
+let bdChart = null;
+
+function getVals() {
+  const n = id => parseFloat(document.getElementById(id).value);
+  return {
+    hours: n('s-hours'), streams: n('s-streams'),
+    rank: n('s-rank') * 0.25, // 0–4 → 0–1 scaled
+    relax: n('s-relax'), edu: n('s-edu'), work: n('s-work'),
+    narc: n('s-narc'), earn: n('s-earn'),
+    rankRaw: n('s-rank')
+  };
+}
+
+function predict(v, out) {
+  const c = C[out];
+  return c.base + c.hours*v.hours + c.streams*v.streams + c.rank*v.rank +
+         c.relax*v.relax + c.edu*v.edu + c.work*v.work + c.narc*v.narc + c.earn*v.earn;
+}
+
+function getBand(val, bands) {
+  return bands.find(b => val >= b[0] && val <= b[1]) || bands[bands.length-1];
+}
+
+function setScore(key, val, max, bands, minVal=0) {
+  const clamped = Math.min(max, Math.max(minVal, val));
+  document.getElementById('num-'+key).textContent = clamped.toFixed(1);
+  const pct = ((clamped-minVal)/(max-minVal)*100).toFixed(1);
+  document.getElementById('bar-'+key).style.width = pct+'%';
+  const band = getBand(clamped, bands);
+  document.getElementById('bar-'+key).style.background = band[3];
+  document.getElementById('band-'+key).textContent = band[2];
+  document.getElementById('band-'+key).style.color = band[3];
+  document.getElementById('banddesc-'+key).textContent = band[4];
+  document.getElementById('num-'+key).style.color = band[3];
+  document.getElementById('card-'+key).style.borderColor = band[3]+'55';
+  document.getElementById('card-'+key).style.boxShadow = `0 0 20px ${band[3]}15`;
+  return clamped;
+}
+
+function sim() {
+  const v = getVals();
+
+  // Update display labels
+  document.getElementById('v-hours').textContent   = v.hours + ' hrs';
+  document.getElementById('v-streams').textContent = v.streams;
+  document.getElementById('v-rank').textContent    = RANK_LABELS[v.rankRaw];
+  document.getElementById('v-relax').textContent   = RELAX_LABELS[v.relax];
+  document.getElementById('v-edu').textContent     = EDU_LABELS[v.edu];
+  document.getElementById('v-work').textContent    = WORK_LABELS[v.work];
+  document.getElementById('v-narc').textContent    = v.narc + ' / 7';
+  document.getElementById('v-earn').textContent    = EARN_LABELS[v.earn];
+
+  // Predict
+  const gad  = setScore('gad',  predict(v,'gad'),  21, GAD_BANDS);
+  const spin = setScore('spin', predict(v,'spin'), 68, SPIN_BANDS);
+  const swl  = setScore('swl',  predict(v,'swl'),  35, SWL_BANDS, 5);
+
+  // Narrative
+  buildNarrative(v, gad, spin, swl);
+
+  // Breakdown chart
+  buildBreakdown(v);
+
+  // Factor table
+  buildTable(v);
+}
+
+function buildNarrative(v, gad, spin, swl) {
+  const gadBand  = getBand(gad,  GAD_BANDS);
+  const spinBand = getBand(spin, SPIN_BANDS);
+  const swlBand  = getBand(swl,  SWL_BANDS);
+
+  let parts = [];
+  parts.push(`This gamer profile predicts <strong style="color:${gadBand[3]}">${gadBand[2]} anxiety (${gad.toFixed(1)})</strong>, <strong style="color:${spinBand[3]}">${spinBand[2]} social phobia (${spin.toFixed(1)})</strong>, and <strong style="color:${swlBand[3]}">${swlBand[2]} life satisfaction (${swl.toFixed(1)})</strong>.`);
+
+  const flags = [];
+
+  if (v.relax === 1)
+    flags.push(`🛋️ <span class="tag tag-bad">⚠ concern</span> Playing <strong>to relax or escape</strong> is the single largest anxiety driver in this profile — adding over 1 point to GAD and reducing life satisfaction. The model suggests this reflects escapism rather than healthy leisure.`);
+
+  if (v.hours >= 25)
+    flags.push(`⏱️ <span class="tag tag-bad">high hours</span> Playing <strong>${v.hours} hours/week</strong> is well above the sample average (~13h) and contributes to worse anxiety, social phobia, and lower life satisfaction in this profile.`);
+
+  if (v.work === 1 && v.edu >= 3)
+    flags.push(`✅ <span class="tag tag-good">protective</span> Being <strong>employed and educated</strong> provides the strongest positive contribution to life satisfaction in this profile — these are the two biggest buffers in the model.`);
+  else if (v.work === 0)
+    flags.push(`💼 <span class="tag tag-bad">concern</span> <strong>Not being employed</strong> is the single biggest drag on predicted life satisfaction for this profile.`);
+
+  if (v.earn >= 2)
+    flags.push(`💰 <span class="tag tag-bad">note</span> A <strong>${EARN_LABELS[v.earn].toLowerCase()} gaming earnings tier</strong> is linked to higher anxiety and social phobia, and lower life satisfaction — possibly reflecting the pressures of gaming as income.`);
+
+  if (v.rankRaw >= 3)
+    flags.push(`🏆 <span class="tag tag-good">protective</span> A <strong>${RANK_LABELS[v.rankRaw].toLowerCase()} competitive rank</strong> is a meaningful protective factor against social phobia specifically.`);
+
+  if (v.streams >= 8)
+    flags.push(`📺 <span class="tag tag-bad">note</span> Streaming <strong>${v.streams} times/week</strong> adds meaningfully to both anxiety and social phobia in this profile.`);
+
+  if (v.narc >= 6)
+    flags.push(`🎭 <span class="tag tag-bad">note</span> A <strong>high narcissism score (${v.narc}/7)</strong> is one of the larger individual personality contributors to anxiety in this model.`);
+
+  if (flags.length === 0)
+    flags.push(`✨ This profile has a fairly balanced set of risk and protective factors with no single factor dominating the predictions.`);
+
+  document.getElementById('narrative').innerHTML = parts.join('') + '<br><br>' + flags.join('<br><br>');
+}
+
+function buildBreakdown(v) {
+  const labels = F_LABELS;
+  const gadContribs  = FACTORS.map(f => C.gad[f]  * v[f]);
+  const spinContribs = FACTORS.map(f => C.spin[f] * v[f]);
+  const swlContribs  = FACTORS.map(f => C.swl[f]  * v[f]);
+
+  const bgGad  = gadContribs.map(x  => x >= 0 ? 'rgba(255,107,107,0.75)' : 'rgba(124,252,154,0.7)');
+  const bgSpin = spinContribs.map(x => x >= 0 ? 'rgba(179,157,219,0.75)' : 'rgba(124,252,154,0.7)');
+  const bgSwl  = swlContribs.map(x  => x >= 0 ? 'rgba(0,229,255,0.6)'   : 'rgba(255,107,107,0.65)');
+
+  if (bdChart) {
+    bdChart.data.labels = labels;
+    bdChart.data.datasets[0].data = gadContribs;
+    bdChart.data.datasets[0].backgroundColor = bgGad;
+    bdChart.data.datasets[1].data = spinContribs;
+    bdChart.data.datasets[1].backgroundColor = bgSpin;
+    bdChart.data.datasets[2].data = swlContribs;
+    bdChart.data.datasets[2].backgroundColor = bgSwl;
+    bdChart.update();
+  } else {
+    bdChart = new Chart(document.getElementById('breakdownChart'), {
+      type: 'bar',
+      data: {
+        labels,
+        datasets: [
+          { label: 'Anxiety (GAD)', data: gadContribs, backgroundColor: bgGad, borderRadius: 4 },
+          { label: 'Social Phobia (SPIN)', data: spinContribs, backgroundColor: bgSpin, borderRadius: 4 },
+          { label: 'Life Satisfaction (SWL)', data: swlContribs, backgroundColor: bgSwl, borderRadius: 4 },
+        ]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: {
+          legend: { labels: { color: '#e2e8f0', boxWidth: 12, font: { size: 12 } } },
+          tooltip: { callbacks: { label: ctx => `${ctx.dataset.label}: ${ctx.parsed.y >= 0 ? '+' : ''}${ctx.parsed.y.toFixed(3)} pts` } }
+        },
+        scales: {
+          x: { grid: { display: false }, ticks: { color: '#94a3b8', font: { size: 11 } } },
+          y: { grid: { color: 'rgba(255,255,255,0.04)' }, title: { display: true, text: 'Points added (+) or removed (−) from score', color: '#64748b', font: { size: 11 } } }
+        }
+      }
+    });
+  }
+}
+
+function buildTable(v) {
+  const tbody = document.getElementById('factor-tbody');
+  tbody.innerHTML = '';
+
+  const userVals = { hours:v.hours, streams:v.streams, rank:v.rank, relax:v.relax, edu:v.edu, work:v.work, narc:v.narc, earn:v.earn };
+  const dispVals = {
+    hours: v.hours+'h/wk', streams: v.streams, rank: RANK_LABELS[v.rankRaw],
+    relax: RELAX_LABELS[v.relax], edu: EDU_LABELS[v.edu], work: WORK_LABELS[v.work],
+    narc: v.narc+'/7', earn: EARN_LABELS[v.earn]
+  };
+
+  FACTORS.forEach((f, i) => {
+    const gC = C.gad[f]  * userVals[f];
+    const sC = C.spin[f] * userVals[f];
+    const wC = C.swl[f]  * userVals[f];
+    const fmt = (n) => {
+      if (Math.abs(n) < 0.005) return `<span class="neutral-t">—</span>`;
+      const cls = n > 0 ? 'pos' : 'neg';
+      return `<span class="${cls}">${n > 0 ? '+' : ''}${n.toFixed(3)}</span>`;
+    };
+    tbody.innerHTML += `<tr>
+      <td class="ft-name">${F_LABELS[i]}</td>
+      <td style="color:var(--cyan);font-family:'Space Mono',monospace">${dispVals[f]}</td>
+      <td>${fmt(gC)}</td>
+      <td>${fmt(sC)}</td>
+      <td>${fmt(wC)}</td>
+    </tr>`;
+  });
+
+  // Totals row
+  const totG = FACTORS.reduce((s,f) => s + C.gad[f]*userVals[f], 0);
+  const totS = FACTORS.reduce((s,f) => s + C.spin[f]*userVals[f], 0);
+  const totW = FACTORS.reduce((s,f) => s + C.swl[f]*userVals[f], 0);
+  const fmtT = (n,base) => {
+    const total = base+n;
+    return `<span style="color:#fff;font-weight:700">${total.toFixed(1)}</span> <span style="color:var(--muted);font-size:10px">(base ${base}${n>=0?'+':''}<span style="color:${n>=0?'#93c5fd':'#86efac'}">${n.toFixed(2)}</span>)</span>`;
+  };
+  tbody.innerHTML += `<tr style="background:rgba(0,229,255,0.04)">
+    <td class="ft-name" style="color:var(--cyan)">TOTAL PREDICTED</td>
+    <td></td>
+    <td>${fmtT(totG,C.gad.base)}</td>
+    <td>${fmtT(totS,C.spin.base)}</td>
+    <td>${fmtT(totW,C.swl.base)}</td>
+  </tr>`;
+}
+
+// ── PRESETS ──
+const PRESETS = {
+  avg:      { hours:13, streams:1,  rank:2, relax:0, edu:3, work:1, narc:3, earn:0 },
+  casual:   { hours:10, streams:0,  rank:1, relax:0, edu:3, work:1, narc:2, earn:0 },
+  hardcore: { hours:40, streams:8,  rank:2, relax:1, edu:2, work:0, narc:5, earn:1 },
+  pro:      { hours:50, streams:15, rank:4, relax:0, edu:2, work:1, narc:4, earn:3 },
+  student:  { hours:15, streams:2,  rank:2, relax:0, edu:4, work:0, narc:2, earn:0 },
+  streamer: { hours:25, streams:20, rank:2, relax:1, edu:2, work:0, narc:5, earn:2 },
+};
+
+function loadPreset(key) {
+  const p = PRESETS[key];
+  Object.entries(p).forEach(([k,val]) => {
+    const el = document.getElementById('s-'+k);
+    if (el) el.value = val;
+  });
+  sim();
+}
+
+// ── INIT ──
+window.addEventListener('load', () => { loadPreset('avg'); });
+</script>
+
+
+</body></html>
